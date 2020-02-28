@@ -1,1 +1,4 @@
 # rhamt-integration-test entry-points
+
+[console_scripts]
+rhamt = rhamt.scripting.cli:cli
