@@ -3,7 +3,7 @@ import click
 
 @click.group()
 def cli():
-    """Entry Point for all cli command"""
+    """CLI Tool for RHAMT"""
     pass
 
 
