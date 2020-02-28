@@ -1,4 +1,3 @@
-import os
 import warnings
 
 import attr
@@ -9,6 +8,7 @@ class Configuration(object):
     """
     holds the current configuration
     """
+
     def __init__(self):
         self.yaycl_config = None
 
@@ -23,7 +23,7 @@ class Configuration(object):
         """
 
         if self.yaycl_config is None:
-            raise RuntimeError('cfme configuration was not initialized')
+            raise RuntimeError("cfme configuration was not initialized")
         return getattr(self.yaycl_config, name)
 
 
@@ -32,13 +32,14 @@ class DeprecatedConfigWrapper(object):
     """
     a wrapper that provides the old :code:``utils.conf`` api
     """
+
     configuration = attr.ib()
     _warn = attr.ib(default=False)
 
     def __getattr__(self, key):
         if self._warn:
             warnings.warn(
-                'the configuration module {} will be deprecated'.format(key),
+                "the configuration module {} will be deprecated".format(key),
                 category=DeprecationWarning,
                 stacklevel=2,
             )
@@ -51,7 +52,7 @@ class DeprecatedConfigWrapper(object):
     def __getitem__(self, key):
         if self._warn:
             warnings.warn(
-                'the configuration module {} will be deprecated'.format(key),
+                "the configuration module {} will be deprecated".format(key),
                 category=DeprecationWarning,
                 stacklevel=2,
             )
@@ -60,7 +61,7 @@ class DeprecatedConfigWrapper(object):
     def __delitem__(self, key):
         # used in bad logging
         if self._warn:
-            warnings.warn('clearing configuration is bad', stacklevel=2)
+            warnings.warn("clearing configuration is bad", stacklevel=2)
 
         del self.configuration.yaycl_config[key]
 

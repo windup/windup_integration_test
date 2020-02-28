@@ -16,11 +16,9 @@ class BrowserFactory(object):
 
     def create(self, url_key):
         try:
-            browser = tries(
-                2, WebDriverException,
-                self.webdriver_class, **self.browser_kwargs())
-        except URLError as e:
-                raise RuntimeError('Could not connect to Selenium server. Is it up and running?')
+            browser = tries(2, WebDriverException, self.webdriver_class, **self.browser_kwargs())
+        except URLError:
+            raise RuntimeError("Could not connect to Selenium server. Is it up and running?")
 
         browser.maximize_window()
         browser.get(url_key)
@@ -43,21 +41,23 @@ class BrowserManager(object):
 
     @classmethod
     def from_conf(cls, browser_conf):
-        webdriver_name = browser_conf.get('webdriver', 'Firefox')
+        webdriver_name = browser_conf.get("webdriver", "Firefox")
         webdriver_class = getattr(webdriver, webdriver_name)
 
-        browser_kwargs = browser_conf.get('webdriver_options', {})
+        browser_kwargs = browser_conf.get("webdriver_options", {})
         if webdriver_name.lower() == "remote":
-            if browser_conf[
-                    'webdriver_options'][
-                        'desired_capabilities']['browserName'].lower() == 'chrome':
-                browser_kwargs['desired_capabilities']['chromeOptions'] = {}
-                browser_kwargs[
-                    'desired_capabilities']['chromeOptions']['args'] = ['--no-sandbox',
-                                                                        '--start-maximized',
-                                                                        '--disable-extensions',
-                                                                        'disable-infobars']
-                browser_kwargs['desired_capabilities'].pop('marionette', None)
+            if (
+                browser_conf["webdriver_options"]["desired_capabilities"]["browserName"].lower()
+                == "chrome"
+            ):
+                browser_kwargs["desired_capabilities"]["chromeOptions"] = {}
+                browser_kwargs["desired_capabilities"]["chromeOptions"]["args"] = [
+                    "--no-sandbox",
+                    "--start-maximized",
+                    "--disable-extensions",
+                    "disable-infobars",
+                ]
+                browser_kwargs["desired_capabilities"].pop("marionette", None)
         return cls(BrowserFactory(webdriver_class, browser_kwargs))
 
     def _is_alive(self):
@@ -74,7 +74,7 @@ class BrowserManager(object):
 
     def ensure_open(self, url_key=None):
         url_key = self.coerce_url_key(url_key)
-        if getattr(self.browser, 'url_key', None) != url_key:
+        if getattr(self.browser, "url_key", None) != url_key:
             return self.start(url_key=url_key)
 
         if self._is_alive():
@@ -107,7 +107,7 @@ class BrowserManager(object):
         except Exception as e:
             # log.error('An exception happened during browser shutdown:')
             # log.exception(e)
-            raise
+            raise e
         finally:
             self.browser = None
 
@@ -127,5 +127,5 @@ class BrowserManager(object):
         return self.browser
 
 
-manager = BrowserManager.from_conf(conf.env.get('browser', {}))
+manager = BrowserManager.from_conf(conf.env.get("browser", {}))
 driver = LocalProxy(manager.ensure_open)

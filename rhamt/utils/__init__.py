@@ -1,7 +1,6 @@
-
-
 class TriesExceeded(Exception):
     """Default exception raised when tries() method doesn't catch a func exception"""
+
     pass
 
 
@@ -21,7 +20,7 @@ def tries(num_tries, exceptions, f, *args, **kwargs):
     Raises:
         What ``f`` raises if the try count is exceeded.
     """
-    caught_exception = TriesExceeded('Tries were exhausted without a func exception')
+    caught_exception = TriesExceeded("Tries were exhausted without a func exception")
     tries = 0
     while tries < num_tries:
         tries += 1
