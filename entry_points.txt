@@ -1,0 +1,1 @@
+# rhamt-integration-test entry-points
