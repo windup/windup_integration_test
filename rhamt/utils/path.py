@@ -1,10 +1,27 @@
-import imp
+"""Project path helpers
 
-from py.path import local
+Contains `pathlib.Path` objects for accessing common project locations.
 
-_rhamt_package_dir = local(imp.find_module("rhamt")[1])
+Paths rendered below will be different in your local environment.
+"""
+import os
+from distutils.sysconfig import get_python_lib as _get_python_lib
+from pathlib import Path
 
-#: The project root, ``rhamt_tests/``
-project_path = _rhamt_package_dir.dirpath()
+import rhamt as _rhamt
 
-conf_path = project_path.join("conf")
+PROJECT_PATH = Path(_rhamt.__file__).parent
+
+
+def _is_site_installed(module):
+    sitedir = _get_python_lib()
+    return os.path.commonpath([module.__file__, sitedir]) == sitedir
+
+
+IQE_EDITABLE_INSTALLED = not _is_site_installed(_rhamt)
+
+# All configurations for RHAMT
+CONF_PATH = os.path.join(PROJECT_PATH, "conf")
+
+# log path for RHAMT
+LOG_PATH = os.path.join(PROJECT_PATH, "log")
