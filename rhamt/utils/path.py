@@ -18,7 +18,7 @@ def _is_site_installed(module):
     return os.path.commonpath([module.__file__, sitedir]) == sitedir
 
 
-IQE_EDITABLE_INSTALLED = not _is_site_installed(_rhamt)
+RHAMT_EDITABLE_INSTALLED = not _is_site_installed(_rhamt)
 
 # All configurations for RHAMT
 CONF_PATH = os.path.join(PROJECT_PATH, "conf")
