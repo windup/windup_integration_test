@@ -2,3 +2,6 @@
 
 [console_scripts]
 rhamt = rhamt.scripting.cli:cli
+
+[rhamt.application_collections]
+base = rhamt.entities:BaseWebUICollection
