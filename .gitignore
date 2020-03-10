@@ -105,8 +105,10 @@ venv.bak/
 .mypy_cache/
 .idea/
 
+# local config files
+*.local.yaml
+
 # project specific
 .rhamt_venv
 .env_rhamt
 *.local.yaml
-log/
