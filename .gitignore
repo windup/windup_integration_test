@@ -85,7 +85,6 @@ celerybeat-schedule
 # Environments
 .env
 .venv
-.rhamt_venv
 env/
 venv/
 ENV/
@@ -105,3 +104,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 .idea/
+
+# project specific
+.rhamt_venv
+.env_rhamt
+*.local.yaml
+log/
