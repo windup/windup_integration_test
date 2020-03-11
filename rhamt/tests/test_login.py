@@ -1,0 +1,9 @@
+import pytest
+from rhamt.base.application.implementations.web_ui import navigate_to
+
+
+@pytest.mark.smoke
+def test_login(application):
+    """Test login nav destination"""
+    view = navigate_to(application.collections.base, "LoggedIn")
+    assert view.is_displayed
