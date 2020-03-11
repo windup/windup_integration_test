@@ -9,3 +9,4 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "web_console: RHAMT Web Console tests")
     config.addinivalue_line("markers", "cli: RHAMT cli tests")
     config.addinivalue_line("markers", "smoke: General smoke tests")
+    config.addinivalue_line("markers", "ci: General smoke tests run on GitHub CI")
