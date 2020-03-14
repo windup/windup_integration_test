@@ -1,12 +1,16 @@
 import shutil
-import click
-from rhamt.utils import conf
 import subprocess
+import time
+
+import click
+
+from rhamt.utils import conf
 
 
 class SeleniumContainer(object):
-    def __init__(self, client=None, name=None, image=None, vnc_port=None, webdriver_port=None,
-                 network=None):
+    def __init__(
+        self, client=None, name=None, image=None, vnc_port=None, webdriver_port=None, network=None
+    ):
         default_conf = conf.get_config("selenium")
         self.client = client or default_conf.client
         self.name = name or default_conf.name
@@ -19,31 +23,33 @@ class SeleniumContainer(object):
 
     @property
     def is_running(self):
-        cmd = subprocess.run(["docker", "ps"], stdout=subprocess.PIPE)
+        cmd = subprocess.run([self.client, "ps"], stdout=subprocess.PIPE)
         return self.name in cmd.stdout.decode()
 
     def start(self):
         if not self.is_running:
             cmd = [
-                    self.client,
-                    "run",
-                    "-d",
-                    "--rm",
-                    "--expose",
-                    "5999",
-                    "--expose",
-                    "4444",
-                    "-p",
-                    f"{self.vnc_port}:5999",
-                    "-p",
-                    f"{self.webdriver_port}:4444",
-                    "--network",
-                    self.network,
-                    "--name",
-                    self.name,
-                    self.image,
-                ]
+                self.client,
+                "run",
+                "-d",
+                "--rm",
+                "--expose",
+                "5999",
+                "--expose",
+                "4444",
+                "-p",
+                f"{self.vnc_port}:5999",
+                "-p",
+                f"{self.webdriver_port}:4444",
+                "--network",
+                self.network,
+                "--name",
+                self.name,
+                self.image,
+            ]
             subprocess.run(cmd)
+            # hack some time to stable
+            time.sleep(5)
         else:
             click.echo(f"{self.name} container already in running state")
 
@@ -86,13 +92,19 @@ def status():
 @main.command(help="Command executor of selenium container")
 def executor():
     sel = SeleniumContainer()
-    return f"http://localhost:{sel.webdriver_port}/wd/hub"
+    if sel.is_running:
+        click.echo(f"http://localhost:{sel.webdriver_port}/wd/hub")
+    else:
+        click.echo(f"{sel.name} not in running state")
 
 
 @main.command(help="VNC url for selenium container")
 def vnc():
     sel = SeleniumContainer()
-    return f"localhost:{sel.vnc_port}"
+    if sel.is_running:
+        click.echo(f"localhost:{sel.vnc_port}")
+    else:
+        click.echo(f"{sel.name} not in running state")
 
 
 @main.command(help="Open VNC viewer for selenium container")
