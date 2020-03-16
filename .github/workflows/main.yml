@@ -48,4 +48,4 @@ jobs:
           pip install -e .
 
       - name: Unit Tests
-        run: py.test -v
+        run: py.test -m ci -v
