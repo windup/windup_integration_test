@@ -58,3 +58,15 @@ It will provide default imports like `navigate_to`, and `Application` object (ap
 You can create your own python file with imports you use frequently.
 Just create a `conf/rhmt_shell_startup.py` file in your repo.
 This file can contain arbitrary python code that is executed in this context.
+
+#### Selenium Container
+```shell
+rhamt selenium --help
+```
+It is containerized `webdriver`. It also includes a `VNC server` so that you can connect
+and see what the browser is doing. This is also useful if you need to put a breakpoint in the test
+and do some browser interaction.
+
+The container client like `Docker` or `Podaman` should up and running on your system.
+**selenium.yaml** file holds default selenium container config.
+You can overwrite default by creating new file **selenium.local.yaml**.

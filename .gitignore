@@ -109,4 +109,3 @@ venv.bak/
 .rhamt_venv
 .env_rhamt
 *.local.yaml
-log/

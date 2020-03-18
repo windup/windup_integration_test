@@ -1,0 +1,9 @@
+# Selenium container configuration
+# Create new `selenium.local.yaml` file and overwrite changes.
+name: rhamt_selenium
+client: docker   # docker/podman
+image: quay.io/redhatqe/selenium-standalone:latest
+webdriver_port: 4444
+vnc_port: 5999
+network: host
+vncviewer: null   # VNC viewer which installed in your system
