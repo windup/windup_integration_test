@@ -21,7 +21,7 @@ def _is_site_installed(module):
 RHAMT_EDITABLE_INSTALLED = not _is_site_installed(_rhamt)
 
 # All configurations for RHAMT
-CONF_PATH = os.path.join(PROJECT_PATH, "conf")
+CONF_PATH = PROJECT_PATH / "conf"
 
 # log path for RHAMT
-LOG_PATH = os.path.join(PROJECT_PATH, "log")
+LOG_PATH = PROJECT_PATH / "log"

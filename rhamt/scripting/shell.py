@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
-
 import click
 from IPython.terminal.interactiveshell import TerminalInteractiveShell
 
@@ -26,9 +24,9 @@ def main(obj):
 
     from rhamt.utils.path import CONF_PATH
 
-    custom_import_path = os.path.join(CONF_PATH, "rhmt_shell_startup.py")
+    custom_import_path = CONF_PATH / "rhmt_shell_startup.py"
 
-    if os.path.isfile(custom_import_path):
+    if custom_import_path.exists():
         with open(custom_import_path, "r") as custom_import_file:
             custom_import_code = custom_import_file.read()
         click.echo(f"Importing custom code:\n{custom_import_code.strip()}")

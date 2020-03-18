@@ -1,5 +1,4 @@
 import logging
-import os
 
 from rhamt.utils.path import LOG_PATH
 
@@ -27,8 +26,9 @@ stream_handler.setLevel(logging.WARNING)
 stream_handler.setFormatter(logging.Formatter("%(levelname)s : %(message)s"))
 
 # File Handler
-rhamt_log_file = os.path.join(LOG_PATH, "rhamt.log")
-file_handler = logging.FileHandler(rhamt_log_file)
+LOG_PATH.mkdir(exist_ok=True)
+rhamt_log_file = LOG_PATH / "rhamt.log"
+file_handler = logging.FileHandler(rhamt_log_file, mode="a")
 file_handler.setLevel(logging.DEBUG)
 file_handler.setFormatter(logging.Formatter("%(levelname)s : %(asctime)s - %(message)s"))
 
