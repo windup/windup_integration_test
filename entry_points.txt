@@ -1,6 +1,6 @@
 # rhamt-integration-test entry-points
 [pytest11]
-iqe = rhamt.test_framework.pytest_plugin
+rhamt = rhamt.test_framework.pytest_plugin
 
 [console_scripts]
 rhamt = rhamt.scripting.cli:cli
