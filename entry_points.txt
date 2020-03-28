@@ -7,3 +7,4 @@ rhamt = rhamt.scripting.cli:cli
 
 [rhamt.application_collections]
 base = rhamt.entities:BaseWebUICollection
+projects = rhamt.entities.projects:ProjectCollection
