@@ -1,10 +1,11 @@
+from widgetastic.exceptions import ItemNotFound
+from widgetastic.exceptions import NoSuchElementException
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import VerticalNavigation
-from widgetastic.exceptions import NoSuchElementException
 
 
 class HOMENavigation(VerticalNavigation):
@@ -53,8 +54,8 @@ class SelectedApplications(Widget):
     class _app(ParametrizedView):
         PARAMETERS = ("app_name",)
         delete_app_btn = Text(
-            ParametrizedLocator(
-                ".//span[normalize-space(.)={app_name|quote}]/following-sibling::a"))
+            ParametrizedLocator(".//span[normalize-space(.)={app_name|quote}]/following-sibling::a")
+        )
 
         def delete_app(self):
             """Clicks the close icon for the app."""
@@ -89,7 +90,9 @@ class ProjectList(Widget):
 
     def _get_project(self, project_name):
         for item in self.browser.elements(self.ITEM_LOCATOR):
-            el = self.browser.element(".//*[contains(@class,'list-group-item-heading')]/a/h2", parent=item)
+            el = self.browser.element(
+                ".//*[contains(@class,'list-group-item-heading')]/a/h2", parent=item
+            )
             if self.browser.text(el) == project_name:
                 return item
         raise ItemNotFound("Project: {} not found".format(project_name))

@@ -15,10 +15,12 @@ def test_multiple_applications_upload(request, application):
     project = project_collection.create(
         name=project_name,
         description=fauxfactory.gen_alphanumeric(),
-        app_list=["acmeair-webapp-1.0-SNAPSHOT.war",
-                  "arit-ear-0.8.1-SNAPSHOT.ear",
-                  "cadmium-war-0.1.0.war",],
-        transformation_path="Containerization"
+        app_list=[
+            "acmeair-webapp-1.0-SNAPSHOT.war",
+            "arit-ear-0.8.1-SNAPSHOT.ear",
+            "cadmium-war-0.1.0.war",
+        ],
+        transformation_path="Containerization",
     )
     analysis_configuration = AnalysisConfiguration(application)
     analysis_configuration.delete_application("arit-ear-0.8.1-SNAPSHOT.ear")

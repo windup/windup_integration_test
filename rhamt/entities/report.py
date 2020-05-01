@@ -1,9 +1,8 @@
+from widgetastic.utils import WaitFillViewStrategy
 from widgetastic.widget import Text
 from widgetastic.widget import View
-from widgetastic_patternfly import Button
 from widgetastic_patternfly import Input
 from widgetastic_patternfly import Tab
-from widgetastic.utils import WaitFillViewStrategy
 
 from rhamt.entities import BaseLoggedInPage
 
@@ -24,7 +23,7 @@ class AllApplicationsView(BaseLoggedInPage):
         @View.nested
         class all_issues(Tab):  # noqa
             fill_strategy = WaitFillViewStrategy("15s")
-            TAB_NAME = 'All Issues'
+            TAB_NAME = "All Issues"
             title = Text('.//div[contains(@class, "page-header")]/h1/div')
 
             @property
@@ -34,10 +33,9 @@ class AllApplicationsView(BaseLoggedInPage):
         @View.nested
         class technologies(Tab):  # noqa
             fill_strategy = WaitFillViewStrategy("20s")
-            TAB_NAME = 'Technologies'
+            TAB_NAME = "Technologies"
             title = Text('.//div[contains(@class, "page-header")]/h1/div')
 
             @property
             def is_displayed(self):
                 return self.title.text == "Technologies"
-

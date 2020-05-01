@@ -1,6 +1,7 @@
 import attr
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
+from wait_for import wait_for
 from widgetastic.utils import WaitFillViewStrategy
 from widgetastic.widget import FileInput
 from widgetastic.widget import Text
@@ -18,8 +19,6 @@ from rhamt.entities.analysis_results import AnalysisResultsView
 from rhamt.utils import conf
 from rhamt.utils.ftp import FTPClientWrapper
 from rhamt.utils.update import Updateable
-from rhamt.utils.wait import TimedOutError
-from wait_for import wait_for
 from rhamt.widgetastic import ProjectList
 from rhamt.widgetastic import ProjectSteps
 from rhamt.widgetastic import TransformationPath
@@ -70,7 +69,7 @@ class AddProjectView(AllProjectView):
             return self.upload_file.is_displayed and self.add_applications.is_displayed
 
         def fill(self, values):
-            app_list = values.get('app_list')
+            app_list = values.get("app_list")
             env = conf.get_config("env")
             fs = FTPClientWrapper(env.ftpserver.entities.rhamt)
             for app in app_list:
@@ -138,8 +137,10 @@ class EditProjectView(AllProjectView):
 
 
 class DeleteProjectView(AllProjectView):
-    title = Text(locator=".//div[contains(@class, 'modal-header')]"
-                         "/h1[normalize-space(.)='Confirm Project Deletion']")
+    title = Text(
+        locator=".//div[contains(@class, 'modal-header')]"
+        "/h1[normalize-space(.)='Confirm Project Deletion']"
+    )
     delete_project_name = Input(id="resource-to-delete")
     delete_btn = Button("Delete")
     cancel_button = Button("Cancel")
@@ -174,9 +175,10 @@ class Project(BaseEntity, Updateable):
 
     def delete(self, project_name):
         view = navigate_to(self, "Delete")
-        view.fill({'delete_project_name': project_name})
+        view.fill({"delete_project_name": project_name})
         view.delete_btn.click()
         import time
+
         time.sleep(10)
 
 
@@ -209,7 +211,7 @@ class ProjectCollection(BaseCollection):
         view = self.create_view(AnalysisResultsView)
         view.wait_displayed()
         assert view.is_displayed
-        wait_for(lambda : view.analysis_results.in_progress(), delay=0.2, timeout=120)
+        wait_for(lambda: view.analysis_results.in_progress(), delay=0.2, timeout=120)
         wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=120)
         assert view.analysis_results.is_analysis_complete()
         return project
@@ -236,7 +238,7 @@ class Add(RhamtNavigateStep):
 @ViaWebUI.register_destination_for(Project)
 class Edit(RhamtNavigateStep):
     VIEW = EditProjectView
-    prerequisite = NavigateToAttribute('parent', 'All')
+    prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self, *args, **kwargs):
         self.prerequisite_view.project_list.edit_project(self.obj.name)
@@ -245,7 +247,7 @@ class Edit(RhamtNavigateStep):
 @ViaWebUI.register_destination_for(Project)
 class Delete(RhamtNavigateStep):
     VIEW = DeleteProjectView
-    prerequisite = NavigateToAttribute('parent', 'All')
+    prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self, *args, **kwargs):
         self.prerequisite_view.project_list.delete_project(self.obj.name)

@@ -1,8 +1,8 @@
 import fauxfactory
 
 from rhamt.base.application.implementations.web_ui import navigate_to
-from rhamt.entities.report import AllApplicationsView
 from rhamt.entities.analysis_results import AnalysisResultsView
+from rhamt.entities.report import AllApplicationsView
 from rhamt.utils import conf
 from rhamt.utils.ftp import FTPClientWrapper
 from rhamt.utils.update import update
@@ -21,11 +21,11 @@ def test_project_crud(application):
     assert project.exists(project_name)
 
     # Edit Project with no change , clicks cancel
-    project.update({'name': project_name})
+    project.update({"name": project_name})
     assert project.name == project_name
 
     # Edit Project with new desc and save
-    update_descr = 'my edited description'
+    update_descr = "my edited description"
     with update(project):
         project.description = update_descr
     assert project.description == update_descr
@@ -67,7 +67,7 @@ def test_application_report(application):
     project_collection.create(
         name=project_name,
         description=fauxfactory.gen_alphanumeric(),
-        app_list=["acmeair-webapp-1.0-SNAPSHOT.war"]
+        app_list=["acmeair-webapp-1.0-SNAPSHOT.war"],
     )
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()

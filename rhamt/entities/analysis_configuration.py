@@ -1,5 +1,4 @@
 from taretto.navigate import NavigateToAttribute
-
 from widgetastic.widget import Text
 from widgetastic_patternfly import Button
 
@@ -8,9 +7,9 @@ from rhamt.base.application.implementations.web_ui import navigate_to
 from rhamt.base.application.implementations.web_ui import RhamtNavigateStep
 from rhamt.base.application.implementations.web_ui import ViaWebUI
 from rhamt.entities import BaseLoggedInPage
-from rhamt.widgetastic import TransformationPath
-from rhamt.widgetastic import SelectedApplications
 from rhamt.utils.update import Updateable
+from rhamt.widgetastic import SelectedApplications
+from rhamt.widgetastic import TransformationPath
 
 
 class AnalysisConfigurationView(BaseLoggedInPage):
@@ -21,7 +20,9 @@ class AnalysisConfigurationView(BaseLoggedInPage):
     selected_applications = SelectedApplications()
     select_none = Button("Select None")
     select_app_msg = Text(
-        locator=".//span[normalize-space(.)= 'You must select an application to run the analysis with')]")
+        locator=".//span[normalize-space(.)= "
+        "'You must select an application to run the analysis with')]"
+    )
 
     @property
     def is_displayed(self):
@@ -39,7 +40,7 @@ class AnalysisConfiguration(Updateable, NavigatableMixin):
         Args:
             app_name: Application
         """
-        view = navigate_to(self, 'AnalysisConfigurationPage')
+        view = navigate_to(self, "AnalysisConfigurationPage")
         view.selected_applications.delete_application(app_name)
         view.save_and_run_button.click()
 
@@ -48,7 +49,7 @@ class AnalysisConfiguration(Updateable, NavigatableMixin):
         Args:
             app_name: Application
         """
-        view = navigate_to(self, 'AnalysisConfiguration')
+        view = navigate_to(self, "AnalysisConfiguration")
         view.select_none.click()
         assert view.select_app_msg.is_displayed()
 
