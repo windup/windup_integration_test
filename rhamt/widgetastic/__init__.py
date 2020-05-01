@@ -1,4 +1,3 @@
-from widgetastic.exceptions import ItemNotFound
 from widgetastic.exceptions import NoSuchElementException
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import ParametrizedView
@@ -6,6 +5,8 @@ from widgetastic.widget import Text
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import VerticalNavigation
+
+from rhamt.utils.exceptions import ItemNotFound
 
 
 class HOMENavigation(VerticalNavigation):
