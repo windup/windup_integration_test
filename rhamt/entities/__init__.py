@@ -6,6 +6,7 @@ from widgetastic.widget import View
 from rhamt.base.application.implementations.web_ui import RhamtNavigateStep
 from rhamt.base.application.implementations.web_ui import ViaWebUI
 from rhamt.base.modeling import BaseCollection
+from rhamt.widgetastic import DropdownMenu
 from rhamt.widgetastic import HOMENavigation
 from rhamt.widgetastic import RHAMTNavigation
 
@@ -14,11 +15,11 @@ class BaseLoggedInPage(View):
     header = Text(locator=".//span[@id='header-logo']")
     home_navigation = HOMENavigation("//ul")
     navigation = RHAMTNavigation('//ul[@class="list-group"]')
-    # TODO: Need to write widget Dropdown
-    setting = Text(
+
+    setting = DropdownMenu(
         locator=".//li[contains(@class, 'dropdown') and .//span[@class='pficon pficon-user']]"
     )
-    help = Text(
+    help = DropdownMenu(
         locator=".//li[contains(@class, 'dropdown') and .//span[@class='pficon pficon-help']]"
     )
 

@@ -3,6 +3,7 @@ from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
+from widgetastic_patternfly import Dropdown
 from widgetastic_patternfly import VerticalNavigation
 
 
@@ -24,6 +25,19 @@ class ProjectSteps(AggregateStatusCard):
         "/li[contains(@class, 'steps active')]"
         "/span/a[contains(normalize-space(.),{@name|quote})]"
     )
+
+
+class DropdownMenu(Dropdown):
+    """This is custom dropdown menu; found at toolbar like
+    HelpMenu and Configuration
+    """
+
+    ROOT = ParametrizedLocator("{@locator}")
+    BUTTON_LOCATOR = ".//a[contains(@class, 'dropdown-toggle')]"
+
+    def __init__(self, parent, locator, logger=None):
+        Widget.__init__(self, parent, logger=logger)
+        self.locator = locator
 
 
 class TransformationPath(Widget):
