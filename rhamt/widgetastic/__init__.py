@@ -1,13 +1,13 @@
-from widgetastic.exceptions import NoSuchElementException
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
+from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import Dropdown
 from widgetastic_patternfly import VerticalNavigation
 
-from rhamt.utils.exceptions import ItemNotFound
+from rhamt.exceptions import ProjectNotFound
 
 
 class HOMENavigation(VerticalNavigation):
@@ -81,52 +81,110 @@ class SelectedApplications(Widget):
         return self._app(app_name).delete_app()
 
 
-class ProjectList(Widget):
-    ROOT = ParametrizedLocator(".//div[contains(@class,'list-group list-view-pf projects-list')]")
-    ITEM_LOCATOR = './div[contains(@class,"list-group-item")]'
-    PROJECT_LOCATOR = './/div[contains(@class,"list-group-item-heading")]/a/h2'
-    # TO DO implement delete and edit methods
-    DELETE_PROJECT = './/a[@title="Delete project"]//i[1]'
-    EDIT_PROJECT = './/a[@class="action-button action-edit-project"]//i[1]'
+class ProjectList(View):
+    """This is custom widget represent project list and provide actions to project
 
-    def __init__(self, parent, locator, logger=None):
-        Widget.__init__(self, parent, logger=logger)
+    .. code-block:: python
+
+        from rhamt.widgetastic import ProjectList
+        projects = ProjectList(view, locator=".//div[contains(@class, 'projects-list')]")
+
+        projects.items          # >> ['test', 'test_2', 'test_project_2']
+        projects.projects       # >> [Project(test), Project(test_2), Project(test_project_2)]
+        proj = projects.get_project("test_2")
+        proj                    # >> Project(test_2)
+        proj.name               # >> 'test_2'
+        proj.description        # >> 'adsfsaf'
+        proj.application_count  # >> '1 application'
+        proj.last_updated       # >> 'Last updated 4 hours ago'
+        proj.edit()             # open edit dialog
+        proj.delete()           # open delete dialog
+    """
+
+    ROOT = ParametrizedLocator("{@locator}")
+    LIST_ITEM_LOCATOR = ".//div[contains(@class, 'list-group-item  project-info')]"
+    TITLE_LOCATOR = ".//h2[contains(@class, 'project-title')]"
+
+    def __init__(self, parent, locator=None, logger=None):
+        View.__init__(self, parent, logger=logger)
         self.locator = locator
+
+    @ParametrizedView.nested
+    class project(ParametrizedView):  # noqa
+        """Parametrized project selection"""
+
+        PARAMETERS = ("name",)
+
+        ROOT = ParametrizedLocator(
+            ".//div[contains(@class, 'list-group-item  project-info') "
+            "and .//h2[text()={name|quote}]]"
+        )
+
+        TITLE_LOCATOR = ".//h2[contains(@class, 'project-title')]"
+        DESCRIPTION_LOCATOR = ".//div[contains(@class, 'list-group-item-text description')]"
+        APPLICATION_COUNT = ".//small[contains(@class, 'count-applications')]"
+        LAST_UPDATED = ".//small[contains(@class, 'last-updated')]"
+        DELETE_PROJECT = ".//a[contains(@class,'action-button action-delete-project')]"
+        EDIT_PROJECT = ".//a[contains(@class,'action-button action-edit-project')]"
+
+        @property
+        def name(self):
+            """return name of project"""
+            return self.browser.text(self.TITLE_LOCATOR)
+
+        @property
+        def description(self):
+            """return description of project"""
+            return self.browser.text(self.DESCRIPTION_LOCATOR)
+
+        @property
+        def application_count(self):
+            """return application count text"""
+            return self.browser.text(self.APPLICATION_COUNT)
+
+        @property
+        def last_updated(self):
+            """return last project updated info"""
+            return self.browser.text(self.LAST_UPDATED)
+
+        def delete(self):
+            """click on delete project"""
+            self.browser.click(self.DELETE_PROJECT)
+
+        def edit(self):
+            """click on edit project"""
+            self.browser.click(self.EDIT_PROJECT)
+
+        def __repr__(self):
+            return f"Project({self.name})"
 
     @property
     def items(self):
-        return [self.browser.text(item) for item in self.browser.elements(self.PROJECT_LOCATOR)]
+        """return all project names"""
+        return [
+            self.browser.text(self.TITLE_LOCATOR, parent=item)
+            for item in self.browser.elements(self.LIST_ITEM_LOCATOR)
+        ]
 
     def read(self):
         return self.items
 
-    def exists(self, project_name):
-        return project_name in self.items
+    @property
+    def projects(self):
+        """return all available project objects"""
+        return [self.project(item) for item in self.items]
 
-    def _get_project(self, project_name):
-        for item in self.browser.elements(self.ITEM_LOCATOR):
-            el = self.browser.element(
-                ".//*[contains(@class,'list-group-item-heading')]/a/h2", parent=item
-            )
-            if self.browser.text(el) == project_name:
-                return item
-        raise ItemNotFound("Project: {} not found".format(project_name))
-
-    def edit_project(self, project_name):
-        try:
-            el = self._get_project(project_name)
-            self.browser.click(self.EDIT_PROJECT, parent=el)
-            return True
-        except NoSuchElementException:
-            return False
-
-    def delete_project(self, project_name):
-        try:
-            el = self._get_project(project_name)
-            self.browser.click(self.DELETE_PROJECT, parent=el)
-            return True
-        except NoSuchElementException:
-            return False
+    def get_project(self, name):
+        """ Select specific project
+        Args:
+            name: name of project
+        Returns:
+            list of project objects
+        """
+        if name in self.items:
+            return self.project(name)
+        else:
+            raise ProjectNotFound(f"Project {name} not found.")
 
 
 class AnalysisResults(Widget):
