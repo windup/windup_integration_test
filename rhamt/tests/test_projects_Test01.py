@@ -14,25 +14,33 @@ def test_project_crud(application):
     # TO DO paramterize the test later for file_name and trans_path, hardcoding for now
     project = project_collection.create(
         name=project_name,
-        description=fauxfactory.gen_alphanumeric(),
+        description=fauxfactory.gen_alphanumeric(start="desc_"),
         app_list=["acmeair-webapp-1.0-SNAPSHOT.war"],
         transformation_path="Containerization",
     )
-    assert project.exists(project_name)
+    assert project.exists
 
     # Edit Project with no change , clicks cancel
     project.update({"name": project_name})
     assert project.name == project_name
 
     # Edit Project with new desc and save
+    updated_name = fauxfactory.gen_alphanumeric(12, start="edited_")
     update_descr = "my edited description"
     with update(project):
+        project.name = updated_name
         project.description = update_descr
-    assert project.description == update_descr
+
+    assert project.exists
+    view = navigate_to(project.parent, "All")
+    # check name and description both updated on UI or not
+    proj = view.projects.get_project(project.name)
+    assert proj.name == updated_name
+    assert proj.description == update_descr
 
     # Delete project
-    project.delete(project_name)
-    assert not project.exists(project_name)
+    project.delete()
+    assert not project.exists
 
 
 def test_delete_application(application):

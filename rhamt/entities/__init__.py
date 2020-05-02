@@ -45,8 +45,13 @@ class BaseLoggedInPage(View):
         locator=".//li[contains(@class, 'dropdown') and .//span[@class='pficon pficon-help']]"
     )
 
-    # only if no project available
+    # only if no projectavailable
     blank_state = View.nested(BlankStateView)
+
+    @property
+    def is_empty(self):
+        """Check project is available or not; blank state"""
+        return self.blank_state.is_displayed
 
     @property
     def is_displayed(self):
@@ -69,3 +74,7 @@ class LoggedIn(RhamtNavigateStep):
     def step(self):
         self.application.web_ui.widgetastic_browser.url = self.application.hostname
         wait_for(lambda: self.view.is_displayed, timeout="30s")
+
+    def resetter(self, *args, **kwargs):
+        # If some views stuck while navigation; reset navigation by clicking logo
+        self.view.header.click()

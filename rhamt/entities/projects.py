@@ -27,13 +27,11 @@ from rhamt.widgetastic import TransformationPath
 class AllProjectView(BaseLoggedInPage):
     """This view represent Project All View"""
 
-    ROOT = ".//div[contains(@class, 'projects-list-page')]"
-
     title = Text(".//div[contains(@class, 'projects-bar')]/h1")
-    search = Input(".//input[contains(@name, 'searchValue')]")
+    search = Input(".//input[`contains(@name, 'searchValue')]")
     # TODO: add custom sort widget
 
-    projects = ProjectList("projects-list")
+    projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
     new_project_button = Button("New Project")
 
     @View.nested
@@ -47,11 +45,6 @@ class AllProjectView(BaseLoggedInPage):
         """Clear search"""
         if self.search.value:
             self.search.fill("")
-
-    @property
-    def is_empty(self):
-        """Check project is available or not; blank state"""
-        return self.blank_state.is_displayed
 
     @property
     def is_displayed(self):
@@ -174,12 +167,13 @@ class DeleteProjectView(AllProjectView):
         "/h1[normalize-space(.)='Confirm Project Deletion']"
     )
     delete_project_name = Input(id="resource-to-delete")
-    delete_btn = Button("Delete")
+
+    delete_button = Button("Delete")
     cancel_button = Button("Cancel")
 
     @property
     def is_displayed(self):
-        return self.delete_btn.is_displayed and self.title.is_displayed
+        return self.delete_button.is_displayed and self.title.is_displayed
 
 
 @attr.s
@@ -194,7 +188,7 @@ class Project(BaseEntity, Updateable):
     def exists(self):
         """Check project exist or not"""
         view = navigate_to(self.parent, "All")
-        return self.name in view.projects.items
+        return False if view.is_empty else self.name in view.projects.items
 
     def update(self, updates):
         view = navigate_to(self, "Edit")
@@ -207,13 +201,21 @@ class Project(BaseEntity, Updateable):
         view.wait_displayed()
         assert view.is_displayed
 
-    def delete(self):
+    def delete(self, cancel=False, wait=False):
+        """
+        Args:
+            cancel: cancel deletion
+            wait: wait for delete
+        """
         view = navigate_to(self, "Delete")
         view.fill({"delete_project_name": self.name})
-        view.delete_btn.click()
-        import time
 
-        time.sleep(10)
+        if cancel:
+            view.cancel_button.click()
+        else:
+            view.delete_button.click()
+            if wait:
+                wait_for(lambda: not self.exists, delay=5, timeout=30)
 
 
 @attr.s
@@ -224,7 +226,13 @@ class ProjectCollection(BaseCollection):
     def all(self):
         """Return all projects instance of Project class"""
         view = navigate_to(self, "All")
-        return [] if view.is_empty else [self.instantiate(name=p) for p in view.projects.items]
+        if view.is_empty:
+            return []
+        else:
+            return [
+                self.instantiate(name=p.name, description=p.description)
+                for p in view.projects.projects
+            ]
 
     def create(self, name, description=None, app_list=None, transformation_path=None):
         """Create a new project.
