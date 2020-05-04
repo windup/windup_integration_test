@@ -25,15 +25,32 @@ from rhamt.widgetastic import TransformationPath
 
 
 class AllProjectView(BaseLoggedInPage):
-    project_list = ProjectList("projects-list")
+    """This view represent Project All View"""
+
+    title = Text(".//div[contains(@class, 'projects-bar')]/h1")
+    search = Input(".//input[`contains(@name, 'searchValue')]")
+    # TODO: add custom sort widget
+
+    projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
     new_project_button = Button("New Project")
-    project = Text(
-        locator=".//div[contains(@class, 'projects-bar')]/h1[normalize-space(.)='Projects']"
-    )
+
+    @View.nested
+    class no_matches(View):  # noqa
+        """After search if no match found"""
+
+        text = Text(".//div[contains(@class, 'no-matches')]")
+        remove = Text(".//div[contains(@class, 'no-matches')]/a")
+
+    def clear_search(self):
+        """Clear search"""
+        if self.search.value:
+            self.search.fill("")
 
     @property
     def is_displayed(self):
-        return self.new_project_button.is_displayed and self.project.is_displayed
+        return self.is_empty or (
+            self.new_project_button.is_displayed and self.title.text == "Projects"
+        )
 
 
 class AddProjectView(AllProjectView):
@@ -66,7 +83,7 @@ class AddProjectView(AllProjectView):
 
         @property
         def is_displayed(self):
-            return self.upload_file.is_displayed and self.add_applications.is_displayed
+            return self.add_applications.is_displayed
 
         def fill(self, values):
             app_list = values.get("app_list")
@@ -114,6 +131,14 @@ class AddProjectView(AllProjectView):
         def after_fill(self, was_change):
             self.save_and_run.click()
 
+    @property
+    def is_displayed(self):
+        return (
+            self.create_project.is_displayed
+            or self.add_applications.is_displayed
+            or self.configure_analysis.is_displayed
+        )
+
 
 class DetailsProjectView(AllProjectView):
     run_analysis_button = Button("Run Analysis")
@@ -142,25 +167,28 @@ class DeleteProjectView(AllProjectView):
         "/h1[normalize-space(.)='Confirm Project Deletion']"
     )
     delete_project_name = Input(id="resource-to-delete")
-    delete_btn = Button("Delete")
+
+    delete_button = Button("Delete")
     cancel_button = Button("Cancel")
 
     @property
     def is_displayed(self):
-        return self.delete_btn.is_displayed and self.title.is_displayed
+        return self.delete_button.is_displayed and self.title.is_displayed
 
 
 @attr.s
 class Project(BaseEntity, Updateable):
 
     name = attr.ib()
-    description = attr.ib()
+    description = attr.ib(default=None)
     app_list = attr.ib(default=None)
     transformation_path = attr.ib(default=None)
 
-    def exists(self, project_name):
+    @property
+    def exists(self):
+        """Check project exist or not"""
         view = navigate_to(self.parent, "All")
-        return view.project_list.exists(project_name)
+        return False if view.is_empty else self.name in view.projects.items
 
     def update(self, updates):
         view = navigate_to(self, "Edit")
@@ -173,13 +201,21 @@ class Project(BaseEntity, Updateable):
         view.wait_displayed()
         assert view.is_displayed
 
-    def delete(self, project_name):
+    def delete(self, cancel=False, wait=False):
+        """
+        Args:
+            cancel: cancel deletion
+            wait: wait for delete
+        """
         view = navigate_to(self, "Delete")
-        view.fill({"delete_project_name": project_name})
-        view.delete_btn.click()
-        import time
+        view.fill({"delete_project_name": self.name})
 
-        time.sleep(10)
+        if cancel:
+            view.cancel_button.click()
+        else:
+            view.delete_button.click()
+            if wait:
+                wait_for(lambda: not self.exists, delay=5, timeout=30)
 
 
 @attr.s
@@ -187,8 +223,19 @@ class ProjectCollection(BaseCollection):
 
     ENTITY = Project
 
-    def create(self, name, description, app_list=None, transformation_path=None):
-        """Create a catalog.
+    def all(self):
+        """Return all projects instance of Project class"""
+        view = navigate_to(self, "All")
+        if view.is_empty:
+            return []
+        else:
+            return [
+                self.instantiate(name=p.name, description=p.description)
+                for p in view.projects.projects
+            ]
+
+    def create(self, name, description=None, app_list=None, transformation_path=None):
+        """Create a new project.
 
         Args:
             name: The name of the project
@@ -223,7 +270,8 @@ class All(RhamtNavigateStep):
     prerequisite = NavigateToAttribute("application.collections.base", "LoggedIn")
 
     def step(self, *args, **kwargs):
-        self.prerequisite_view.home_navigation.select("Projects")
+        if not self.prerequisite_view.is_empty:
+            self.prerequisite_view.home_navigation.select("Projects")
 
 
 @ViaWebUI.register_destination_for(ProjectCollection)
@@ -232,7 +280,10 @@ class Add(RhamtNavigateStep):
     prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
-        self.prerequisite_view.new_project_button.click()
+        if self.prerequisite_view.is_empty:
+            self.prerequisite_view.blank_state.new_project_button.click()
+        else:
+            self.prerequisite_view.new_project_button.click()
 
 
 @ViaWebUI.register_destination_for(Project)
@@ -241,7 +292,8 @@ class Edit(RhamtNavigateStep):
     prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self, *args, **kwargs):
-        self.prerequisite_view.project_list.edit_project(self.obj.name)
+        proj = self.prerequisite_view.projects.get_project(self.obj.name)
+        proj.edit()
 
 
 @ViaWebUI.register_destination_for(Project)
@@ -250,4 +302,5 @@ class Delete(RhamtNavigateStep):
     prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self, *args, **kwargs):
-        self.prerequisite_view.project_list.delete_project(self.obj.name)
+        proj = self.prerequisite_view.projects.get_project(self.obj.name)
+        proj.delete()
