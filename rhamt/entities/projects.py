@@ -14,43 +14,24 @@ from rhamt.base.application.implementations.web_ui import RhamtNavigateStep
 from rhamt.base.application.implementations.web_ui import ViaWebUI
 from rhamt.base.modeling import BaseCollection
 from rhamt.base.modeling import BaseEntity
-from rhamt.entities import BaseLoggedInPage
+from rhamt.entities import AllProjectView
 from rhamt.entities.analysis_results import AnalysisResultsView
 from rhamt.utils import conf
 from rhamt.utils.ftp import FTPClientWrapper
 from rhamt.utils.update import Updateable
-from rhamt.widgetastic import ProjectList
+from rhamt.widgetastic import DropdownMenu
 from rhamt.widgetastic import ProjectSteps
 from rhamt.widgetastic import TransformationPath
 
 
-class AllProjectView(BaseLoggedInPage):
-    """This view represent Project All View"""
-
-    title = Text(".//div[contains(@class, 'projects-bar')]/h1")
-    search = Input(".//input[`contains(@name, 'searchValue')]")
-    # TODO: add custom sort widget
-
-    projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
-    new_project_button = Button("New Project")
-
-    @View.nested
-    class no_matches(View):  # noqa
-        """After search if no match found"""
-
-        text = Text(".//div[contains(@class, 'no-matches')]")
-        remove = Text(".//div[contains(@class, 'no-matches')]/a")
-
-    def clear_search(self):
-        """Clear search"""
-        if self.search.value:
-            self.search.fill("")
+class ProjectView(AllProjectView):
+    project_dropdown = DropdownMenu(
+        locator=".//li[contains(@class, 'dropdown') and .//span[@class='nav-item']]"
+    )
 
     @property
     def is_displayed(self):
-        return self.is_empty or (
-            self.new_project_button.is_displayed and self.title.text == "Projects"
-        )
+        return self.project_dropdown.is_displayed
 
 
 class AddProjectView(AllProjectView):
@@ -61,7 +42,7 @@ class AddProjectView(AllProjectView):
         create_project = ProjectSteps("Create Project")
         name = Input(name="projectTitle")
         description = Input(locator='.//textarea[@id="idDescription"]')
-        next_btn = Button("Next")
+        next_button = Button("Next")
         cancel_btn = Button("Cancel")
         fill_strategy = WaitFillViewStrategy("15s")
 
@@ -70,7 +51,7 @@ class AddProjectView(AllProjectView):
             return self.name.is_displayed and self.create_project.is_displayed
 
         def after_fill(self, was_change):
-            self.next_btn.click()
+            self.next_button.click()
 
     @View.nested
     class add_applications(View):  # noqa
@@ -78,7 +59,9 @@ class AddProjectView(AllProjectView):
         delete_application = Text(locator=".//div[contains(@class, 'action-button')]/span/i")
         confirm_delete = Button("Yes")
         upload_file = FileInput(id="fileUpload")
-        next_btn = Button("Next")
+        next_button = Button("Next")
+        back_button = Button("Back")
+        cancel_button = Button("Cancel")
         fill_strategy = WaitFillViewStrategy("20s")
 
         @property
@@ -94,13 +77,13 @@ class AddProjectView(AllProjectView):
                 # This part has to be here as file is downloaded temporarily
                 file_path = fs.download(app)
                 self.upload_file.fill(file_path)
-            wait_for(lambda: self.next_btn.is_enabled, delay=0.2, timeout=60)
+            wait_for(lambda: self.next_button.is_enabled, delay=0.2, timeout=60)
             was_change = True
             self.after_fill(was_change)
             return was_change
 
         def after_fill(self, was_change):
-            self.next_btn.click()
+            self.next_button.click()
 
     @View.nested
     class configure_analysis(View):  # noqa
@@ -234,6 +217,10 @@ class ProjectCollection(BaseCollection):
                 for p in view.projects.projects
             ]
 
+    def instantiate_1(self, name):
+        project = self.instantiate(name=name)
+        return project
+
     def create(self, name, description=None, app_list=None, transformation_path=None):
         """Create a new project.
 
@@ -245,6 +232,7 @@ class ProjectCollection(BaseCollection):
         """
         view = navigate_to(self, "Add")
         view.create_project.fill({"name": name, "description": description})
+        view.add_applications.wait_displayed()
         view.add_applications.fill({"app_list": app_list})
         view.configure_analysis.wait_displayed()
         view.configure_analysis.fill({"transformation_path": transformation_path})

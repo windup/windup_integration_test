@@ -155,6 +155,10 @@ class ProjectList(View):
             """click on edit project"""
             self.browser.click(self.EDIT_PROJECT)
 
+        def select(self):
+            """click on specific project"""
+            self.browser.click(self.TITLE_LOCATOR)
+
         def __repr__(self):
             return f"Project({self.name})"
 
@@ -175,7 +179,7 @@ class ProjectList(View):
         return [self.project(item) for item in self.items]
 
     def get_project(self, name):
-        """ Select specific project
+        """ Get specific project
         Args:
             name: name of project
         Returns:
@@ -186,10 +190,30 @@ class ProjectList(View):
         else:
             raise ProjectNotFound(f"Project {name} not found.")
 
+    def select_project(self, name):
+        """ Select specific project
+                Args:
+                    name: name of project
+                Returns:
+                    True if clicked
+                """
+        if name in self.items:
+            self.project(name).select()
+            return True
+        else:
+            raise ProjectNotFound(f"Project {name} not found.")
+
 
 class AnalysisResults(Widget):
-    SPINNER_LOCATOR = './/span[contains(@class, "status-icon")]/span[contains(@class,"spinner")]'
-    COMPLETE_STATUS_LOCATOR = './/span[contains(@class, "fa fa-check")]'
+    # When there are multiple analysis the first row is latest one
+    # so we need to check spinner and success in 1st row
+    SPINNER_LOCATOR = (
+        './/tr[contains(@class, "info")]/td[2]/wu-status-icon'
+        '/span[contains(@class, "status-icon")]/span[contains(@class,"spinner")]'
+    )
+    COMPLETE_STATUS_LOCATOR = (
+        './/tr[1]/td[2]//wu-status-icon/span/span[contains(@class, "fa fa-check")]'
+    )
     SHOW_REPORT = './/i[contains(@class,"fa fa-bar-chart")]'
 
     def in_progress(self):
