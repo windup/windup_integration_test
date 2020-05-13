@@ -14,14 +14,44 @@ from rhamt.base.application.implementations.web_ui import RhamtNavigateStep
 from rhamt.base.application.implementations.web_ui import ViaWebUI
 from rhamt.base.modeling import BaseCollection
 from rhamt.base.modeling import BaseEntity
-from rhamt.entities import AllProjectView
+from rhamt.entities import BaseLoggedInPage
 from rhamt.entities.analysis_results import AnalysisResultsView
 from rhamt.utils import conf
 from rhamt.utils.ftp import FTPClientWrapper
 from rhamt.utils.update import Updateable
 from rhamt.widgetastic import DropdownMenu
+from rhamt.widgetastic import ProjectList
 from rhamt.widgetastic import ProjectSteps
 from rhamt.widgetastic import TransformationPath
+
+
+class AllProjectView(BaseLoggedInPage):
+    """This view represent Project All View"""
+
+    title = Text(".//div[contains(@class, 'projects-bar')]/h1")
+    search = Input(".//input[`contains(@name, 'searchValue')]")
+    # TODO: add custom sort widget
+
+    projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
+    new_project_button = Button("New Project")
+
+    @View.nested
+    class no_matches(View):  # noqa
+        """After search if no match found"""
+
+        text = Text(".//div[contains(@class, 'no-matches')]")
+        remove = Text(".//div[contains(@class, 'no-matches')]/a")
+
+    def clear_search(self):
+        """Clear search"""
+        if self.search.value:
+            self.search.fill("")
+
+    @property
+    def is_displayed(self):
+        return self.is_empty or (
+            self.new_project_button.is_displayed and self.title.text == "Projects"
+        )
 
 
 class ProjectView(AllProjectView):
@@ -43,7 +73,7 @@ class AddProjectView(AllProjectView):
         name = Input(name="projectTitle")
         description = Input(locator='.//textarea[@id="idDescription"]')
         next_button = Button("Next")
-        cancel_btn = Button("Cancel")
+        cancel_button = Button("Cancel")
         fill_strategy = WaitFillViewStrategy("15s")
 
         @property
@@ -136,12 +166,12 @@ class EditProjectView(AllProjectView):
     title = Text(locator=".//div/h1[normalize-space(.)='Edit Project']")
     name = Input(name="projectTitle")
     description = Input(locator='.//textarea[@id="idDescription"]')
-    update_project_btn = Button("Update Project")
+    update_project_button = Button("Update Project")
     cancel_button = Button("Cancel")
 
     @property
     def is_displayed(self):
-        return self.update_project_btn.is_displayed and self.title.is_displayed
+        return self.update_project_button.is_displayed and self.title.is_displayed
 
 
 class DeleteProjectView(AllProjectView):
@@ -177,7 +207,7 @@ class Project(BaseEntity, Updateable):
         view = navigate_to(self, "Edit")
         changed = view.fill(updates)
         if changed:
-            view.update_project_btn.click()
+            view.update_project_button.click()
         else:
             view.cancel_button.click()
         view = self.create_view(AllProjectView, override=updates)
@@ -216,10 +246,6 @@ class ProjectCollection(BaseCollection):
                 self.instantiate(name=p.name, description=p.description)
                 for p in view.projects.projects
             ]
-
-    def instantiate_1(self, name):
-        project = self.instantiate(name=name)
-        return project
 
     def create(self, name, description=None, app_list=None, transformation_path=None):
         """Create a new project.

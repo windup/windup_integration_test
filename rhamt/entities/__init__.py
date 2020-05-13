@@ -3,14 +3,12 @@ from wait_for import wait_for
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly import Button
-from widgetastic_patternfly import Input
 
 from rhamt.base.application.implementations.web_ui import RhamtNavigateStep
 from rhamt.base.application.implementations.web_ui import ViaWebUI
 from rhamt.base.modeling import BaseCollection
 from rhamt.widgetastic import DropdownMenu
 from rhamt.widgetastic import HOMENavigation
-from rhamt.widgetastic import ProjectList
 from rhamt.widgetastic import RHAMTNavigation
 
 
@@ -61,35 +59,6 @@ class BaseLoggedInPage(View):
             "RED HAT APPLICATION MIGRATION TOOLKIT" in self.header.text
             and self.header.is_displayed
             and self.help.is_displayed
-        )
-
-
-class AllProjectView(BaseLoggedInPage):
-    """This view represent Project All View"""
-
-    title = Text(".//div[contains(@class, 'projects-bar')]/h1")
-    search = Input(".//input[`contains(@name, 'searchValue')]")
-    # TODO: add custom sort widget
-
-    projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
-    new_project_button = Button("New Project")
-
-    @View.nested
-    class no_matches(View):  # noqa
-        """After search if no match found"""
-
-        text = Text(".//div[contains(@class, 'no-matches')]")
-        remove = Text(".//div[contains(@class, 'no-matches')]/a")
-
-    def clear_search(self):
-        """Clear search"""
-        if self.search.value:
-            self.search.fill("")
-
-    @property
-    def is_displayed(self):
-        return self.is_empty or (
-            self.new_project_button.is_displayed and self.title.text == "Projects"
         )
 
 

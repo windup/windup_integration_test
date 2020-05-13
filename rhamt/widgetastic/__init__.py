@@ -192,16 +192,11 @@ class ProjectList(View):
 
     def select_project(self, name):
         """ Select specific project
-                Args:
-                    name: name of project
-                Returns:
-                    True if clicked
-                """
-        if name in self.items:
-            self.project(name).select()
-            return True
-        else:
-            raise ProjectNotFound(f"Project {name} not found.")
+            Args:
+                name: name of project
+        """
+        project = self.get_project(name)
+        project.select()
 
 
 class AnalysisResults(Widget):

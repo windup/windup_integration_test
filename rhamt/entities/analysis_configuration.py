@@ -7,8 +7,8 @@ from rhamt.base.application.implementations.web_ui import NavigatableMixin
 from rhamt.base.application.implementations.web_ui import navigate_to
 from rhamt.base.application.implementations.web_ui import RhamtNavigateStep
 from rhamt.base.application.implementations.web_ui import ViaWebUI
-from rhamt.entities import AllProjectView
 from rhamt.entities import BaseLoggedInPage
+from rhamt.entities.projects import AllProjectView
 from rhamt.entities.projects import ProjectView
 from rhamt.utils.update import Updateable
 from rhamt.widgetastic import SelectedApplications
