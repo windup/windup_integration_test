@@ -19,6 +19,7 @@ from rhamt.entities.analysis_results import AnalysisResultsView
 from rhamt.utils import conf
 from rhamt.utils.ftp import FTPClientWrapper
 from rhamt.utils.update import Updateable
+from rhamt.widgetastic import DropdownMenu
 from rhamt.widgetastic import ProjectList
 from rhamt.widgetastic import ProjectSteps
 from rhamt.widgetastic import TransformationPath
@@ -53,6 +54,16 @@ class AllProjectView(BaseLoggedInPage):
         )
 
 
+class ProjectView(AllProjectView):
+    project_dropdown = DropdownMenu(
+        locator=".//li[contains(@class, 'dropdown') and .//span[@class='nav-item']]"
+    )
+
+    @property
+    def is_displayed(self):
+        return self.project_dropdown.is_displayed
+
+
 class AddProjectView(AllProjectView):
     fill_strategy = WaitFillViewStrategy("15s")
 
@@ -61,8 +72,8 @@ class AddProjectView(AllProjectView):
         create_project = ProjectSteps("Create Project")
         name = Input(name="projectTitle")
         description = Input(locator='.//textarea[@id="idDescription"]')
-        next_btn = Button("Next")
-        cancel_btn = Button("Cancel")
+        next_button = Button("Next")
+        cancel_button = Button("Cancel")
         fill_strategy = WaitFillViewStrategy("15s")
 
         @property
@@ -70,7 +81,7 @@ class AddProjectView(AllProjectView):
             return self.name.is_displayed and self.create_project.is_displayed
 
         def after_fill(self, was_change):
-            self.next_btn.click()
+            self.next_button.click()
 
     @View.nested
     class add_applications(View):  # noqa
@@ -78,7 +89,9 @@ class AddProjectView(AllProjectView):
         delete_application = Text(locator=".//div[contains(@class, 'action-button')]/span/i")
         confirm_delete = Button("Yes")
         upload_file = FileInput(id="fileUpload")
-        next_btn = Button("Next")
+        next_button = Button("Next")
+        back_button = Button("Back")
+        cancel_button = Button("Cancel")
         fill_strategy = WaitFillViewStrategy("20s")
 
         @property
@@ -94,13 +107,13 @@ class AddProjectView(AllProjectView):
                 # This part has to be here as file is downloaded temporarily
                 file_path = fs.download(app)
                 self.upload_file.fill(file_path)
-            wait_for(lambda: self.next_btn.is_enabled, delay=0.2, timeout=60)
+            wait_for(lambda: self.next_button.is_enabled, delay=0.2, timeout=60)
             was_change = True
             self.after_fill(was_change)
             return was_change
 
         def after_fill(self, was_change):
-            self.next_btn.click()
+            self.next_button.click()
 
     @View.nested
     class configure_analysis(View):  # noqa
@@ -153,12 +166,12 @@ class EditProjectView(AllProjectView):
     title = Text(locator=".//div/h1[normalize-space(.)='Edit Project']")
     name = Input(name="projectTitle")
     description = Input(locator='.//textarea[@id="idDescription"]')
-    update_project_btn = Button("Update Project")
+    update_project_button = Button("Update Project")
     cancel_button = Button("Cancel")
 
     @property
     def is_displayed(self):
-        return self.update_project_btn.is_displayed and self.title.is_displayed
+        return self.update_project_button.is_displayed and self.title.is_displayed
 
 
 class DeleteProjectView(AllProjectView):
@@ -194,7 +207,7 @@ class Project(BaseEntity, Updateable):
         view = navigate_to(self, "Edit")
         changed = view.fill(updates)
         if changed:
-            view.update_project_btn.click()
+            view.update_project_button.click()
         else:
             view.cancel_button.click()
         view = self.create_view(AllProjectView, override=updates)
@@ -245,6 +258,7 @@ class ProjectCollection(BaseCollection):
         """
         view = navigate_to(self, "Add")
         view.create_project.fill({"name": name, "description": description})
+        view.add_applications.wait_displayed()
         view.add_applications.fill({"app_list": app_list})
         view.configure_analysis.wait_displayed()
         view.configure_analysis.fill({"transformation_path": transformation_path})

@@ -45,7 +45,7 @@ class BaseLoggedInPage(View):
         locator=".//li[contains(@class, 'dropdown') and .//span[@class='pficon pficon-help']]"
     )
 
-    # only if no projectavailable
+    # only if no project available
     blank_state = View.nested(BlankStateView)
 
     @property

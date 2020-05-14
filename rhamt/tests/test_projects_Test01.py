@@ -58,24 +58,29 @@ def test_delete_application(application):
     file_path = fs.download("acmeair-webapp-1.0-SNAPSHOT.war")
 
     view.add_applications.upload_file.fill(file_path)
-    view.add_applications.next_btn.wait_displayed()
+    view.add_applications.next_button.wait_displayed()
     view.add_applications.delete_application.click()
 
     view.add_applications.confirm_delete.wait_displayed()
     view.add_applications.confirm_delete.click()
 
-    view.add_applications.next_btn.wait_displayed()
-    assert not view.add_applications.next_btn.is_enabled
+    view.add_applications.next_button.wait_displayed()
+    assert not view.add_applications.next_button.is_enabled
+    view.add_applications.back_button.wait_displayed()
+    view.add_applications.back_button.click()
+    view.add_applications.cancel_button.wait_displayed()
+    view.add_applications.cancel_button.click()
 
 
 def test_application_report(application):
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
     project_collection = application.collections.projects
-    # TO DO paramterize the test later for file_name and trans_path, hardcoding for now
+
     project_collection.create(
         name=project_name,
         description=fauxfactory.gen_alphanumeric(),
         app_list=["acmeair-webapp-1.0-SNAPSHOT.war"],
+        transformation_path="Containerization",
     )
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()

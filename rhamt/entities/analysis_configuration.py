@@ -1,4 +1,5 @@
 from taretto.navigate import NavigateToAttribute
+from taretto.navigate import NavigateToSibling
 from widgetastic.widget import Text
 from widgetastic_patternfly import Button
 
@@ -7,6 +8,8 @@ from rhamt.base.application.implementations.web_ui import navigate_to
 from rhamt.base.application.implementations.web_ui import RhamtNavigateStep
 from rhamt.base.application.implementations.web_ui import ViaWebUI
 from rhamt.entities import BaseLoggedInPage
+from rhamt.entities.projects import AllProjectView
+from rhamt.entities.projects import ProjectView
 from rhamt.utils.update import Updateable
 from rhamt.widgetastic import SelectedApplications
 from rhamt.widgetastic import TransformationPath
@@ -32,8 +35,9 @@ class AnalysisConfigurationView(BaseLoggedInPage):
 class AnalysisConfiguration(Updateable, NavigatableMixin):
     """Analysis Configuration"""
 
-    def __init__(self, application):
+    def __init__(self, application, project_name):
         self.application = application
+        self.project_name = project_name
 
     def delete_application(self, app_name):
         """ Delete application to be analysed
@@ -55,8 +59,27 @@ class AnalysisConfiguration(Updateable, NavigatableMixin):
 
 
 @ViaWebUI.register_destination_for(AnalysisConfiguration)
-class AnalysisConfigurationPage(RhamtNavigateStep):
+class AllProject(RhamtNavigateStep):
+    VIEW = AllProjectView
     prerequisite = NavigateToAttribute("application.collections.base", "LoggedIn")
+
+    def step(self):
+        if not self.prerequisite_view.is_empty:
+            self.prerequisite_view.home_navigation.select("Projects")
+
+
+@ViaWebUI.register_destination_for(AnalysisConfiguration)
+class SelectProject(RhamtNavigateStep):
+    VIEW = ProjectView
+    prerequisite = NavigateToSibling("AllProject")
+
+    def step(self):
+        self.prerequisite_view.projects.select_project(self.obj.project_name)
+
+
+@ViaWebUI.register_destination_for(AnalysisConfiguration)
+class AnalysisConfigurationPage(RhamtNavigateStep):
+    prerequisite = NavigateToSibling("SelectProject")
     VIEW = AnalysisConfigurationView
 
     def step(self):
