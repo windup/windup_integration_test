@@ -30,7 +30,7 @@ RUN useradd jboss \
 
 WORKDIR /opt/rhamt
 
-RUN mv -r /tmp/${WEB_DISTRIBUTION}/* ./ && chown jboss:jboss /opt -R
+RUN mv /tmp/${WEB_DISTRIBUTION}/* ./ && chown jboss:jboss /opt -R
 
 EXPOSE 8080
 
