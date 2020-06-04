@@ -20,10 +20,7 @@ ENV WEB_CONSOLE_FILE_PATH="${BASE_URL}/web/${WEB_CONSOLE}/${VERSION}/${WEB_CONSO
 # https://repo1.maven.org/maven2/org/jboss/windup/web/rhamt-web-distribution/4.3.1.Beta1/rhamt-web-distribution-4.3.1.Beta1-with-authentication.zip
 # https://repo1.maven.org/maven2/org/jboss/windup/rhamt-cli/4.3.1.Beta1/rhamt-cli-4.3.1.Beta1-offline.zip
 
-RUN echo $WEB_CONSOLE_FILE_PATH
-
-RUN wget -o - $WEB_CONSOLE_FILE_PATH -P /tmp| wc -l > /number
-RUN unzip -o /tmp/$WEB_CONSOLE_FILE -d /tmp
+RUN wget -o - $WEB_CONSOLE_FILE_PATH -P /tmp| wc -l > /number && unzip -o /tmp/$WEB_CONSOLE_FILE -d /tmp
 
 RUN useradd jboss \
         && usermod -G jboss jboss \
@@ -33,7 +30,7 @@ RUN useradd jboss \
 
 WORKDIR /opt/rhamt
 
-RUN cp -r /tmp/${WEB_DISTRIBUTION}/* ./ && chown jboss:jboss /opt -R
+RUN mv -r /tmp/${WEB_DISTRIBUTION}/* ./ && chown jboss:jboss /opt -R
 
 EXPOSE 8080
 
