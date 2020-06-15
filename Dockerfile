@@ -5,7 +5,7 @@ LABEL description="Red Hat Application Migration Toolkit Web-Console"
 
 
 RUN dnf -y update && dnf clean all
-RUN dnf -y install java java-devel unzip wget python3-virtualenv && dnf clean all
+RUN dnf -y install java java-devel unzip wget xterm python3-virtualenv && dnf clean all
 
 # set java env
 ENV JAVA_HOME /usr/lib/jvm/java-openjdk
