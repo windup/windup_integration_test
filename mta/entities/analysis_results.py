@@ -10,8 +10,6 @@ from mta.base.application.implementations.web_ui import NavigatableMixin
 from mta.base.application.implementations.web_ui import navigate_to
 from mta.base.application.implementations.web_ui import ViaWebUI
 from mta.entities import BaseLoggedInPage
-from mta.entities import ProjectView
-from mta.entities.projects import AllProjectView
 from mta.utils.update import Updateable
 from mta.widgetastic import AnalysisResults
 
@@ -59,7 +57,7 @@ class AnalysisResults(Updateable, NavigatableMixin):
 
 @ViaWebUI.register_destination_for(AnalysisResults)
 class AllProject(MTANavigateStep):
-    VIEW = AllProjectView
+    VIEW = AnalysisResultsView
     prerequisite = NavigateToAttribute("application.collections.base", "LoggedIn")
 
     def step(self):
@@ -69,7 +67,7 @@ class AllProject(MTANavigateStep):
 
 @ViaWebUI.register_destination_for(AnalysisResults)
 class SelectProject(MTANavigateStep):
-    VIEW = ProjectView
+    VIEW = AnalysisResultsView
     prerequisite = NavigateToSibling("AllProject")
 
     def step(self):
