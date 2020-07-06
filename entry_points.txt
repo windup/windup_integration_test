@@ -1,10 +1,10 @@
-# rhamt-integration-test entry-points
+# mta-integration-test entry-points
 [pytest11]
-rhamt = rhamt.test_framework.pytest_plugin
+mta = mta.test_framework.pytest_plugin
 
 [console_scripts]
-rhamt = rhamt.scripting.cli:cli
+mta = mta.scripting.cli:cli
 
-[rhamt.application_collections]
-base = rhamt.entities:BaseWebUICollection
-projects = rhamt.entities.projects:ProjectCollection
+[mta.application_collections]
+base = mta.entities:BaseWebUICollection
+projects = mta.entities.projects:ProjectCollection

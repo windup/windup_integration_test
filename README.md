@@ -6,18 +6,18 @@
 2. Follow the following steps (Minimum Python-3.6 required)
 
 ```shell
-git clone https://github.com/<user>/rhamt_integration_test.git
-cd rhamt_integration_test
-python3 -m venv .rhamt_venv
-source .rhamt_venv/bin/activate
+git clone https://github.com/<user>/windup_integration_tests.git
+cd windup_integration_tests
+python3 -m venv .mta_venv
+source .mta_venv/bin/activate
 pip install -e .
 ```
 
-**Note:** After this you should able to access `rhamt` command. `rhamt` is a command-line tool;
-which help for test development. Check help (`rhamt --help`) for more information.
+**Note:** After this you should able to access `mta` command. `mta` is a command-line tool;
+which help for test development. Check help (`mta --help`) for more information.
 
 #### Configure your Environment:
-The framework needs some configuration before actual use. Configuration file located at `rhamt/conf` directory.
+The framework needs some configuration before actual use. Configuration file located at `mta/conf` directory.
 **env.yaml** file holds your testing environment.
 You need to change this as per your application `hostname` (web-console) and webdriver options.
 The best practice is to create a local file with the name **env.local.yaml** and overwrite tags.
@@ -41,27 +41,27 @@ browser:
       unexpectedAlertBehaviour: ignore
 ```
 
-## rhamt:
+## mta:
 Command line tool for windup integration tests development. You can find help with command
 ```shell
-rhamt --help
+mta --help
 ```
 
-`rhamt` providing fallowing features
+`mta` providing fallowing features
 
 #### Ipython Shell
 ```shell
-rhamt shell --help
+mta shell --help
 ```
 It is Ipython interactive shell for windup integration test development.
 It will provide default imports like `navigate_to`, and `Application` object (app).
 You can create your own python file with imports you use frequently.
-Just create a `conf/rhmt_shell_startup.py` file in your repo.
+Just create a `conf/mta_shell_startup.py` file in your repo.
 This file can contain arbitrary python code that is executed in this context.
 
 #### Selenium Container
 ```shell
-rhamt selenium --help
+mta selenium --help
 ```
 It is containerized `webdriver`. It also includes a `VNC server` so that you can connect
 and see what the browser is doing. This is also useful if you need to put a breakpoint in the test

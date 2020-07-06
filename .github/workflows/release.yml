@@ -1,4 +1,4 @@
-name: Publish rhamt-integration-test to PyPI
+name: Publish windup-integration-test to PyPI
 
 on:
   push:
