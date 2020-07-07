@@ -1,4 +1,4 @@
-name: rhamt-integration-tests
+name: windup-integration-test
 
 on: [push, pull_request]
 
@@ -42,7 +42,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           architecture: x64
 
-      - name: Setup rhamt-integration-test
+      - name: Setup windup-integration-test
         run: |
           python -m pip install --upgrade pip setuptools
           pip install -e .
