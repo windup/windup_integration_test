@@ -25,3 +25,6 @@ CONF_PATH = PROJECT_PATH / "conf"
 
 # log path for MTA
 LOG_PATH = PROJECT_PATH / "log"
+
+# yaml key for MTA
+YAML_PATH = PROJECT_PATH / ".yaml_key"

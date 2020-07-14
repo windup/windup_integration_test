@@ -580,9 +580,8 @@ class FTPClientWrapper(FTPClient):
     def __init__(self, entity_path=None, entrypoint=None, host=None, login=None, password=None):
         env = conf.get_config("env")
         host = host or env.ftpserver.host
-        login = login or env.ftpserver.credentials.username
-        password = password or env.ftpserver.credentials.password
-
+        login = login or credentials[env.ftpserver.credentials]["username"]
+        password = password or credentials[env.ftpserver.credentials]["password"]
         self.entrypoint = entrypoint or env.ftpserver.entrypoint
         self.entity_path = entity_path
 
