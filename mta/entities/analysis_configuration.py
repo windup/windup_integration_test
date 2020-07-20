@@ -7,9 +7,9 @@ from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import NavigatableMixin
 from mta.base.application.implementations.web_ui import navigate_to
 from mta.base.application.implementations.web_ui import ViaWebUI
+from mta.entities import AllProjectView
 from mta.entities import BaseLoggedInPage
-from mta.entities.projects import AllProjectView
-from mta.entities.projects import ProjectView
+from mta.entities import ProjectView
 from mta.utils.update import Updateable
 from mta.widgetastic import SelectedApplications
 from mta.widgetastic import TransformationPath

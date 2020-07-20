@@ -14,54 +14,13 @@ from mta.base.application.implementations.web_ui import navigate_to
 from mta.base.application.implementations.web_ui import ViaWebUI
 from mta.base.modeling import BaseCollection
 from mta.base.modeling import BaseEntity
-from mta.entities import BaseLoggedInPage
+from mta.entities import AllProjectView
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import Updateable
-from mta.widgetastic import DropdownMenu
-from mta.widgetastic import ProjectList
 from mta.widgetastic import ProjectSteps
 from mta.widgetastic import TransformationPath
-
-
-class AllProjectView(BaseLoggedInPage):
-    """This view represent Project All View"""
-
-    title = Text(".//div[contains(@class, 'projects-bar')]/h1")
-    search = Input(".//input[`contains(@name, 'searchValue')]")
-    # TODO: add custom sort widget
-
-    projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
-    new_project_button = Button("New Project")
-
-    @View.nested
-    class no_matches(View):  # noqa
-        """After search if no match found"""
-
-        text = Text(".//div[contains(@class, 'no-matches')]")
-        remove = Text(".//div[contains(@class, 'no-matches')]/a")
-
-    def clear_search(self):
-        """Clear search"""
-        if self.search.value:
-            self.search.fill("")
-
-    @property
-    def is_displayed(self):
-        return self.is_empty or (
-            self.new_project_button.is_displayed and self.title.text == "Projects"
-        )
-
-
-class ProjectView(AllProjectView):
-    project_dropdown = DropdownMenu(
-        locator=".//li[contains(@class, 'dropdown') and .//span[@class='nav-item']]"
-    )
-
-    @property
-    def is_displayed(self):
-        return self.project_dropdown.is_displayed
 
 
 class AddProjectView(AllProjectView):
