@@ -1,6 +1,7 @@
 import fauxfactory
 
 from mta.entities.analysis_results import AnalysisResults
+from mta.entities.analysis_results import AnalysisResultsView
 
 
 def test_analysis_results(application):
@@ -24,4 +25,10 @@ def test_analysis_results(application):
 
     analysis_results = AnalysisResults(application, project_name)
     analysis_results.run_analysis()
+    analysis_results.search_analysis(row=1)
+    # Verify that correct search results are displayed
+    view = analysis_results.create_view(AnalysisResultsView)
+    assert view.analysis_number_1.is_displayed
+    analysis_results.search_analysis(row=2)
+    assert view.analysis_number_2.is_displayed
     # TODO : delete application and analyse

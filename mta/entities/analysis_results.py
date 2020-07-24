@@ -20,8 +20,11 @@ class AnalysisResultsView(BaseLoggedInPage):
 
     run_analysis_button = Button("Run Analysis")
     title = Text(locator=".//div/h2[normalize-space(.)='Active Analysis']")
-    search = Input(".//input[`contains(@name, 'searchValue')]")
+    search = Input("searchValue")
     analysis_results = AnalysisResults()
+    # Two locators for searching two different rows
+    analysis_number_1 = Text(locator=".//tr[1]//a[@class='pointer link']")
+    analysis_number_2 = Text(locator=".//tr[2]//a[@class='pointer link']")
 
     @property
     def is_displayed(self):
@@ -40,13 +43,16 @@ class AnalysisResults(Updateable, NavigatableMixin):
         self.application = application
         self.project_name = project_name
 
-    def search_applications(self, app_name):
-        """ Search application
-        Args:
-            app_name: Application
+    def search_analysis(self, row):
+        """ Search analysis results with analysis number
         """
         view = navigate_to(self, "AnalysisResultsPage")
-        view.search.fill(app_name)
+        if row == 1:
+            analysis_num = view.analysis_number_1.text
+        else:
+            analysis_num = view.analysis_number_2.text
+        only_digits = "".join([c for c in analysis_num if c.isdigit()])
+        view.search.fill(only_digits)
 
     def run_analysis(self):
         """ Run analysis"""
