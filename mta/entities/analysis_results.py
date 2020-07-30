@@ -39,7 +39,7 @@ class AnalysisResultsView(BaseLoggedInPage):
             self.close_search.click()
 
     @ParametrizedView.nested
-    class analysis_row(ParametrizedView): # noqa
+    class analysis_row(ParametrizedView):  # noqa
         PARAMETERS = ("row",)
 
         analysis_number = Text(ParametrizedLocator(".//tr[{row}]//a[@class='pointer link']"))
