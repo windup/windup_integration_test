@@ -7,7 +7,8 @@ from mta.entities.analysis_results import AnalysisResultsView
 def test_analysis_results(application):
     """ Validates Web console Test 03
     1) Upload more than one application into a project to analyse
-    2) Delete one application and analyse
+    2) Search analysis
+    3) Delete analysis
     """
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
     project_collection = application.collections.projects
@@ -25,10 +26,22 @@ def test_analysis_results(application):
 
     analysis_results = AnalysisResults(application, project_name)
     analysis_results.run_analysis()
-    analysis_results.search_analysis(row=1)
-    # Verify that correct search results are displayed
     view = analysis_results.create_view(AnalysisResultsView)
-    assert view.analysis_number_1.is_displayed
+
+    # search row 1 in list
+    analysis_results.search_analysis(row=1)
+    assert view.AnalysisRowView(row=1).analysis_number.is_displayed
+    view.clear_search()
+    # search row 2 in list
     analysis_results.search_analysis(row=2)
-    assert view.analysis_number_2.is_displayed
-    # TODO : delete application and analyse
+    view.clear_search()
+
+    # delete analysis of row 1 and cancel
+    analysis_results.delete_analysis(row=1)
+    view.cancel_delete.wait_displayed()
+    view.cancel_delete.click()
+    # delete analysis of row 1 and confirm
+    view.wait_displayed()
+    analysis_results.delete_analysis(row=1)
+    view.confirm_delete.wait_displayed()
+    view.confirm_delete.click()
