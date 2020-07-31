@@ -579,6 +579,8 @@ class FTPClientWrapper(FTPClient):
 
     def __init__(self, entity_path=None, entrypoint=None, host=None, login=None, password=None):
         env = conf.get_config("env")
+        if env.ftpserver.credentials.username == "":
+            env = conf.get_config("env.local")
         host = host or env.ftpserver.host
         login = login or env.ftpserver.credentials.username
         password = password or env.ftpserver.credentials.password
