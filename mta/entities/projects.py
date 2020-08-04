@@ -3,7 +3,6 @@ from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
 from wait_for import wait_for
 from widgetastic.utils import WaitFillViewStrategy
-from widgetastic.widget import FileInput
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly import Button
@@ -19,6 +18,7 @@ from mta.entities.analysis_results import AnalysisResultsView
 from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import Updateable
+from mta.widgetastic import HiddenFileInput
 from mta.widgetastic import ProjectSteps
 from mta.widgetastic import TransformationPath
 
@@ -33,7 +33,7 @@ class AddProjectView(AllProjectView):
         description = Input(locator='.//textarea[@id="idDescription"]')
         next_button = Button("Next")
         cancel_button = Button("Cancel")
-        fill_strategy = WaitFillViewStrategy("15s")
+        fill_strategy = WaitFillViewStrategy("20s")
 
         @property
         def is_displayed(self):
@@ -47,7 +47,7 @@ class AddProjectView(AllProjectView):
         add_applications = ProjectSteps("Add Applications")
         delete_application = Text(locator=".//div[contains(@class, 'action-button')]/span/i")
         confirm_delete = Button("Yes")
-        upload_file = FileInput(id="fileUpload")
+        upload_file = HiddenFileInput(id="fileUpload")
         next_button = Button("Next")
         back_button = Button("Back")
         cancel_button = Button("Cancel")
