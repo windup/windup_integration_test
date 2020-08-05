@@ -1,4 +1,5 @@
 from widgetastic.utils import ParametrizedLocator
+from widgetastic.widget import FileInput
 from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
 from widgetastic.widget import View
@@ -227,3 +228,20 @@ class AnalysisResults(Widget):
         main_window = self.browser.current_window_handle
         open_url_window = (set(self.browser.window_handles) - {main_window}).pop()
         self.browser.switch_to_window(open_url_window)
+
+
+class HiddenFileInput(FileInput):
+    """Uploads file via hidden input form field
+
+    Prerequisite:
+        Type of input field should be file (type='file')
+    """
+
+    def fill(self, filepath):
+        self.browser.set_attribute("style", "position", self)
+        self.browser.send_keys(filepath, self)
+
+    @property
+    def is_displayed(self):
+        self.browser.set_attribute("style", "position", self)
+        return self.browser.is_displayed(self)
