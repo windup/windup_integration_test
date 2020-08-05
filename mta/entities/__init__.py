@@ -69,7 +69,7 @@ class AllProjectView(BaseLoggedInPage):
     """This view represent Project All View"""
 
     title = Text(".//div[contains(@class, 'projects-bar')]/h1")
-    search = Input(".//input[`contains(@name, 'searchValue')]")
+    search = Input(".//input[contains(@name, 'searchValue')]")
     # TODO: add custom sort widget
 
     projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
