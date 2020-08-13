@@ -63,7 +63,7 @@ class AnalysisResults(Updateable, NavigatableMixin):
             row: row number to search
         """
         view = navigate_to(self, "AnalysisResultsPage")
-        analysis_num = view.AnalysisRowView(row).analysis_number.text
+        analysis_num = view.analysis_row(row).analysis_number.text
         only_digits = "".join([c for c in analysis_num if c.isdigit()])
         view.search.fill(only_digits)
 
@@ -81,15 +81,12 @@ class AnalysisResults(Updateable, NavigatableMixin):
             row: row number
         """
         view = navigate_to(self, "AnalysisResultsPage")
-        view.AnalysisRowView(row).delete_analysis.click()
+        view.analysis_row(row).delete_analysis.click()
 
     def sort_analysis(self):
         view = navigate_to(self, "AnalysisResultsPage")
         view.sort_analysis.click()
-        assert (
-            view.AnalysisRowView(1).analysis_number.text
-            > view.AnalysisRowView(2).analysis_number.text
-        )
+        assert view.analysis_row(1).analysis_number.text > view.analysis_row(2).analysis_number.text
 
 
 @ViaWebUI.register_destination_for(AnalysisResults)
