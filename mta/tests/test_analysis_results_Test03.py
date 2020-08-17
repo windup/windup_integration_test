@@ -30,7 +30,7 @@ def test_analysis_results(application):
 
     # search row 1 in list
     analysis_results.search_analysis(row=1)
-    assert view.AnalysisRowView(row=1).analysis_number.is_displayed
+    assert view.analysis_row(row=1).analysis_number.is_displayed
     view.clear_search()
     # search row 2 in list
     analysis_results.search_analysis(row=2)
