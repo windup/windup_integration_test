@@ -35,6 +35,10 @@ def test_analysis_results(application):
     # search row 2 in list
     analysis_results.search_analysis(row=2)
     view.clear_search()
+    # Sort Analysis
+    analysis_results.sort_analysis()
+    assert (view.analysis_row(row=1).analysis_number.text >
+            view.analysis_row(row=2).analysis_number.text)
 
     # delete analysis of row 1 and cancel
     analysis_results.delete_analysis(row=1)
