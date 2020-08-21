@@ -86,7 +86,6 @@ class AnalysisResults(Updateable, NavigatableMixin):
     def sort_analysis(self):
         view = navigate_to(self, "AnalysisResultsPage")
         view.sort_analysis.click()
-        assert view.analysis_row(1).analysis_number.text > view.analysis_row(2).analysis_number.text
 
 
 @ViaWebUI.register_destination_for(AnalysisResults)
