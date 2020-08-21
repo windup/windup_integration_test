@@ -32,6 +32,7 @@ class ApplicationsView(BaseLoggedInPage):
     application_packages = Text(
         locator=".//wu-select-packages/h3[normalize-space(.)='Application packages']"
     )
+    sort_application = Text(locator=".//th[contains(normalize-space(.), 'Application')]//i[1]")
     save_and_run_button = Button("Save & Run")
     yes_button = Button("Yes")
     no_button = Button("No")
@@ -56,6 +57,7 @@ class ApplicationsView(BaseLoggedInPage):
                 "/span/a[@title='Delete']//i"
             )
         )
+        row = Text(ParametrizedLocator(".//tr[{name}]/td/a"))
 
         @property
         def is_displayed(self):
@@ -71,7 +73,7 @@ class Applications(Updateable, NavigatableMixin):
 
     def search_application(self, name):
         """ Search application
-            Args:
+        Args:
             name: name to search
         """
         view = navigate_to(self, "ApplicationsPage")
@@ -80,7 +82,7 @@ class Applications(Updateable, NavigatableMixin):
 
     def delete_application(self, name, cancel=True):
         """ Delete application
-            Args:
+        Args:
             name: name of app
         """
         view = navigate_to(self, "ApplicationsPage")
@@ -93,7 +95,7 @@ class Applications(Updateable, NavigatableMixin):
 
     def add_application(self, app):
         """ Add application
-            Args:
+        Args:
             app: name of app
         """
         view = navigate_to(self, "ApplicationsPage")
@@ -108,12 +110,16 @@ class Applications(Updateable, NavigatableMixin):
         wait_for(lambda: view.application_packages.is_displayed, delay=0.6, timeout=240)
         view.save_and_run_button.click()
         # wait for analysis to finish
-        view = self.create_view(AnalysisResultsView)
+        view = self.create_view(AnalysisResultsView, wait="30s")
         view.wait_displayed()
         assert view.is_displayed
         wait_for(lambda: view.analysis_results.in_progress(), delay=0.2, timeout=120)
         wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=120)
         assert view.analysis_results.is_analysis_complete()
+
+    def sort_application(self):
+        view = navigate_to(self, "ApplicationsPage")
+        view.sort_application.click()
 
 
 @ViaWebUI.register_destination_for(Applications)

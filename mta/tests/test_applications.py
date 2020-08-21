@@ -82,3 +82,29 @@ def test_delete_application(application):
     applications.delete_application(name="cadmium-war-0.1.0.war", cancel=True)
     # Delete
     applications.delete_application(name="cadmium-war-0.1.0.war", cancel=False)
+
+
+def test_sort_application(application):
+    """ Validates Web console Test 03
+    1) Upload one or more application into a project to analyse
+    2) Go to Applications page
+    3) Sort app
+    """
+    project_name = fauxfactory.gen_alphanumeric(12, start="project_")
+    project_collection = application.collections.projects
+    project = project_collection.create(
+        name=project_name,
+        description=fauxfactory.gen_alphanumeric(),
+        app_list=[
+            "acmeair-webapp-1.0-SNAPSHOT.war",
+            "cadmium-war-0.1.0.war",
+            "bw-note-ear-4.0.0.ear",
+        ],
+        transformation_path="Containerization",
+    )
+    assert project.exists
+    applications = Applications(application, project_name)
+    view = applications.create_view(ApplicationsView)
+    # Sort application
+    applications.sort_application()
+    assert view.application_row(name=1).row.text < view.application_row(name=2).row.text
