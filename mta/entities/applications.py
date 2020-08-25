@@ -91,6 +91,7 @@ class Applications(Updateable, NavigatableMixin):
             view.no_button.is_displayed
             view.no_button.click()
         else:
+            view.no_button.is_displayed
             view.yes_button.click()
 
     def add_application(self, app):
@@ -110,7 +111,7 @@ class Applications(Updateable, NavigatableMixin):
         wait_for(lambda: view.application_packages.is_displayed, delay=0.6, timeout=240)
         view.save_and_run_button.click()
         # wait for analysis to finish
-        view = self.create_view(AnalysisResultsView, wait="30s")
+        view = self.create_view(AnalysisResultsView)
         view.wait_displayed()
         assert view.is_displayed
         wait_for(lambda: view.analysis_results.in_progress(), delay=0.2, timeout=120)
