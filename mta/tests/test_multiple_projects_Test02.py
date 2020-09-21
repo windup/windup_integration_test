@@ -28,7 +28,7 @@ def test_multiple_applications_upload(request, application):
     view = analysis_configuration.create_view(AnalysisResultsView)
     view.wait_displayed()
     assert view.is_displayed
-    wait_for(lambda: view.analysis_results.in_progress(), delay=0.6, timeout=400)
-    wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=120)
+    wait_for(lambda: view.analysis_results.in_progress(), delay=0.6, timeout=450)
+    wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
     assert view.analysis_results.is_analysis_complete()
     project.delete()

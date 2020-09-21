@@ -98,9 +98,8 @@ def test_sort_application(application):
         app_list=[
             "acmeair-webapp-1.0-SNAPSHOT.war",
             "cadmium-war-0.1.0.war",
-            "bw-note-ear-4.0.0.ear",
+            "arit-ear-0.8.1-SNAPSHOT.ear",
         ],
-        transformation_path="Containerization",
     )
     assert project.exists
     applications = Applications(application, project_name)
