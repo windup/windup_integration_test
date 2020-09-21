@@ -230,7 +230,7 @@ class ProjectCollection(BaseCollection):
             transformation_path=transformation_path,
         )
         view = self.create_view(AnalysisResultsView)
-        view.wait_displayed('60s')
+        view.wait_displayed("60s")
         assert view.is_displayed
         wait_for(lambda: view.analysis_results.in_progress(), delay=0.2, timeout=450)
         wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
