@@ -4,7 +4,7 @@ from mta.entities.applications import Applications
 from mta.entities.applications import ApplicationsView
 
 
-def test_applications(application):
+def test_applications_page(application):
     """ Validates Web console Test 03
     1) Upload more than one application into a project to analyse
     2) Go to Applications page
@@ -39,7 +39,7 @@ def test_applications(application):
     view.clear_search()
 
 
-def test_add_application(application):
+def test_add_applications_to_project(application):
     """ Validates Web console Test 03
     1) Upload one application into a project to analyse
     2) Go to Applications page
@@ -58,7 +58,7 @@ def test_add_application(application):
     applications.add_application(app="cadmium-war-0.1.0.war")
 
 
-def test_delete_application(application):
+def test_delete_application_from_project(application):
     """ Validates Web console Test 03
     1) Upload one or more application into a project to analyse
     2) Go to Applications page
@@ -84,7 +84,7 @@ def test_delete_application(application):
     applications.delete_application(name="cadmium-war-0.1.0.war", cancel=False)
 
 
-def test_sort_application(application):
+def test_sort_applications(application):
     """ Validates Web console Test 03
     1) Upload one or more application into a project to analyse
     2) Go to Applications page

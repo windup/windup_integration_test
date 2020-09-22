@@ -4,7 +4,7 @@ from mta.entities.analysis_results import AnalysisResults
 from mta.entities.analysis_results import AnalysisResultsView
 
 
-def test_analysis_results(application):
+def test_analysis_results_search_sort_delete(application):
     """ Validates Web console Test 03
     1) Upload more than one application into a project to analyse
     2) Search analysis
