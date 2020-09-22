@@ -11,13 +11,16 @@ RUN dnf -y install java java-devel unzip wget xterm python3-virtualenv && dnf cl
 ENV JAVA_HOME /usr/lib/jvm/java-openjdk
 ENV BASE_URL="https://repo1.maven.org/maven2/org/jboss/windup"
 ENV WEB_CONSOLE="mta-web-distribution"
-ENV VERSION="5.0.0.Final"
+ENV VERSION="5.0.1.Final"
 ENV WEB_DISTRIBUTION="${WEB_CONSOLE}-${VERSION}"
 ENV WEB_CONSOLE_FILE="${WEB_DISTRIBUTION}-with-authentication.zip"
 ENV WEB_CONSOLE_FILE_PATH="${BASE_URL}/web/${WEB_CONSOLE}/${VERSION}/${WEB_CONSOLE_FILE}"
 
 
 RUN wget -o - $WEB_CONSOLE_FILE_PATH -P /tmp| wc -l > /number && unzip -o /tmp/$WEB_CONSOLE_FILE -d /tmp
+
+RUN echo $WEB_CONSOLE_FILE_PATH
+RUN echo $WEB_CONSOLE_FILE
 
 RUN useradd jboss \
         && usermod -G jboss jboss \
@@ -28,6 +31,10 @@ RUN useradd jboss \
 WORKDIR /opt/mta
 
 RUN mv /tmp/${WEB_DISTRIBUTION}/* ./ && chown jboss:jboss /opt -R
+
+# For some reason this dir is not empty on docker image and build fails
+# TODO investigate and remove this
+RUN rm -rf /opt/mta/standalone/configuration/standalone_xml_history/current/*
 
 EXPOSE 8080
 

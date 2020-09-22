@@ -6,4 +6,4 @@ image: quay.io/redhatqe/selenium-standalone:latest
 webdriver_port: 4444
 vnc_port: 5999
 network: host
-vncviewer: null   # VNC viewer which installed in your system
+vncviewer: vncviewer   # VNC viewer which installed in your system
