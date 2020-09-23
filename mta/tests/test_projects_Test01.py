@@ -130,6 +130,7 @@ def test_sort_projects(request, application):
     project_collection.sort_projects("Created date")
     project_collection.sort_projects("Last modified date")
     project_collection.sort_projects("Number of applications")
+    project_collection.sort_projects("Name")
 
 
 def test_search_project(request, application):
