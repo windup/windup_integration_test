@@ -106,10 +106,7 @@ def test_sort_projects(request, application):
     project2 = project_collection.create(
         name=fauxfactory.gen_alphanumeric(12, start="bproject_"),
         description=fauxfactory.gen_alphanumeric(start="desc_"),
-        app_list=[
-            "acmeair-webapp-1.0-SNAPSHOT.war",
-            "arit-ear-0.8.1-SNAPSHOT.ear",
-        ]
+        app_list=["acmeair-webapp-1.0-SNAPSHOT.war", "arit-ear-0.8.1-SNAPSHOT.ear"],
     )
 
     project3 = project_collection.create(

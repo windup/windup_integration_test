@@ -1,5 +1,4 @@
 from wait_for import wait_for
-
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import FileInput
 from widgetastic.widget import ParametrizedView
@@ -48,7 +47,6 @@ class DropdownMenu(Dropdown):
 
 
 class SortSelector(SelectorDropdown):
-
     def item_select(self, item, *args, **kwargs):
         super(SelectorDropdown, self).item_select(item, *args, **kwargs)
         wait_for(lambda: self.currently_selected.lower() == item.lower(), num_sec=3, delay=0.2)

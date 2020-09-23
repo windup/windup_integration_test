@@ -71,7 +71,7 @@ class AllProjectView(BaseLoggedInPage):
 
     title = Text(".//div[contains(@class, 'projects-bar')]/h1")
     search = Input("searchValue")
-    sort = SortSelector('class', 'btn btn-default dropdown-toggle')
+    sort = SortSelector("class", "btn btn-default dropdown-toggle")
 
     projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
     new_project_button = Button("New Project")
