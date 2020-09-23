@@ -70,7 +70,7 @@ class AllProjectView(BaseLoggedInPage):
     """This view represent Project All View"""
 
     title = Text(".//div[contains(@class, 'projects-bar')]/h1")
-    search = Input(".//input[contains(@name, 'searchValue')]")
+    search = Input("searchValue")
     sort = SortSelector('class', 'btn btn-default dropdown-toggle')
 
     projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
