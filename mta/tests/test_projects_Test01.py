@@ -88,3 +88,69 @@ def test_application_report(application):
     view.analysis_results.show_report()
     view = project_collection.create_view(AllApplicationsView)
     assert view.is_displayed
+
+
+def test_sort_projects(request, application):
+    """
+    Sort Projects
+    """
+    project_collection = application.collections.projects
+
+    project1 = project_collection.create(
+        name=fauxfactory.gen_alphanumeric(12, start="aproject_"),
+        description=fauxfactory.gen_alphanumeric(start="desc_"),
+        app_list=["acmeair-webapp-1.0-SNAPSHOT.war"],
+    )
+    assert project1.exists
+
+    project2 = project_collection.create(
+        name=fauxfactory.gen_alphanumeric(12, start="bproject_"),
+        description=fauxfactory.gen_alphanumeric(start="desc_"),
+        app_list=[
+            "acmeair-webapp-1.0-SNAPSHOT.war",
+            "arit-ear-0.8.1-SNAPSHOT.ear",
+        ]
+    )
+
+    project3 = project_collection.create(
+        name=fauxfactory.gen_alphanumeric(12, start="cproject_"),
+        description=fauxfactory.gen_alphanumeric(start="desc_"),
+        app_list=[
+            "acmeair-webapp-1.0-SNAPSHOT.war",
+            "cadmium-war-0.1.0.war",
+            "bw-note-ear-4.0.0.ear",
+        ],
+    )
+    assert project3.exists
+
+    @request.addfinalizer
+    def _cleanup():
+        project1.delete()
+
+    project2.delete()
+    project3.delete()
+
+    project_collection.sort_projects("Created date")
+    project_collection.sort_projects("Last modified date")
+    project_collection.sort_projects("Number of applications")
+
+
+def test_search_project(request, application):
+    """
+    Search Projects
+    """
+    project_name = fauxfactory.gen_alphanumeric(12, start="project_")
+    project_collection = application.collections.projects
+
+    project = project_collection.create(
+        name=project_name,
+        description=fauxfactory.gen_alphanumeric(start="desc_"),
+        app_list=["acmeair-webapp-1.0-SNAPSHOT.war"],
+    )
+    assert project.exists
+
+    @request.addfinalizer
+    def _cleanup():
+        project.delete()
+
+    project_collection.search_project(project_name)

@@ -12,6 +12,7 @@ from mta.widgetastic import DropdownMenu
 from mta.widgetastic import HOMENavigation
 from mta.widgetastic import MTANavigation
 from mta.widgetastic import ProjectList
+from mta.widgetastic import SortSelector
 
 
 class BlankStateView(View):
@@ -70,7 +71,7 @@ class AllProjectView(BaseLoggedInPage):
 
     title = Text(".//div[contains(@class, 'projects-bar')]/h1")
     search = Input(".//input[contains(@name, 'searchValue')]")
-    # TODO: add custom sort widget
+    sort = SortSelector('class', 'btn btn-default dropdown-toggle')
 
     projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
     new_project_button = Button("New Project")

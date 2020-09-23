@@ -237,6 +237,14 @@ class ProjectCollection(BaseCollection):
         assert view.analysis_results.is_analysis_complete()
         return project
 
+    def sort_projects(self, criteria):
+        view = navigate_to(self, "All")
+        view.sort.item_select(criteria)
+
+    def search_project(self, project):
+        view = navigate_to(self, "All")
+        view.search.fill(project)
+
 
 @ViaWebUI.register_destination_for(ProjectCollection)
 class All(MTANavigateStep):
