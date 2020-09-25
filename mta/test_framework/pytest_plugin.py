@@ -2,7 +2,7 @@ import logging
 
 logger = logging.getLogger("mta.test_framework.pytest_plugin")
 
-pytest_plugins = ["mta.fixtures.application"]
+pytest_plugins = ["mta.fixtures.application", "mta.fixtures.project_fixture"]
 
 
 def pytest_configure(config):
