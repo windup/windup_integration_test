@@ -25,10 +25,11 @@ def test_advanced_options(application):
             "description": fauxfactory.gen_alphanumeric(),
         }
     )
-    view.add_applications.wait_displayed()
+
     env = conf.get_config("env")
     fs = FTPClientWrapper(env.ftpserver.entities.mta)
     file_path = fs.download("arit-ear-0.8.1-SNAPSHOT.ear")
+    view.add_applications.wait_displayed('60s')
     view.add_applications.upload_file.fill(file_path)
     file_path = fs.download("acmeair-webapp-1.0-SNAPSHOT.war")
     view.add_applications.upload_file.fill(file_path)
