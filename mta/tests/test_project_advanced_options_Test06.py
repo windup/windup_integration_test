@@ -17,19 +17,14 @@ def test_advanced_options(application):
     4) Run analysis
     5) Open Report
     """
+    project_name = fauxfactory.gen_alphanumeric(12, start="project_")
     project_collection = application.collections.projects
     view = navigate_to(project_collection, "Add")
-    view.create_project.fill(
-        {
-            "name": fauxfactory.gen_alphanumeric(12, start="project_"),
-            "description": fauxfactory.gen_alphanumeric(),
-        }
-    )
-
+    view.create_project.fill({"name": project_name, "description": "desc"})
+    view.add_applications.wait_displayed('20s')
     env = conf.get_config("env")
     fs = FTPClientWrapper(env.ftpserver.entities.mta)
     file_path = fs.download("arit-ear-0.8.1-SNAPSHOT.ear")
-    view.add_applications.wait_displayed('60s')
     view.add_applications.upload_file.fill(file_path)
     file_path = fs.download("acmeair-webapp-1.0-SNAPSHOT.war")
     view.add_applications.upload_file.fill(file_path)
