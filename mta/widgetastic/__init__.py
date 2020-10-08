@@ -6,6 +6,7 @@ from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
+from widgetastic_patternfly import Button
 from widgetastic_patternfly import Dropdown
 from widgetastic_patternfly import SelectorDropdown
 from widgetastic_patternfly import VerticalNavigation
@@ -253,3 +254,12 @@ class HiddenFileInput(FileInput):
     def is_displayed(self):
         self.browser.set_attribute("style", "position", self)
         return self.browser.is_displayed(self)
+
+
+class AddButton(Button):
+    """Multiple buttons with same name are present in UI.
+       So need to specify the locator.
+    """
+
+    def __locator__(self):
+        return ".//button[text()='Cancel']/following-sibling::button"

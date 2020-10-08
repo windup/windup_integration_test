@@ -2,7 +2,11 @@ import attr
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
 from wait_for import wait_for
+from widgetastic.utils import ParametrizedLocator
 from widgetastic.utils import WaitFillViewStrategy
+from widgetastic.widget import Checkbox
+from widgetastic.widget import ParametrizedView
+from widgetastic.widget import Select
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly import Button
@@ -18,6 +22,7 @@ from mta.entities.analysis_results import AnalysisResultsView
 from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import Updateable
+from mta.widgetastic import AddButton
 from mta.widgetastic import HiddenFileInput
 from mta.widgetastic import ProjectSteps
 from mta.widgetastic import TransformationPath
@@ -74,8 +79,8 @@ class AddProjectView(AllProjectView):
         def after_fill(self, was_change):
             self.next_button.click()
 
-    @View.nested
     class configure_analysis(View):  # noqa
+        PARAMETERS = ("pkg",)
         configure_analysis = ProjectSteps("Configure the Analysis")
         transformation_path = TransformationPath()
         application_packages = Text(
@@ -87,6 +92,71 @@ class AddProjectView(AllProjectView):
         @property
         def is_displayed(self):
             return self.configure_analysis.is_displayed
+
+        @ParametrizedView.nested
+        class application_package(ParametrizedView):  # noqa
+            PARAMETERS = ("pkg",)
+
+            app_checkbox = Text(
+                ParametrizedLocator(".//span[text()[normalize-space(.)={pkg|quote}]]")
+            )
+            include_pkg = Text(
+                ParametrizedLocator(
+                    ".//div[./preceding-sibling::div"
+                    "/h2[text()[normalize-space()='Include packages']]]"
+                    "/select/option[text()[normalize-space()={pkg|quote}]]"
+                )
+            )
+
+            exclude_pkg = Text(
+                ParametrizedLocator(
+                    ".//div[./preceding-sibling::div/"
+                    "h2[text()[normalize-space()='Exclude packages']]]"
+                    "/select/option[text()[normalize-space()={pkg|quote}]]"
+                )
+            )
+
+            @property
+            def is_displayed(self):
+                return self.app_checkbox.is_displayed and self.include_pkg.is_displayed
+
+        @View.nested
+        class use_custom_rules(View):  # noqa
+            expand_custom_rules = Text(
+                locator=".//span[contains(@class ,'fa field-selection-toggle-pf')]"
+            )
+            add_button = Button("Add")
+            upload_file = HiddenFileInput(id="fileUpload")
+            add_rules_button = AddButton("Add")
+            select_all_rules = Checkbox(locator=".//input[@title='Select All Rows']")
+            rule = Text(
+                locator=".//option[text()[normalize-space()='custom.Test1rules.rhamt.xml']]"
+            )
+
+        @View.nested
+        class use_custom_labels(View):  # noqa
+            expand_custom_labels = Text(
+                locator=".//a[text()[normalize-space(.)='Use custom labels']]"
+            )
+            add_button = Button("Add")
+            upload_file = HiddenFileInput(id="fileUpload")
+            add_labels_button = AddButton("Add")
+            select_all_labels = Checkbox(locator=".//input[@value='allRowsSelected']")
+            label = Text(
+                locator=".//option[text()[normalize-space()='customWebLogic.windup.label.xml']]"
+            )
+
+        @View.nested
+        class advanced_options(View):  # noqa
+            expand_advanced_options = Text(
+                locator=".//a[text()[normalize-space(.)='Advanced options']]"
+            )
+            add_option_button = Button("Add option")
+            option_select = Select(name="newOptionTypeSelection")
+            select_value = Checkbox(locator=".//input[@name='currentOptionInput']")
+            add_button = Button("Add")
+            cancel_button = Button("Cancel")
+            delete_button = Button("Delete")
 
         def fill(self, values):
             """

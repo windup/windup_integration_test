@@ -57,15 +57,19 @@ class AnalysisResults(Updateable, NavigatableMixin):
         self.application = application
         self.project_name = project_name
 
+    def get_analysis_number(self, view, row):
+        """ Method to return only digit from row text"""
+        analysis_num = view.analysis_row(row).analysis_number.text
+        only_digits = "".join([c for c in analysis_num if c.isdigit()])
+        return only_digits
+
     def search_analysis(self, row):
         """ Search analysis results with analysis number
             Args:
             row: row number to search
         """
         view = navigate_to(self, "AnalysisResultsPage")
-        analysis_num = view.analysis_row(row).analysis_number.text
-        only_digits = "".join([c for c in analysis_num if c.isdigit()])
-        view.search.fill(only_digits)
+        view.search.fill(self.get_analysis_number(view, row))
 
     def run_analysis(self):
         """ Run analysis"""
