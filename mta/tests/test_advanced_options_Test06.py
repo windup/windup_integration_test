@@ -21,7 +21,7 @@ def test_advanced_options(application):
     project_collection = application.collections.projects
     view = navigate_to(project_collection, "Add")
     view.create_project.fill({"name": project_name, "description": "desc"})
-    view.add_applications.wait_displayed('20s')
+    view.add_applications.wait_displayed("20s")
     env = conf.get_config("env")
     fs = FTPClientWrapper(env.ftpserver.entities.mta)
     file_path = fs.download("arit-ear-0.8.1-SNAPSHOT.ear")
