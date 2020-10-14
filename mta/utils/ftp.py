@@ -595,8 +595,8 @@ class FTPClientWrapper(FTPClient):
         path = os.path.join(self.entrypoint, self.entity_path if entity_path else "")
         # In windows OS adds forward slashes to the path , we need to replace them
         if platform == "win32":
-            new_path = path.replace("\\", "/")
-        self.cwd(new_path)
+            path = path.replace("\\", "/")
+        self.cwd(path)
 
     @property
     def file_names(self):
