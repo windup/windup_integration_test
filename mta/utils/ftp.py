@@ -591,7 +591,11 @@ class FTPClientWrapper(FTPClient):
         )
 
         # Change working directory as per entity_path if provided
-        self.cwd(os.path.join(self.entrypoint, self.entity_path if entity_path else ""))
+        path = os.path.join(self.entrypoint, self.entity_path if entity_path else "")
+        # In windows OS adds forward slashes to the path , we need to replace them
+        new_path = path.replace("\\", "/")
+        print(new_path)
+        self.cwd(new_path)
 
     @property
     def file_names(self):
