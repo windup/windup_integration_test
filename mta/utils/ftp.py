@@ -3,9 +3,9 @@ import os
 import re
 from datetime import datetime
 from io import BytesIO
+from sys import platform
 from time import mktime
 from time import strptime
-from sys import platform
 
 import fauxfactory
 
@@ -593,9 +593,9 @@ class FTPClientWrapper(FTPClient):
 
         # Change working directory as per entity_path if provided
         path = os.path.join(self.entrypoint, self.entity_path if entity_path else "")
-        # In windows OS adds forward slashes to the path , we need to replace them 
+        # In windows OS adds forward slashes to the path , we need to replace them
         if platform == "win32":
-            new_path = path.replace('\\', '/')
+            new_path = path.replace("\\", "/")
         self.cwd(new_path)
 
     @property
