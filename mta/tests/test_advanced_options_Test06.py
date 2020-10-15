@@ -71,6 +71,11 @@ def test_advanced_options(application):
         timeout=60,
     )
     view.configure_analysis.use_custom_rules.add_rules_button.click()
+    wait_for(
+        lambda: view.configure_analysis.use_custom_rules.select_all_rules.is_enabled,
+        delay=0.2,
+        timeout=60,
+    )
     view.configure_analysis.use_custom_rules.select_all_rules.click()
     assert view.configure_analysis.use_custom_rules.rule.is_displayed
     view.configure_analysis.use_custom_rules.expand_custom_rules.click()
@@ -90,6 +95,11 @@ def test_advanced_options(application):
         timeout=60,
     )
     view.configure_analysis.use_custom_labels.add_labels_button.click()
+    wait_for(
+        lambda: view.configure_analysis.use_custom_labels.select_all_labels.is_enabled,
+        delay=0.2,
+        timeout=60,
+    )
     view.configure_analysis.use_custom_labels.select_all_labels.click()
     assert view.configure_analysis.use_custom_labels.label.is_displayed
     view.configure_analysis.use_custom_labels.expand_custom_labels.click()
@@ -116,9 +126,7 @@ def test_advanced_options(application):
     view.configure_analysis.save_and_run.click()
     # Verify that analysis completes
     view = project_collection.create_view(AnalysisResultsView)
-    view.wait_displayed("60s")
-    assert view.is_displayed
-    wait_for(lambda: view.analysis_results.in_progress(), delay=0.6, timeout=450)
+    wait_for(lambda: view.analysis_results.in_progress(), delay=0.6, timeout=150)
     wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
     assert view.analysis_results.is_analysis_complete()
     # Verify that report opens
