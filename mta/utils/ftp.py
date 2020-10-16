@@ -1,9 +1,10 @@
 import ftplib
 import os
 import re
+import tempfile
 from datetime import datetime
 from io import BytesIO
-from sys import platform
+from pathlib import PurePosixPath
 from time import mktime
 from time import strptime
 
@@ -592,10 +593,8 @@ class FTPClientWrapper(FTPClient):
         )
 
         # Change working directory as per entity_path if provided
-        path = os.path.join(self.entrypoint, self.entity_path if entity_path else "")
-        # In windows OS adds forward slashes to the path , we need to replace them
-        if platform == "win32":
-            path = path.replace("\\", "/")
+        entity_path = self.entity_path if entity_path else ""
+        path = PurePosixPath(self.entrypoint, entity_path)
         self.cwd(path)
 
     @property
@@ -629,8 +628,8 @@ class FTPClientWrapper(FTPClient):
         Returns:
             target path
         """
-
-        target = target if target else os.path.join("/tmp", name)
+        tmp_dir = tempfile.mkdtemp()
+        target = target if target else os.path.join(tmp_dir, name)
         if name not in self.file_names:
             raise FTPException("{} not found in {}".format(name, self.pwd()))
 
