@@ -212,10 +212,7 @@ class ProjectList(View):
 class AnalysisResults(Widget):
     # When there are multiple analysis the first row is latest one
     # so we need to check spinner and success in 1st row
-    SPINNER_LOCATOR = (
-        './/tr[contains(@class, "info")]/td[2]/wu-status-icon'
-        '/span[contains(@class, "status-icon")]/span[contains(@class,"spinner")]'
-    )
+    SPINNER_LOCATOR = ".//div[contains(@class ,'spinner spinner-xs')]"
     COMPLETE_STATUS_LOCATOR = (
         './/tr[1]/td[2]//wu-status-icon/span/span[contains(@class, "fa fa-check")]'
     )
