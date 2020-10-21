@@ -64,18 +64,9 @@ def test_advanced_options(application):
     fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
     file_path = fs1.download("custom.Test1rules.rhamt.xml")
     view.configure_analysis.use_custom_rules.upload_file.fill(file_path)
-    view.configure_analysis.use_custom_rules.add_rules_button.wait_displayed()
-    wait_for(
-        lambda: view.configure_analysis.use_custom_rules.add_rules_button.is_enabled,
-        delay=0.2,
-        timeout=60,
-    )
+    view.configure_analysis.use_custom_rules.add_rules_button.wait_displayed('10s')
     view.configure_analysis.use_custom_rules.add_rules_button.click()
-    wait_for(
-        lambda: view.configure_analysis.use_custom_rules.select_all_rules.is_enabled,
-        delay=0.2,
-        timeout=60,
-    )
+    view.configure_analysis.use_custom_rules.select_all_rules.wait_displayed('10s')
     view.configure_analysis.use_custom_rules.select_all_rules.click()
     assert view.configure_analysis.use_custom_rules.rule.is_displayed
     view.configure_analysis.use_custom_rules.expand_custom_rules.click()
@@ -89,11 +80,6 @@ def test_advanced_options(application):
     file_path = fs2.download("customWebLogic.windup.label.xml")
     view.configure_analysis.use_custom_labels.upload_file.fill(file_path)
     view.configure_analysis.use_custom_labels.add_labels_button.wait_displayed()
-    wait_for(
-        lambda: view.configure_analysis.use_custom_labels.add_labels_button.is_enabled,
-        delay=0.2,
-        timeout=60,
-    )
     view.configure_analysis.use_custom_labels.add_labels_button.click()
     view.configure_analysis.use_custom_labels.select_all_labels.click()
     assert view.configure_analysis.use_custom_labels.label.is_displayed
