@@ -64,10 +64,19 @@ def test_advanced_options(application):
     fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
     file_path = fs1.download("custom.Test1rules.rhamt.xml")
     view.configure_analysis.use_custom_rules.upload_file.fill(file_path)
-    view.configure_analysis.use_custom_rules.add_rules_button.wait_displayed("30s")
-    view.configure_analysis.use_custom_rules.add_rules_button.click()
-    view.configure_analysis.use_custom_rules.select_all_rules.wait_displayed("30s")
-    view.configure_analysis.use_custom_rules.select_all_rules.click()
+
+    if view.configure_analysis.use_custom_rules.add_rules_button.is_enabled:
+        view.configure_analysis.use_custom_rules.add_rules_button.click()
+    else:
+        wait_for(lambda: configure_analysis.use_custom_rules.add_rules_button.is_enabled,
+                 delay=0.2, timeout=60)
+        view.configure_analysis.use_custom_rules.add_rules_button.click()
+
+    if view.configure_analysis.use_custom_rules.select_all_rules.is_displayed:
+        view.configure_analysis.use_custom_rules.select_all_rules.click()
+    else:
+        view.configure_analysis.use_custom_rules.select_all_rules.wait_displayed("30s")
+        view.configure_analysis.use_custom_rules.select_all_rules.click()
     assert view.configure_analysis.use_custom_rules.rule.is_displayed
     view.configure_analysis.use_custom_rules.expand_custom_rules.click()
 
