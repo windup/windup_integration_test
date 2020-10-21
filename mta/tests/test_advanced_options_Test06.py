@@ -68,8 +68,11 @@ def test_advanced_options(application):
     if view.configure_analysis.use_custom_rules.add_rules_button.is_enabled:
         view.configure_analysis.use_custom_rules.add_rules_button.click()
     else:
-        wait_for(lambda: configure_analysis.use_custom_rules.add_rules_button.is_enabled,
-                 delay=0.2, timeout=60)
+        wait_for(
+            lambda: view.configure_analysis.use_custom_rules.add_rules_button.is_enabled,
+            delay=0.2,
+            timeout=60,
+        )
         view.configure_analysis.use_custom_rules.add_rules_button.click()
 
     if view.configure_analysis.use_custom_rules.select_all_rules.is_displayed:
@@ -88,10 +91,25 @@ def test_advanced_options(application):
     fs2 = FTPClientWrapper(env.ftpserver.entities.mta)
     file_path = fs2.download("customWebLogic.windup.label.xml")
     view.configure_analysis.use_custom_labels.upload_file.fill(file_path)
-    view.configure_analysis.use_custom_labels.add_labels_button.wait_displayed()
-    view.configure_analysis.use_custom_labels.add_labels_button.click()
-    view.configure_analysis.use_custom_labels.select_all_labels.wait_displayed("30s")
-    view.configure_analysis.use_custom_labels.select_all_labels.click()
+
+    if view.configure_analysis.use_custom_labels.add_labels_button.is_enabled:
+        view.configure_analysis.use_custom_labels.add_labels_button.click()
+    else:
+        wait_for(
+            lambda: view.configure_analysis.use_custom_labels.add_labels_button.is_enabled,
+            delay=0.2,
+            timeout=60,
+        )
+        view.configure_analysis.use_custom_labels.add_labels_button.click()
+
+    if view.configure_analysis.use_custom_labels.select_all_labels.is_displayed:
+        view.configure_analysis.use_custom_labels.select_all_labels.click()
+    else:
+        view.configure_analysis.use_custom_labels.select_all_labels.wait_displayed("30s")
+        view.configure_analysis.use_custom_labels.select_all_labels.click()
+    assert view.configure_analysis.use_custom_labels.label.is_displayed
+    view.configure_analysis.use_custom_labels.expand_custom_labels.click()
+
     assert view.configure_analysis.use_custom_labels.label.is_displayed
     view.configure_analysis.use_custom_labels.expand_custom_labels.click()
 
