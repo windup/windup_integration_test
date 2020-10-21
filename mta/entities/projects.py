@@ -87,7 +87,6 @@ class AddProjectView(AllProjectView):
             locator=".//wu-select-packages/h3[normalize-space(.)='Application packages']"
         )
         save_and_run = Button("Save & Run")
-        yes_button = Button("Yes")
         fill_strategy = WaitFillViewStrategy("15s")
 
         @property
@@ -166,13 +165,13 @@ class AddProjectView(AllProjectView):
             """
             if values.get("transformation_path"):
                 self.transformation_path.select_card(card_name=values.get("transformation_path"))
+            wait_for(lambda: self.application_packages.is_displayed, delay=0.6, timeout=500)
             was_change = True
             self.after_fill(was_change)
             return was_change
 
         def after_fill(self, was_change):
             self.save_and_run.click()
-            self.yes_button.click()
 
     @property
     def is_displayed(self):

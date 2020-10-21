@@ -110,9 +110,6 @@ def test_advanced_options(application):
     assert view.configure_analysis.use_custom_labels.label.is_displayed
     view.configure_analysis.use_custom_labels.expand_custom_labels.click()
 
-    assert view.configure_analysis.use_custom_labels.label.is_displayed
-    view.configure_analysis.use_custom_labels.expand_custom_labels.click()
-
     # advanced options
     view.configure_analysis.advanced_options.expand_advanced_options.click()
     view.configure_analysis.advanced_options.add_option_button.click()
