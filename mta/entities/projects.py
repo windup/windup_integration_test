@@ -1,3 +1,5 @@
+from sys import platform
+
 import attr
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
@@ -87,6 +89,7 @@ class AddProjectView(AllProjectView):
             locator=".//wu-select-packages/h3[normalize-space(.)='Application packages']"
         )
         save_and_run = Button("Save & Run")
+        yes_button = Button("Yes")
         fill_strategy = WaitFillViewStrategy("15s")
 
         @property
@@ -165,13 +168,16 @@ class AddProjectView(AllProjectView):
             """
             if values.get("transformation_path"):
                 self.transformation_path.select_card(card_name=values.get("transformation_path"))
-            wait_for(lambda: self.application_packages.is_displayed, delay=0.6, timeout=240)
+            if not platform == "win32":
+                wait_for(lambda: self.application_packages.is_displayed, delay=0.6, timeout=500)
             was_change = True
             self.after_fill(was_change)
             return was_change
 
         def after_fill(self, was_change):
             self.save_and_run.click()
+            if self.yes_button.is_displayed:
+                self.yes_button.click()
 
     @property
     def is_displayed(self):
@@ -302,7 +308,7 @@ class ProjectCollection(BaseCollection):
         view = self.create_view(AnalysisResultsView)
         view.wait_displayed("60s")
         assert view.is_displayed
-        wait_for(lambda: view.analysis_results.in_progress(), delay=0.2, timeout=450)
+        wait_for(lambda: view.analysis_results.in_progress(), delay=20, timeout=450)
         wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
         assert view.analysis_results.is_analysis_complete()
         return project

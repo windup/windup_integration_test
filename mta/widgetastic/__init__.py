@@ -212,21 +212,28 @@ class ProjectList(View):
 class AnalysisResults(Widget):
     # When there are multiple analysis the first row is latest one
     # so we need to check spinner and success in 1st row
-    SPINNER_LOCATOR = (
-        './/tr[contains(@class, "info")]/td[2]/wu-status-icon'
-        '/span[contains(@class, "status-icon")]/span[contains(@class,"spinner")]'
-    )
+    SPINNER_LOCATOR = ".//div[contains(@class ,'spinner spinner-xs')]"
+    ANALYSIS_STATUS = ".//tr[@class ='info']//td[2]"
     COMPLETE_STATUS_LOCATOR = (
         './/tr[1]/td[2]//wu-status-icon/span/span[contains(@class, "fa fa-check")]'
     )
     SHOW_REPORT = './/i[contains(@class,"fa fa-bar-chart")]'
 
     def in_progress(self):
-        return self.browser.is_displayed(self.SPINNER_LOCATOR)
+        if "In Progress" in self.get_status() or self.browser.is_displayed(self.SPINNER_LOCATOR):
+            return True
+        if "Queued" in self.get_status():
+            self.browser.refresh()
+            return False
+        return False
 
     def is_analysis_complete(self):
         """Returns True if analysis complete and spinner not present"""
         return self.browser.is_displayed(self.COMPLETE_STATUS_LOCATOR)
+
+    def get_status(self):
+        """Returns text of status"""
+        return self.browser.text(self.ANALYSIS_STATUS)
 
     def show_report(self):
         self.browser.click(self.SHOW_REPORT)
