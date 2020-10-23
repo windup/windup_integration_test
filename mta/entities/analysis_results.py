@@ -77,9 +77,9 @@ class AnalysisResults(Updateable, NavigatableMixin):
         """ Run analysis"""
         view = navigate_to(self, "AnalysisResultsPage")
         view.run_analysis_button.click()
-        wait_for(lambda: view.analysis_results.in_progress(), delay=0.2, timeout=450)
         if platform == "win32":
             view.browser.refresh()
+        wait_for(lambda: view.analysis_results.in_progress(), delay=0.2, timeout=450)
         wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
         assert view.analysis_results.is_analysis_complete()
 
