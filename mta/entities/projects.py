@@ -9,8 +9,8 @@ from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Select
 from widgetastic.widget import Text
 from widgetastic.widget import View
-from widgetastic_patternfly import Button
 from widgetastic_patternfly import Input
+from widgetastic_patternfly4 import Button
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import navigate_to
@@ -24,35 +24,43 @@ from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import Updateable
 from mta.widgetastic import AddButton
 from mta.widgetastic import HiddenFileInput
-from mta.widgetastic import ProjectSteps
 from mta.widgetastic import TransformationPath
 
 
 class AddProjectView(AllProjectView):
     fill_strategy = WaitFillViewStrategy("15s")
+    create_project = Text(locator=".//h1[normalize-space(.)='Create project']")
+
+    @property
+    def is_displayed(self):
+        return self.create_project.is_displayed
 
     @View.nested
     class create_project(View):  # noqa
-        create_project = ProjectSteps("Create Project")
-        name = Input(name="projectTitle")
-        description = Input(locator='.//textarea[@id="idDescription"]')
+        title = Text(locator=".//h5[normalize-space(.)='Project details']")
+        name = Input(name="name")
+        description = Input(locator='.//textarea[@name="description"]')
         next_button = Button("Next")
         cancel_button = Button("Cancel")
         fill_strategy = WaitFillViewStrategy("20s")
 
         @property
         def is_displayed(self):
-            return self.name.is_displayed and self.create_project.is_displayed
+            return self.name.is_displayed and self.title.is_displayed
 
         def after_fill(self, was_change):
             self.next_button.click()
 
     @View.nested
     class add_applications(View):  # noqa
-        add_applications = ProjectSteps("Add Applications")
+        # add_applications = ProjectSteps("Add Applications")
+        title = Text(locator=".//h5[normalize-space(.)='Add applications']")
         delete_application = Text(locator=".//div[contains(@class, 'action-button')]/span/i")
         confirm_delete = Button("Yes")
-        upload_file = HiddenFileInput(id="fileUpload")
+        upload_file = HiddenFileInput(
+            locator='.//input[@accept=".ear,.har,.jar,.rar,.sar,.war,.zip"]'
+        )
+
         next_button = Button("Next")
         back_button = Button("Back")
         cancel_button = Button("Cancel")
@@ -60,7 +68,7 @@ class AddProjectView(AllProjectView):
 
         @property
         def is_displayed(self):
-            return self.add_applications.is_displayed
+            return self.title.is_displayed
 
         def fill(self, values):
             app_list = values.get("app_list")
@@ -80,21 +88,42 @@ class AddProjectView(AllProjectView):
             self.next_button.click()
 
     class configure_analysis(View):  # noqa
-        PARAMETERS = ("pkg",)
-        configure_analysis = ProjectSteps("Configure the Analysis")
-        transformation_path = TransformationPath()
-        application_packages = Text(
-            locator=".//wu-select-packages/h3[normalize-space(.)='Application packages']"
-        )
-        save_and_run = Button("Save & Run")
-        fill_strategy = WaitFillViewStrategy("15s")
+        @View.nested
+        class set_transformation_target(View):  # noqa
+            # configure_analysis = ProjectSteps("Configure the Analysis")
+            title = Text(locator=".//h5[normalize-space(.)='Select transformation target']")
+            transformation_path = TransformationPath()
+            application_packages = Text(
+                locator=".//wu-select-packages/h3[normalize-space(.)='Application packages']"
+            )
+            next_button = Button("Next")
+            back_button = Button("Back")
+            cancel_button = Button("Cancel")
+            fill_strategy = WaitFillViewStrategy("15s")
 
-        @property
-        def is_displayed(self):
-            return self.configure_analysis.is_displayed
+            @property
+            def is_displayed(self):
+                return self.title.is_displayed
+
+            def fill(self, values):
+                """
+                Args:
+                    values:
+                """
+                if values.get("transformation_path"):
+                    self.transformation_path.select_card(
+                        card_name=values.get("transformation_path")
+                    )
+                was_change = True
+                self.after_fill(was_change)
+                return was_change
+
+            def after_fill(self, was_change):
+                self.next_button.click()
 
         @ParametrizedView.nested
-        class application_package(ParametrizedView):  # noqa
+        class select_packages(ParametrizedView):  # noqa
+            title = Text(locator=".//h5[normalize-space(.)='Select packages']")
             PARAMETERS = ("pkg",)
 
             app_checkbox = Text(
@@ -115,13 +144,34 @@ class AddProjectView(AllProjectView):
                     "/select/option[text()[normalize-space()={pkg|quote}]]"
                 )
             )
+            next_button = Button("Next")
+            back_button = Button("Back")
+            cancel_button = Button("Cancel")
+            fill_strategy = WaitFillViewStrategy("15s")
 
             @property
             def is_displayed(self):
-                return self.app_checkbox.is_displayed and self.include_pkg.is_displayed
+                return self.title.is_displayed
 
+            def fill(self, values):
+                """
+                Args:
+                    values:
+                """
+                if values.get("pkg"):
+                    self.app_checkbox(values.get("pkg")).click()
+                was_change = True
+                self.after_fill(was_change)
+                return was_change
+
+            def after_fill(self, was_change):
+                self.next_button.click()
+
+    class advanced(View):  # noqa
         @View.nested
-        class use_custom_rules(View):  # noqa
+        class custom_rules(View):  # noqa
+            title = Text(locator=".//h5[normalize-space(.)='Custom rules']")
+
             expand_custom_rules = Text(
                 locator=".//span[contains(@class ,'fa field-selection-toggle-pf')]"
             )
@@ -132,9 +182,32 @@ class AddProjectView(AllProjectView):
             rule = Text(
                 locator=".//option[text()[normalize-space()='custom.Test1rules.rhamt.xml']]"
             )
+            next_button = Button("Next")
+            back_button = Button("Back")
+            cancel_button = Button("Cancel")
+            fill_strategy = WaitFillViewStrategy("15s")
+
+            @property
+            def is_displayed(self):
+                return self.title.is_displayed
+
+            def fill(self, values):
+                """
+                Args:
+                    values:
+                """
+                if values.get("file_rule"):
+                    self.expand_custom_rules.click()
+                was_change = True
+                self.after_fill(was_change)
+                return was_change
+
+            def after_fill(self, was_change):
+                self.next_button.click()
 
         @View.nested
-        class use_custom_labels(View):  # noqa
+        class custom_labels(View):  # noqa
+            title = Text(locator=".//h5[normalize-space(.)='Custom labels']")
             expand_custom_labels = Text(
                 locator=".//a[text()[normalize-space(.)='Use custom labels']]"
             )
@@ -145,9 +218,32 @@ class AddProjectView(AllProjectView):
             label = Text(
                 locator=".//option[text()[normalize-space()='customWebLogic.windup.label.xml']]"
             )
+            next_button = Button("Next")
+            back_button = Button("Back")
+            cancel_button = Button("Cancel")
+            fill_strategy = WaitFillViewStrategy("15s")
+
+            @property
+            def is_displayed(self):
+                return self.title.is_displayed
+
+            def fill(self, values):
+                """
+                Args:
+                    values:
+                """
+                if values.get("file_label"):
+                    self.expand_custom_labels.click()
+                was_change = True
+                self.after_fill(was_change)
+                return was_change
+
+            def after_fill(self, was_change):
+                self.next_button.click()
 
         @View.nested
-        class advanced_options(View):  # noqa
+        class options(View):  # noqa
+            title = Text(locator=".//h5[normalize-space(.)='Advanced options']")
             expand_advanced_options = Text(
                 locator=".//a[text()[normalize-space(.)='Advanced options']]"
             )
@@ -156,30 +252,29 @@ class AddProjectView(AllProjectView):
             select_value = Checkbox(locator=".//input[@name='currentOptionInput']")
             add_button = Button("Add")
             cancel_button = Button("Cancel")
-            delete_button = Button("Delete")
+            next_button = Button("Next")
+            back_button = Button("Back")
+            fill_strategy = WaitFillViewStrategy("25s")
 
-        def fill(self, values):
-            """
-            Args:
-                values:
-            """
-            if values.get("transformation_path"):
-                self.transformation_path.select_card(card_name=values.get("transformation_path"))
-            wait_for(lambda: self.application_packages.is_displayed, delay=0.6, timeout=240)
-            was_change = True
-            self.after_fill(was_change)
-            return was_change
+            @property
+            def is_displayed(self):
+                return self.title.is_displayed
+
+            def after_fill(self, was_change):
+                self.next_button.click()
+
+    @View.nested
+    class review(View):  # noqa
+        title = Text(locator=".//h5[normalize-space(.)='Review project details']")
+        save = Button("Save")
+        save_and_run = Button("Save and run")
+
+        @property
+        def is_displayed(self):
+            return self.title.is_displayed
 
         def after_fill(self, was_change):
             self.save_and_run.click()
-
-    @property
-    def is_displayed(self):
-        return (
-            self.create_project.is_displayed
-            or self.add_applications.is_displayed
-            or self.configure_analysis.is_displayed
-        )
 
 
 class DetailsProjectView(AllProjectView):
@@ -277,7 +372,17 @@ class ProjectCollection(BaseCollection):
                 for p in view.projects.projects
             ]
 
-    def create(self, name, description=None, app_list=None, transformation_path=None):
+    def create(
+        self,
+        name,
+        description=None,
+        app_list=None,
+        transformation_path=None,
+        pkg=None,
+        file_rule=None,
+        file_label=None,
+        options=None,
+    ):
         """Create a new project.
 
         Args:
@@ -285,13 +390,32 @@ class ProjectCollection(BaseCollection):
             description: The description of the project
             app_list: Applications to be analyzed
             transformation_path: transformation_path
+            pkg: package
+            file_rule: Rules
+            file_label: Label
+            options: Options
         """
         view = navigate_to(self, "Add")
         view.create_project.fill({"name": name, "description": description})
         view.add_applications.wait_displayed()
         view.add_applications.fill({"app_list": app_list})
-        view.configure_analysis.wait_displayed()
-        view.configure_analysis.fill({"transformation_path": transformation_path})
+        view.configure_analysis.set_transformation_target.wait_displayed()
+        view.configure_analysis.set_transformation_target.fill(
+            {"transformation_path": transformation_path}
+        )
+        wait_for(
+            lambda: view.configure_analysis.select_packages(pkg).is_displayed, delay=0.2, timeout=60
+        )
+        view.configure_analysis.select_packages(pkg).wait_displayed()
+        view.configure_analysis.select_packages(pkg).fill({"pkg": pkg})
+        view.advanced.custom_rules.wait_displayed()
+        view.advanced.custom_rules.fill({"file_rule": file_rule})
+        view.advanced.custom_labels.wait_displayed()
+        view.advanced.custom_labels.fill({"file_label": file_label})
+        view.advanced.options.wait_displayed()
+        view.advanced.options.fill({"options": options})
+        view.review.wait_displayed()
+        view.review.after_fill(was_change=True)
 
         project = self.instantiate(
             name=name,
