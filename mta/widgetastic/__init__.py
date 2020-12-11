@@ -247,12 +247,12 @@ class HiddenFileInput(FileInput):
     """
 
     def fill(self, filepath):
-        self.browser.set_attribute("style", "position", self)
+        self.browser.set_attribute("style", "display: none;", self)
         self.browser.send_keys(filepath, self)
 
     @property
     def is_displayed(self):
-        self.browser.set_attribute("style", "position", self)
+        self.browser.set_attribute("style", "display: none;", self)
         return self.browser.is_displayed(self)
 
 

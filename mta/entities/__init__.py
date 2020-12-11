@@ -2,8 +2,8 @@ import attr
 from wait_for import wait_for
 from widgetastic.widget import Text
 from widgetastic.widget import View
-from widgetastic_patternfly import Button
 from widgetastic_patternfly import Input
+from widgetastic_patternfly4 import Button
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import ViaWebUI
@@ -18,18 +18,18 @@ from mta.widgetastic import SortSelector
 class BlankStateView(View):
     """This view represent web-console without any project i.e. blank state"""
 
-    ROOT = ".//div[contains(@class, 'blank-slate')]"
+    ROOT = ".//div[contains(@class, 'pf-c-empty-state__content')]"
 
-    title = Text(locator=".//h1")
+    title = Text(locator=".//h4")
     welcome_help = Text(locator=".//div[@class='welcome-help-text']")
-    new_project_button = Button("New Project")
+    new_project_button = Button("Create project")
     documentation = Text(locator=".//a[contains(text(), 'documentation')]")
 
     @property
     def is_displayed(self):
         return (
             self.title.is_displayed
-            and self.title.text == "Welcome to the Web Console."
+            and self.title.text == "Welcome to the Migration Toolkit for Applications"
             and self.new_project_button.is_displayed
         )
 
@@ -37,16 +37,14 @@ class BlankStateView(View):
 class BaseLoggedInPage(View):
     """This is base view for MTA"""
 
-    header = Text(locator=".//img[@id='header-logo']")
+    header = Text(locator=".//img[@alt='brand']")
     home_navigation = HOMENavigation("//ul")
     navigation = MTANavigation('//ul[@class="list-group"]')
 
     setting = DropdownMenu(
         locator=".//li[contains(@class, 'dropdown') and .//span[@class='pficon pficon-user']]"
     )
-    help = DropdownMenu(
-        locator=".//li[contains(@class, 'dropdown') and .//span[@class='pficon pficon-help']]"
-    )
+    help = Button(id="aboutButton")
 
     # only if no project available
     blank_state = View.nested(BlankStateView)
@@ -69,12 +67,12 @@ class BaseWebUICollection(BaseCollection):
 class AllProjectView(BaseLoggedInPage):
     """This view represent Project All View"""
 
-    title = Text(".//div[contains(@class, 'projects-bar')]/h1")
+    title = Text(".//div[contains(@class, 'pf-c-content')]/h1")
     search = Input("searchValue")
     sort = SortSelector("class", "btn btn-default dropdown-toggle")
 
     projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
-    new_project_button = Button("New Project")
+    new_project_button = Button("Create project")
 
     @View.nested
     class no_matches(View):  # noqa
