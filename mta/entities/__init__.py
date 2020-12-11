@@ -2,7 +2,6 @@ import attr
 from wait_for import wait_for
 from widgetastic.widget import Text
 from widgetastic.widget import View
-
 from widgetastic_patternfly import Input
 from widgetastic_patternfly4 import Button
 
@@ -19,18 +18,18 @@ from mta.widgetastic import SortSelector
 class BlankStateView(View):
     """This view represent web-console without any project i.e. blank state"""
 
-    ROOT = ".//div[contains(@class, 'blank-slate')]"
+    ROOT = ".//div[contains(@class, 'pf-c-empty-state__content')]"
 
-    title = Text(locator=".//h1")
+    title = Text(locator=".//h4")
     welcome_help = Text(locator=".//div[@class='welcome-help-text']")
-    new_project_button = Button("New Project")
+    new_project_button = Button("Create project")
     documentation = Text(locator=".//a[contains(text(), 'documentation')]")
 
     @property
     def is_displayed(self):
         return (
             self.title.is_displayed
-            and self.title.text == "Welcome to the Web Console."
+            and self.title.text == "Welcome to the Migration Toolkit for Applications"
             and self.new_project_button.is_displayed
         )
 

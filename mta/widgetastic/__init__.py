@@ -263,13 +263,3 @@ class AddButton(Button):
 
     def __locator__(self):
         return ".//button[text()='Cancel']/following-sibling::button"
-
-
-class PF4Button(Button):
-    """New PF4 button has different locator
-    """
-
-    def __locator__(self):
-        return (
-            './/*[(self::a or self::button or (self::input and (@type="button" or @type="submit")))'
-            '{}]'.format(self.locator_conditions))
