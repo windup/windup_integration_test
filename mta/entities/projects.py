@@ -34,8 +34,8 @@ class AddProjectView(AllProjectView):
     @View.nested
     class create_project(View):  # noqa
         create_project = ProjectSteps("Create Project")
-        name = Input(name="projectTitle")
-        description = Input(locator='.//textarea[@id="idDescription"]')
+        name = Input(name="name")
+        description = Input(locator='.//textarea[@name="description"]')
         next_button = Button("Next")
         cancel_button = Button("Cancel")
         fill_strategy = WaitFillViewStrategy("20s")
@@ -52,7 +52,9 @@ class AddProjectView(AllProjectView):
         add_applications = ProjectSteps("Add Applications")
         delete_application = Text(locator=".//div[contains(@class, 'action-button')]/span/i")
         confirm_delete = Button("Yes")
-        upload_file = HiddenFileInput(id="fileUpload")
+        upload_file = HiddenFileInput(
+            locator='.//input[@accept=".ear,.har,.jar,.rar,.sar,.war,.zip"]')
+
         next_button = Button("Next")
         back_button = Button("Back")
         cancel_button = Button("Cancel")
