@@ -414,7 +414,7 @@ class ProjectCollection(BaseCollection):
         view.advanced.custom_labels.fill({"file_label": file_label})
         view.advanced.options.wait_displayed()
         view.advanced.options.fill({"options": options})
-        view.review.options.wait_displayed()
+        view.review.wait_displayed()
         view.review.after_fill(was_change=True)
 
         project = self.instantiate(
