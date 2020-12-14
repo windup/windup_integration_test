@@ -29,11 +29,11 @@ from mta.widgetastic import TransformationPath
 
 class AddProjectView(AllProjectView):
     fill_strategy = WaitFillViewStrategy("15s")
-    create_project = Text(locator=".//h1[normalize-space(.)='Create project']")
+    title = Text(locator=".//h1[normalize-space(.)='Create project']")
 
     @property
     def is_displayed(self):
-        return self.create_project.is_displayed
+        return self.title.is_displayed
 
     @View.nested
     class create_project(View):  # noqa
@@ -53,10 +53,10 @@ class AddProjectView(AllProjectView):
 
     @View.nested
     class add_applications(View):  # noqa
-        # add_applications = ProjectSteps("Add Applications")
         title = Text(locator=".//h5[normalize-space(.)='Add applications']")
         delete_application = Text(locator=".//div[contains(@class, 'action-button')]/span/i")
         confirm_delete = Button("Yes")
+        browse_button = Button("Browse")
         upload_file = HiddenFileInput(
             locator='.//input[@accept=".ear,.har,.jar,.rar,.sar,.war,.zip"]'
         )
@@ -68,7 +68,7 @@ class AddProjectView(AllProjectView):
 
         @property
         def is_displayed(self):
-            return self.title.is_displayed
+            return self.title.is_displayed and self.browse_button.is_displayed
 
         def fill(self, values):
             app_list = values.get("app_list")
@@ -90,7 +90,6 @@ class AddProjectView(AllProjectView):
     class configure_analysis(View):  # noqa
         @View.nested
         class set_transformation_target(View):  # noqa
-            # configure_analysis = ProjectSteps("Configure the Analysis")
             title = Text(locator=".//h5[normalize-space(.)='Select transformation target']")
             transformation_path = TransformationPath()
             application_packages = Text(
@@ -103,12 +102,12 @@ class AddProjectView(AllProjectView):
 
             @property
             def is_displayed(self):
-                return self.title.is_displayed
+                return self.title.is_displayed and self.transformation_path.is_displayed
 
             def fill(self, values):
                 """
                 Args:
-                    values:
+                    values: transformation path to be selected
                 """
                 if values.get("transformation_path"):
                     self.transformation_path.select_card(
@@ -126,22 +125,17 @@ class AddProjectView(AllProjectView):
             title = Text(locator=".//h5[normalize-space(.)='Select packages']")
             PARAMETERS = ("pkg",)
 
-            app_checkbox = Text(
-                ParametrizedLocator(".//span[text()[normalize-space(.)={pkg|quote}]]")
-            )
-            include_pkg = Text(
+            select_all_packages = Text(locator=".//input[@class='ant-checkbox-input']")
+            all_packages = Text(
                 ParametrizedLocator(
-                    ".//div[./preceding-sibling::div"
-                    "/h2[text()[normalize-space()='Include packages']]]"
-                    "/select/option[text()[normalize-space()={pkg|quote}]]"
+                    ".//div[@class='ant-tree-treenode'])"
+                    "/span[text()[normalize-space(.)={pkg|quote}]]"
                 )
             )
-
-            exclude_pkg = Text(
+            included_packages = Text(
                 ParametrizedLocator(
-                    ".//div[./preceding-sibling::div/"
-                    "h2[text()[normalize-space()='Exclude packages']]]"
-                    "/select/option[text()[normalize-space()={pkg|quote}]]"
+                    ".//li[@class='ant-transfer-list-content-item']"
+                    "/span[text()[normalize-space(.)={pkg|quote}]]"
                 )
             )
             next_button = Button("Next")
@@ -151,12 +145,12 @@ class AddProjectView(AllProjectView):
 
             @property
             def is_displayed(self):
-                return self.title.is_displayed
+                return self.title.is_displayed and self.select_all_packages.is_displayed
 
             def fill(self, values):
                 """
                 Args:
-                    values:
+                    values: application packages to be selected
                 """
                 if values.get("pkg"):
                     self.app_checkbox(values.get("pkg")).click()
@@ -171,12 +165,8 @@ class AddProjectView(AllProjectView):
         @View.nested
         class custom_rules(View):  # noqa
             title = Text(locator=".//h5[normalize-space(.)='Custom rules']")
-
-            expand_custom_rules = Text(
-                locator=".//span[contains(@class ,'fa field-selection-toggle-pf')]"
-            )
-            add_button = Button("Add")
-            upload_file = HiddenFileInput(id="fileUpload")
+            add_rule_button = Button("Add rule")
+            upload_rule = HiddenFileInput(id="fileUpload")
             add_rules_button = AddButton("Add")
             select_all_rules = Checkbox(locator=".//input[@title='Select All Rows']")
             rule = Text(
@@ -189,12 +179,12 @@ class AddProjectView(AllProjectView):
 
             @property
             def is_displayed(self):
-                return self.title.is_displayed
+                return self.title.is_displayed and self.add_rule_button.is_displayed
 
             def fill(self, values):
                 """
                 Args:
-                    values:
+                    values: custom rule file to be uploaded
                 """
                 if values.get("file_rule"):
                     self.expand_custom_rules.click()
@@ -208,11 +198,8 @@ class AddProjectView(AllProjectView):
         @View.nested
         class custom_labels(View):  # noqa
             title = Text(locator=".//h5[normalize-space(.)='Custom labels']")
-            expand_custom_labels = Text(
-                locator=".//a[text()[normalize-space(.)='Use custom labels']]"
-            )
-            add_button = Button("Add")
-            upload_file = HiddenFileInput(id="fileUpload")
+            add_label_button = Button("Add label")
+            upload_label = HiddenFileInput(id="fileUpload")
             add_labels_button = AddButton("Add")
             select_all_labels = Checkbox(locator=".//input[@value='allRowsSelected']")
             label = Text(
@@ -225,12 +212,12 @@ class AddProjectView(AllProjectView):
 
             @property
             def is_displayed(self):
-                return self.title.is_displayed
+                return self.title.is_displayed and self.add_label_button.is_displayed
 
             def fill(self, values):
                 """
                 Args:
-                    values:
+                    values: custom label file to be uploaded
                 """
                 if values.get("file_label"):
                     self.expand_custom_labels.click()
@@ -244,9 +231,7 @@ class AddProjectView(AllProjectView):
         @View.nested
         class options(View):  # noqa
             title = Text(locator=".//h5[normalize-space(.)='Advanced options']")
-            expand_advanced_options = Text(
-                locator=".//a[text()[normalize-space(.)='Advanced options']]"
-            )
+            select_target = Input(id="pf-select-toggle-id-4-select-multi-typeahead-typeahead")
             add_option_button = Button("Add option")
             option_select = Select(name="newOptionTypeSelection")
             select_value = Checkbox(locator=".//input[@name='currentOptionInput']")
@@ -258,7 +243,7 @@ class AddProjectView(AllProjectView):
 
             @property
             def is_displayed(self):
-                return self.title.is_displayed
+                return self.title.is_displayed and self.select_target.is_displayed
 
             def after_fill(self, was_change):
                 self.next_button.click()
@@ -271,7 +256,7 @@ class AddProjectView(AllProjectView):
 
         @property
         def is_displayed(self):
-            return self.title.is_displayed
+            return self.title.is_displayed and self.save_and_run.is_displayed
 
         def after_fill(self, was_change):
             self.save_and_run.click()

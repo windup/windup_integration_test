@@ -54,14 +54,15 @@ class SortSelector(SelectorDropdown):
 
 
 class TransformationPath(Widget):
+    ROOT = './/div[contains(@class,"select-card__component__empty-state")]'
+
     @ParametrizedView.nested
     class _card(ParametrizedView):
         PARAMETERS = ("card_name",)
         card = Text(
             ParametrizedLocator(
-                './/div[contains(@class, "card-pf-view-multi-select")]'
-                '/div[contains(@class, "card-pf-body")] '
-                "/h2[contains(normalize-space(.),{card_name|quote})]"
+                './/div[contains(@class, "pf-c-empty-state__content")] '
+                "/h4[contains(normalize-space(.),{card_name|quote})]"
             )
         )
 
