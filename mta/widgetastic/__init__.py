@@ -54,14 +54,15 @@ class SortSelector(SelectorDropdown):
 
 
 class TransformationPath(Widget):
+    ROOT = './/div[contains(@class,"select-card__component__empty-state")]'
+
     @ParametrizedView.nested
     class _card(ParametrizedView):
         PARAMETERS = ("card_name",)
         card = Text(
             ParametrizedLocator(
-                './/div[contains(@class, "card-pf-view-multi-select")]'
-                '/div[contains(@class, "card-pf-body")] '
-                "/h2[contains(normalize-space(.),{card_name|quote})]"
+                './/div[contains(@class, "pf-c-empty-state__content")] '
+                "/h4[contains(normalize-space(.),{card_name|quote})]"
             )
         )
 
@@ -247,12 +248,12 @@ class HiddenFileInput(FileInput):
     """
 
     def fill(self, filepath):
-        self.browser.set_attribute("style", "position", self)
+        self.browser.set_attribute("style", "display: none;", self)
         self.browser.send_keys(filepath, self)
 
     @property
     def is_displayed(self):
-        self.browser.set_attribute("style", "position", self)
+        self.browser.set_attribute("style", "display: none;", self)
         return self.browser.is_displayed(self)
 
 
