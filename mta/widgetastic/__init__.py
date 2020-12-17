@@ -1,3 +1,4 @@
+from selenium.webdriver.common.keys import Keys
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import FileInput
@@ -7,6 +8,7 @@ from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import Button
+from widgetastic_patternfly import Input
 from widgetastic_patternfly import SelectorDropdown
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Navigation
@@ -178,3 +180,17 @@ class AddButton(Button):
 
     def __locator__(self):
         return ".//button[text()='Cancel']/following-sibling::button"
+
+
+class Input(Input):
+    """Customized fill method for Input widget."""
+
+    def fill(self, value):
+        current_value = self.value
+        if value == current_value:
+            return False
+        # Clear and type everything
+        self.browser.click(self)
+        self.browser.send_keys(f"{Keys.CONTROL}+a", self)
+        self.browser.send_keys(value, self)
+        return True

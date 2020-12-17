@@ -1,10 +1,10 @@
 from widgetastic.utils import WaitFillViewStrategy
 from widgetastic.widget import Text
 from widgetastic.widget import View
-from widgetastic_patternfly import Input
 from widgetastic_patternfly import Tab
 
 from mta.entities import BaseLoggedInPage
+from mta.widgetastic import Input
 
 
 class AllApplicationsView(BaseLoggedInPage):
