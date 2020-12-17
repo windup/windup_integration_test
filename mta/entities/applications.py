@@ -69,7 +69,6 @@ class Applications(Updateable, NavigatableMixin):
             name: name to search
         """
         view = navigate_to(self, "ApplicationsPage")
-        # app = view.application_row(name).application_name.text
         view.search.fill(name)
 
     def delete_application(self, name, cancel=True):
@@ -82,11 +81,8 @@ class Applications(Updateable, NavigatableMixin):
             if row.application.text == name:
                 row[view.ACTIONS_INDEX].widget.item_select("Delete")
         if cancel:
-            print("=============cancel==========")
-            # view.cancel_button.is_displayed
             view.cancel_button.click()
         else:
-            # view.delete_button.is_displayed
             view.delete_button.click()
 
     def add_application(self, app):
