@@ -272,23 +272,20 @@ class DetailsProjectView(AllProjectView):
 
 
 class EditProjectView(AllProjectView):
-    title = Text(locator=".//div/h1[normalize-space(.)='Edit Project']")
-    name = Input(name="projectTitle")
-    description = Input(locator='.//textarea[@id="idDescription"]')
-    update_project_button = Button("Update Project")
+    title = Text(locator=".//h1[normalize-space(.)='Project details']")
+    name = Input(name="name")
+    description = Input(name="description")
+    save_button = Button("Save")
     cancel_button = Button("Cancel")
 
     @property
     def is_displayed(self):
-        return self.update_project_button.is_displayed and self.title.is_displayed
+        return self.save_button.is_displayed and self.title.is_displayed
 
 
 class DeleteProjectView(AllProjectView):
-    title = Text(
-        locator=".//div[contains(@class, 'modal-header')]"
-        "/h1[normalize-space(.)='Confirm Project Deletion']"
-    )
-    delete_project_name = Input(id="resource-to-delete")
+    title = Text(locator=".//h1[normalize-space(.)='Project details']")
+    delete_project_name = Input(id="matchText")
 
     delete_button = Button("Delete")
     cancel_button = Button("Cancel")
@@ -310,14 +307,14 @@ class Project(BaseEntity, Updateable):
     def exists(self):
         """Check project exist or not"""
         view = navigate_to(self.parent, "All")
-        return False if view.is_empty else self.name in view.projects.items
+        return view.projects.exists(self.name)
 
     def update(self, updates):
         view = navigate_to(self, "Edit")
         view.wait_displayed()
         changed = view.fill(updates)
         if changed:
-            view.update_project_button.click()
+            view.save_button.click()
         else:
             view.cancel_button.click()
         view = self.create_view(AllProjectView, override=updates)
@@ -332,7 +329,6 @@ class Project(BaseEntity, Updateable):
         """
         view = navigate_to(self, "Delete")
         view.fill({"delete_project_name": self.name})
-
         if cancel:
             view.cancel_button.click()
         else:
@@ -432,7 +428,7 @@ class All(MTANavigateStep):
 
     def step(self, *args, **kwargs):
         if not self.prerequisite_view.is_empty:
-            self.prerequisite_view.home_navigation.select("Projects")
+            self.prerequisite_view.navigation.select("Projects")
 
 
 @ViaWebUI.register_destination_for(ProjectCollection)
@@ -453,8 +449,7 @@ class Edit(MTANavigateStep):
     prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self, *args, **kwargs):
-        proj = self.prerequisite_view.projects.get_project(self.obj.name)
-        proj.edit()
+        self.prerequisite_view.projects.edit(self.obj.name)
 
 
 @ViaWebUI.register_destination_for(Project)
@@ -463,5 +458,4 @@ class Delete(MTANavigateStep):
     prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self, *args, **kwargs):
-        proj = self.prerequisite_view.projects.get_project(self.obj.name)
-        proj.delete()
+        self.prerequisite_view.projects.delete(self.obj.name)

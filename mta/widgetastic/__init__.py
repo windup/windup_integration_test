@@ -7,23 +7,16 @@ from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import Button
-from widgetastic_patternfly import Dropdown
 from widgetastic_patternfly import SelectorDropdown
-from widgetastic_patternfly import VerticalNavigation
-
-from mta.exceptions import ProjectNotFound
-
-
-class HOMENavigation(VerticalNavigation):
-    """The Patternfly Vertical navigation for Home Icon (Projects)"""
-
-    CURRENTLY_SELECTED = './/li[contains(@class, "home")]/a/span'
+from widgetastic_patternfly4 import Dropdown
+from widgetastic_patternfly4 import Navigation
+from widgetastic_patternfly4 import PatternflyTable
 
 
-class MTANavigation(VerticalNavigation):
-    """The Patternfly Vertical navigation for left menu"""
+class MTANavigation(Navigation):
+    """The Patternfly 4 navigation for left menu"""
 
-    CURRENTLY_SELECTED = './/li[contains(@class, "active")]/a/span'
+    ITEM_MATCHING = "//ul/li/a[contains(normalize-space(.), {})]"
 
 
 class ProjectSteps(AggregateStatusCard):
@@ -93,113 +86,42 @@ class SelectedApplications(Widget):
 
 
 class ProjectList(View):
-    """This is custom widget represent project list and provide actions to project
+    """This is custom widget represent project list and provide actions to project"""
 
-    .. code-block:: python
-
-        from mta.widgetastic import ProjectList
-        projects = ProjectList(view, locator=".//div[contains(@class, 'projects-list')]")
-
-        projects.items          # >> ['test', 'test_2', 'test_project_2']
-        projects.projects       # >> [Project(test), Project(test_2), Project(test_project_2)]
-        proj = projects.get_project("test_2")
-        proj                    # >> Project(test_2)
-        proj.name               # >> 'test_2'
-        proj.description        # >> 'adsfsaf'
-        proj.application_count  # >> '1 application'
-        proj.last_updated       # >> 'Last updated 4 hours ago'
-        proj.edit()             # open edit dialog
-        proj.delete()           # open delete dialog
-    """
-
-    ROOT = ParametrizedLocator("{@locator}")
-    LIST_ITEM_LOCATOR = ".//div[contains(@class, 'list-group-item  project-info')]"
-    TITLE_LOCATOR = ".//h2[contains(@class, 'project-title')]"
-
-    def __init__(self, parent, locator=None, logger=None):
-        View.__init__(self, parent, logger=logger)
-        self.locator = locator
-
-    @ParametrizedView.nested
-    class project(ParametrizedView):  # noqa
-        """Parametrized project selection"""
-
-        PARAMETERS = ("name",)
-
-        ROOT = ParametrizedLocator(
-            ".//div[contains(@class, 'list-group-item  project-info') "
-            "and .//h2[text()={name|quote}]]"
-        )
-
-        TITLE_LOCATOR = ".//h2[contains(@class, 'project-title')]"
-        DESCRIPTION_LOCATOR = ".//div[contains(@class, 'list-group-item-text description')]"
-        APPLICATION_COUNT = ".//small[contains(@class, 'count-applications')]"
-        LAST_UPDATED = ".//small[contains(@class, 'last-updated')]"
-        DELETE_PROJECT = ".//a[contains(@class,'action-button action-delete-project')]"
-        EDIT_PROJECT = ".//a[contains(@class,'action-button action-edit-project')]"
-
-        @property
-        def name(self):
-            """return name of project"""
-            return self.browser.text(self.TITLE_LOCATOR)
-
-        @property
-        def description(self):
-            """return description of project"""
-            return self.browser.text(self.DESCRIPTION_LOCATOR)
-
-        @property
-        def application_count(self):
-            """return application count text"""
-            return self.browser.text(self.APPLICATION_COUNT)
-
-        @property
-        def last_updated(self):
-            """return last project updated info"""
-            return self.browser.text(self.LAST_UPDATED)
-
-        def delete(self):
-            """click on delete project"""
-            self.browser.click(self.DELETE_PROJECT)
-
-        def edit(self):
-            """click on edit project"""
-            self.browser.click(self.EDIT_PROJECT)
-
-        def select(self):
-            """click on specific project"""
-            self.browser.click(self.TITLE_LOCATOR)
-
-        def __repr__(self):
-            return f"Project({self.name})"
-
-    @property
-    def items(self):
-        """return all project names"""
-        return [
-            self.browser.text(self.TITLE_LOCATOR, parent=item)
-            for item in self.browser.elements(self.LIST_ITEM_LOCATOR)
-        ]
-
-    def read(self):
-        return self.items
-
-    @property
-    def projects(self):
-        """return all available project objects"""
-        return [self.project(item) for item in self.items]
+    ACTIONS_INDEX = 4
+    table = PatternflyTable(
+        ".//table[contains(@class, 'pf-c-table')]",
+        column_widgets={
+            "Name": Text(locator=".//a"),
+            "Applications": Text(locator=".//td[@data-label='Applications']"),
+            "Status": Text(locator=".//td[@data-label='Status']"),
+            "Description": Text(locator=".//td[@data-label='Description']"),
+            ACTIONS_INDEX: Dropdown(),
+        },
+    )
 
     def get_project(self, name):
-        """ Get specific project
-        Args:
-            name: name of project
-        Returns:
-            list of project objects
-        """
-        if name in self.items:
-            return self.project(name)
-        else:
-            raise ProjectNotFound(f"Project {name} not found.")
+        for row in self.table:
+            if row.name.text == name:
+                return row
+
+    def exists(self, name):
+        for row in self.table:
+            if row.name.text == name:
+                return True
+        return False
+
+    def delete(self, name):
+        """click on delete project"""
+        for row in self.table:
+            if row.name.text == name:
+                row[self.ACTIONS_INDEX].widget.item_select("Delete")
+
+    def edit(self, name):
+        """click on edit project"""
+        for row in self.table:
+            if row.name.text == name:
+                row[self.ACTIONS_INDEX].widget.item_select("Edit")
 
     def select_project(self, name):
         """ Select specific project
@@ -207,27 +129,25 @@ class ProjectList(View):
                 name: name of project
         """
         project = self.get_project(name)
-        project.select()
+        project.name.widget.click()
 
 
 class AnalysisResults(Widget):
     # When there are multiple analysis the first row is latest one
     # so we need to check spinner and success in 1st row
-    SPINNER_LOCATOR = (
-        './/tr[contains(@class, "info")]/td[2]/wu-status-icon'
-        '/span[contains(@class, "status-icon")]/span[contains(@class,"spinner")]'
-    )
-    COMPLETE_STATUS_LOCATOR = (
-        './/tr[1]/td[2]//wu-status-icon/span/span[contains(@class, "fa fa-check")]'
-    )
-    SHOW_REPORT = './/i[contains(@class,"fa fa-bar-chart")]'
+
+    COMPLETE_STATUS_LOCATOR = './/tr[1]/td[@data-label="Status"]/span[text()="Completed"]'
+    SHOW_REPORT = './/a[@title="Reports"]'
+    PROGRESS_BAR = './/div[contains(@role, "progressbar")]'
 
     def in_progress(self):
-        return self.browser.is_displayed(self.SPINNER_LOCATOR)
+        return self.browser.is_displayed(self.PROGRESS_BAR)
 
     def is_analysis_complete(self):
         """Returns True if analysis complete and spinner not present"""
-        return self.browser.is_displayed(self.COMPLETE_STATUS_LOCATOR)
+        return not self.browser.is_displayed(self.PROGRESS_BAR) and self.browser.is_displayed(
+            self.COMPLETE_STATUS_LOCATOR
+        )
 
     def show_report(self):
         self.browser.click(self.SHOW_REPORT)

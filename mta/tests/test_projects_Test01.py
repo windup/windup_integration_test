@@ -27,8 +27,8 @@ def test_project_crud(create_minimal_project):
     view = navigate_to(project.parent, "All")
     # check name and description both updated on UI or not
     proj = view.projects.get_project(project.name)
-    assert proj.name == updated_name
-    assert proj.description == update_descr
+    assert proj.name.text == updated_name
+    assert proj.description.text == update_descr
 
 
 def test_delete_application(application):

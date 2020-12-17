@@ -9,7 +9,6 @@ from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import ViaWebUI
 from mta.base.modeling import BaseCollection
 from mta.widgetastic import DropdownMenu
-from mta.widgetastic import HOMENavigation
 from mta.widgetastic import MTANavigation
 from mta.widgetastic import ProjectList
 from mta.widgetastic import SortSelector
@@ -38,8 +37,7 @@ class BaseLoggedInPage(View):
     """This is base view for MTA"""
 
     header = Text(locator=".//img[@alt='brand']")
-    home_navigation = HOMENavigation("//ul")
-    navigation = MTANavigation('//ul[@class="list-group"]')
+    navigation = MTANavigation(locator='//ul[@class="pf-c-nav__list"]')
 
     setting = DropdownMenu(
         locator=".//li[contains(@class, 'dropdown') and .//span[@class='pficon pficon-user']]"
@@ -70,8 +68,7 @@ class AllProjectView(BaseLoggedInPage):
     title = Text(".//div[contains(@class, 'pf-c-content')]/h1")
     search = Input("searchValue")
     sort = SortSelector("class", "btn btn-default dropdown-toggle")
-
-    projects = ProjectList(locator=".//div[contains(@class, 'projects-list')]")
+    projects = ProjectList()
     new_project_button = Button("Create project")
 
     @View.nested

@@ -4,8 +4,8 @@ from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
-from widgetastic_patternfly import Button
 from widgetastic_patternfly import Input
+from widgetastic_patternfly4 import Button
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import NavigatableMixin
@@ -20,8 +20,8 @@ from mta.widgetastic import AnalysisResults
 
 class AnalysisResultsView(BaseLoggedInPage):
 
-    run_analysis_button = Button("Run Analysis")
-    title = Text(locator=".//div/h2[normalize-space(.)='Active Analysis']")
+    run_analysis_button = Button("Run analysis")
+    title = Text(locator=".//div/h1[normalize-space(.)='Active analysis']")
     search = Input("searchValue")
     close_search = Text(locator=".//span[@class='pficon pficon-close']")
     analysis_results = AnalysisResults()
