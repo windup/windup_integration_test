@@ -47,21 +47,15 @@ class SortSelector(SelectorDropdown):
 
 
 class TransformationPath(Widget):
-    ROOT = './/div[contains(@class,"select-card__component__empty-state")]'
+    ROOT = './/div[contains(@class,"pf-c-empty-state__content")]'
 
     @ParametrizedView.nested
     class _card(ParametrizedView):
         PARAMETERS = ("card_name",)
-        card = Text(
-            ParametrizedLocator(
-                './/div[contains(@class, "pf-c-empty-state__content")] '
-                "/h4[contains(normalize-space(.),{card_name|quote})]"
-            )
-        )
+        card = Text(ParametrizedLocator("//h4[contains(normalize-space(.), {card_name|quote})]"))
 
         def click_card(self):
             """Clicks the list item with this name."""
-
             return self.card.click()
 
     def select_card(self, card_name):

@@ -231,7 +231,7 @@ class AddProjectView(AllProjectView):
         @View.nested
         class options(View):  # noqa
             title = Text(locator=".//h5[normalize-space(.)='Advanced options']")
-            select_target = Input(id="pf-select-toggle-id-4-select-multi-typeahead-typeahead")
+            select_target = Input(locator='.//input[@placeholder="Select targets"]')
             add_option_button = Button("Add option")
             option_select = Select(name="newOptionTypeSelection")
             select_value = Checkbox(locator=".//input[@name='currentOptionInput']")
