@@ -66,7 +66,7 @@ class AllProjectView(BaseLoggedInPage):
     """This view represent Project All View"""
 
     title = Text(".//div[contains(@class, 'pf-c-content')]/h1")
-    search = Input("searchValue")
+    search = Input(locator=".//input[@aria-label='Filter by name']")
     sort = SortSelector("class", "btn btn-default dropdown-toggle")
     projects = ProjectList()
     new_project_button = Button("Create project")

@@ -54,8 +54,7 @@ class AddProjectView(AllProjectView):
     @View.nested
     class add_applications(View):  # noqa
         title = Text(locator=".//h5[normalize-space(.)='Add applications']")
-        delete_application = Text(locator=".//div[contains(@class, 'action-button')]/span/i")
-        confirm_delete = Button("Yes")
+        delete_application = Text(locator=".//button[contains(@aria-label, 'delete-application')]")
         browse_button = Button("Browse")
         upload_file = HiddenFileInput(
             locator='.//input[@accept=".ear,.har,.jar,.rar,.sar,.war,.zip"]'
@@ -412,9 +411,9 @@ class ProjectCollection(BaseCollection):
         assert view.analysis_results.is_analysis_complete()
         return project
 
-    def sort_projects(self, criteria):
+    def sort_projects(self, criteria, order):
         view = navigate_to(self, "All")
-        view.sort.item_select(criteria)
+        view.projects.table.sort_by(criteria, order)
 
     def search_project(self, project):
         view = navigate_to(self, "All")

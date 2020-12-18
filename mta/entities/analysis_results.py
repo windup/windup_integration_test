@@ -21,7 +21,7 @@ from mta.widgetastic import AnalysisResults
 class AnalysisResultsView(BaseLoggedInPage):
 
     run_analysis_button = Button("Run analysis")
-    title = Text(locator=".//div/h1[normalize-space(.)='Active analysis']")
+    title = Text(locator=".//div/h1[normalize-space(.)='Analysis results']")
     search = Input("searchValue")
     close_search = Text(locator=".//span[@class='pficon pficon-close']")
     analysis_results = AnalysisResults()
