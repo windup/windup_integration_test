@@ -2,7 +2,6 @@ from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
 from wait_for import wait_for
 from widgetastic.widget import Text
-from widgetastic_patternfly import Input
 from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import PatternflyTable
@@ -19,6 +18,7 @@ from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import Updateable
 from mta.widgetastic import HiddenFileInput
+from mta.widgetastic import Input
 
 
 class ApplicationsView(BaseLoggedInPage):

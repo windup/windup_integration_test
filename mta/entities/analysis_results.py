@@ -4,7 +4,6 @@ from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
-from widgetastic_patternfly import Input
 from widgetastic_patternfly4 import Button
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
@@ -16,6 +15,7 @@ from mta.entities import BaseLoggedInPage
 from mta.entities import ProjectView
 from mta.utils.update import Updateable
 from mta.widgetastic import AnalysisResults
+from mta.widgetastic import Input
 
 
 class AnalysisResultsView(BaseLoggedInPage):

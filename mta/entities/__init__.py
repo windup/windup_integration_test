@@ -2,13 +2,13 @@ import attr
 from wait_for import wait_for
 from widgetastic.widget import Text
 from widgetastic.widget import View
-from widgetastic_patternfly import Input
 from widgetastic_patternfly4 import Button
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import ViaWebUI
 from mta.base.modeling import BaseCollection
 from mta.widgetastic import DropdownMenu
+from mta.widgetastic import Input
 from mta.widgetastic import MTANavigation
 from mta.widgetastic import ProjectList
 from mta.widgetastic import SortSelector

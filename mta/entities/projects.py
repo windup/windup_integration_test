@@ -9,7 +9,6 @@ from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Select
 from widgetastic.widget import Text
 from widgetastic.widget import View
-from widgetastic_patternfly import Input
 from widgetastic_patternfly4 import Button
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
@@ -24,6 +23,7 @@ from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import Updateable
 from mta.widgetastic import AddButton
 from mta.widgetastic import HiddenFileInput
+from mta.widgetastic import Input
 from mta.widgetastic import TransformationPath
 
 
