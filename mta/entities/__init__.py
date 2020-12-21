@@ -97,7 +97,7 @@ class AllProjectView(BaseLoggedInPage):
 
     @property
     def all_projects(self):
-        """Clear search"""
+        """Returns list of all project rows"""
         return [row for row in self.table]
 
     @property
