@@ -338,6 +338,11 @@ class Project(BaseEntity, Updateable):
             if wait:
                 wait_for(lambda: not self.exists, delay=5, timeout=30)
 
+    def delete_if_exists(self):
+        """Check project exist and delete"""
+        if self.exists:
+            self.delete()
+
 
 @attr.s
 class ProjectCollection(BaseCollection):

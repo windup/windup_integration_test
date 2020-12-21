@@ -1,6 +1,7 @@
 import fauxfactory
 
 from mta.base.application.implementations.web_ui import navigate_to
+from mta.entities import AllProjectView
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.entities.report import AllApplicationsView
 from mta.utils import conf
@@ -16,19 +17,19 @@ def test_project_crud(create_minimal_project):
     project.update({"name": project.name})
     assert project.name == project.name
 
-    # Edit Project with new desc and save
+    # Edit Project with new description, name and save
     updated_name = fauxfactory.gen_alphanumeric(12, start="edited_")
-    update_descr = "my edited description"
+    update_desc = fauxfactory.gen_alphanumeric(12, start="edited_")
     with update(project):
         project.name = updated_name
-        project.description = update_descr
+        project.description = update_desc
 
     assert project.exists
     view = navigate_to(project.parent, "All")
     # check name and description both updated on UI or not
-    proj = view.projects.get_project(project.name)
+    proj = view.get_project(project.name)
     assert proj.name.text == updated_name
-    assert proj.description.text == update_descr
+    assert proj.description.text == update_desc
 
 
 def test_delete_application(application):
@@ -36,10 +37,11 @@ def test_delete_application(application):
     Test01 -08
     Delete uploaded application file and check if next button gets disabled
     """
-    project_name = fauxfactory.gen_alphanumeric(12, start="project_")
     project_collection = application.collections.projects
     view = navigate_to(project_collection, "Add")
-    view.create_project.fill({"name": project_name, "description": "desc"})
+    view.create_project.fill(
+        {"name": fauxfactory.gen_alphanumeric(12, start="project_"), "description": "desc"}
+    )
 
     env = conf.get_config("env")
     fs = FTPClientWrapper(env.ftpserver.entities.mta)
@@ -95,3 +97,5 @@ def test_search_project(create_minimal_project):
     project, project_collection = create_minimal_project
     assert project.exists
     project_collection.search_project(project.name)
+    view = project_collection.create_view(AllProjectView)
+    assert project.name in [row.name.text for row in view.table]

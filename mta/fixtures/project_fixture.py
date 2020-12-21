@@ -11,7 +11,7 @@ def create_minimal_project(application):
         app_list=["acmeair-webapp-1.0-SNAPSHOT.war"],
     )
     yield project, project_collection
-    project.delete()
+    project.delete_if_exists()
 
 
 @pytest.fixture(scope="function")
@@ -25,7 +25,7 @@ def create_project_with_two_apps(application):
         transformation_path="Containerization",
     )
     yield project, project_collection
-    project.delete()
+    project.delete_if_exists()
 
 
 @pytest.fixture(scope="function")
@@ -42,4 +42,4 @@ def create_project(application):
         transformation_path="Containerization",
     )
     yield project, project_collection
-    project.delete()
+    project.delete_if_exists()
