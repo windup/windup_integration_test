@@ -27,8 +27,8 @@ def test_project_crud(create_minimal_project):
     view = navigate_to(project.parent, "All")
     # check name and description both updated on UI or not
     proj = view.projects.get_project(project.name)
-    assert proj.name == updated_name
-    assert proj.description == update_descr
+    assert proj.name.text == updated_name
+    assert proj.description.text == update_descr
 
 
 def test_delete_application(application):
@@ -48,9 +48,6 @@ def test_delete_application(application):
     view.add_applications.upload_file.fill(file_path)
     view.add_applications.next_button.wait_displayed()
     view.add_applications.delete_application.click()
-
-    view.add_applications.confirm_delete.wait_displayed()
-    view.add_applications.confirm_delete.click()
 
     view.add_applications.next_button.wait_displayed()
     assert not view.add_applications.next_button.is_enabled
@@ -83,10 +80,12 @@ def test_sort_projects(create_minimal_project, create_project_with_two_apps, cre
     project3, project_collection = create_project
     assert project3.exists
 
-    project_collection.sort_projects("Created date")
-    project_collection.sort_projects("Last modified date")
-    project_collection.sort_projects("Number of applications")
-    project_collection.sort_projects("Name")
+    project_collection.sort_projects("Name", "ascending")
+    project_collection.sort_projects("Applications", "ascending")
+    project_collection.sort_projects("Status", "ascending")
+    project_collection.sort_projects("Name", "descending")
+    project_collection.sort_projects("Applications", "descending")
+    project_collection.sort_projects("Status", "descending")
 
 
 def test_search_project(create_minimal_project):

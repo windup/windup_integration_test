@@ -1,11 +1,11 @@
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
 from wait_for import wait_for
-from widgetastic.utils import ParametrizedLocator
-from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
-from widgetastic_patternfly import Button
 from widgetastic_patternfly import Input
+from widgetastic_patternfly4 import Button
+from widgetastic_patternfly4 import Dropdown
+from widgetastic_patternfly4 import PatternflyTable
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import NavigatableMixin
@@ -27,6 +27,15 @@ class ApplicationsView(BaseLoggedInPage):
     add_application_button = Button("Add")
     upload_file = HiddenFileInput(id="fileUpload")
     search = Input("searchValue")
+    ACTIONS_INDEX = 2
+    table = PatternflyTable(
+        ".//table[contains(@class, 'pf-c-table')]",
+        column_widgets={
+            "Application": Text(locator=".//a"),
+            "Date added": Text(locator=".//td[@data-label='Date added']"),
+            ACTIONS_INDEX: Dropdown(),
+        },
+    )
     close_search = Text(locator=".//span[@class='pficon pficon-close']")
     done_button = Button("Done")
     application_packages = Text(
@@ -34,8 +43,8 @@ class ApplicationsView(BaseLoggedInPage):
     )
     sort_application = Text(locator=".//th[contains(normalize-space(.), 'Application')]//i[1]")
     save_and_run_button = Button("Save & Run")
-    yes_button = Button("Yes")
-    no_button = Button("No")
+    delete_button = Button("Delete")
+    cancel_button = Button("Cancel")
 
     @property
     def is_displayed(self):
@@ -45,23 +54,6 @@ class ApplicationsView(BaseLoggedInPage):
         """Clear search"""
         if self.search.value:
             self.close_search.click()
-
-    @ParametrizedView.nested
-    class application_row(ParametrizedView):  # noqa
-        PARAMETERS = ("name",)
-
-        application_name = Text(ParametrizedLocator(".//td[normalize-space(.)='{name}']"))
-        delete_application = Text(
-            ParametrizedLocator(
-                ".//td[./preceding-sibling::td[normalize-space(.)='{name}']]"
-                "/span/a[@title='Delete']//i"
-            )
-        )
-        row = Text(ParametrizedLocator(".//tr[{name}]/td/a"))
-
-        @property
-        def is_displayed(self):
-            return self.delete_application.is_displayed and self.application_name.is_displayed
 
 
 class Applications(Updateable, NavigatableMixin):
@@ -77,8 +69,7 @@ class Applications(Updateable, NavigatableMixin):
             name: name to search
         """
         view = navigate_to(self, "ApplicationsPage")
-        app = view.application_row(name).application_name.text
-        view.search.fill(app)
+        view.search.fill(name)
 
     def delete_application(self, name, cancel=True):
         """ Delete application
@@ -86,13 +77,13 @@ class Applications(Updateable, NavigatableMixin):
             name: name of app
         """
         view = navigate_to(self, "ApplicationsPage")
-        view.application_row(name).delete_application.click()
+        for row in view.table:
+            if row.application.text == name:
+                row[view.ACTIONS_INDEX].widget.item_select("Delete")
         if cancel:
-            view.no_button.is_displayed
-            view.no_button.click()
+            view.cancel_button.click()
         else:
-            view.no_button.is_displayed
-            view.yes_button.click()
+            view.delete_button.click()
 
     def add_application(self, app):
         """ Add application
@@ -130,7 +121,7 @@ class AllProject(MTANavigateStep):
 
     def step(self):
         if not self.prerequisite_view.is_empty:
-            self.prerequisite_view.home_navigation.select("Projects")
+            self.prerequisite_view.navigation.select("Projects")
 
 
 @ViaWebUI.register_destination_for(Applications)

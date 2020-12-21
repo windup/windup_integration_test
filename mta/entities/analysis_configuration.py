@@ -65,7 +65,7 @@ class AllProject(MTANavigateStep):
 
     def step(self):
         if not self.prerequisite_view.is_empty:
-            self.prerequisite_view.home_navigation.select("Projects")
+            self.prerequisite_view.navigation.select("Projects")
 
 
 @ViaWebUI.register_destination_for(AnalysisConfiguration)
