@@ -24,9 +24,6 @@ from mta.widgetastic import HiddenFileInput
 class ApplicationsView(BaseLoggedInPage):
 
     title = Text(locator=".//div/h2[normalize-space(.)='Applications']")
-    add_application_button = Button("Add")
-    upload_file = HiddenFileInput(id="fileUpload")
-    search = Input("searchValue")
     ACTIONS_INDEX = 2
     table = PatternflyTable(
         ".//table[contains(@class, 'pf-c-table')]",
@@ -36,8 +33,10 @@ class ApplicationsView(BaseLoggedInPage):
             ACTIONS_INDEX: Dropdown(),
         },
     )
-    close_search = Text(locator=".//span[@class='pficon pficon-close']")
-    done_button = Button("Done")
+    add_application_button = Button("Add application")
+    upload_file = HiddenFileInput(locator='.//input[@accept=".ear,.har,.jar,.rar,.sar,.war,.zip"]')
+    search = Input(locator=".//input[@aria-label='Filter by name']")
+    done_button = Button("Close")
     application_packages = Text(
         locator=".//wu-select-packages/h3[normalize-space(.)='Application packages']"
     )
@@ -53,7 +52,8 @@ class ApplicationsView(BaseLoggedInPage):
     def clear_search(self):
         """Clear search"""
         if self.search.value:
-            self.close_search.click()
+            self.search.fill("")
+            self.browser.refresh()
 
 
 class Applications(Updateable, NavigatableMixin):
