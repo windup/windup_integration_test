@@ -306,7 +306,10 @@ class Project(BaseEntity, Updateable):
     def exists(self):
         """Check project exist or not"""
         view = navigate_to(self.parent, "All")
-        return view.projects.exists(self.name)
+        for row in view.table:
+            if row.name.text == self.name:
+                return True
+        return False
 
     def update(self, updates):
         view = navigate_to(self, "Edit")
@@ -348,8 +351,8 @@ class ProjectCollection(BaseCollection):
             return []
         else:
             return [
-                self.instantiate(name=p.name, description=p.description)
-                for p in view.projects.projects
+                self.instantiate(name=p.name.text, description=p.description.text)
+                for p in view.all_projects
             ]
 
     def create(
@@ -413,11 +416,17 @@ class ProjectCollection(BaseCollection):
 
     def sort_projects(self, criteria, order):
         view = navigate_to(self, "All")
-        view.projects.table.sort_by(criteria, order)
+        view.table.sort_by(criteria, order)
 
     def search_project(self, project):
         view = navigate_to(self, "All")
         view.search.fill(project)
+
+    def get_project(self, name):
+        view = navigate_to(self.parent, "All")
+        for row in view.table:
+            if row.name.text == name:
+                return row
 
 
 @ViaWebUI.register_destination_for(ProjectCollection)
@@ -437,9 +446,9 @@ class Add(MTANavigateStep):
 
     def step(self, *args, **kwargs):
         if self.prerequisite_view.is_empty:
-            self.prerequisite_view.blank_state.new_project_button.click()
+            self.prerequisite_view.blank_state.create_project.click()
         else:
-            self.prerequisite_view.new_project_button.click()
+            self.prerequisite_view.create_project.click()
 
 
 @ViaWebUI.register_destination_for(Project)
@@ -448,7 +457,9 @@ class Edit(MTANavigateStep):
     prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self, *args, **kwargs):
-        self.prerequisite_view.projects.edit(self.obj.name)
+        for row in self.prerequisite_view.table:
+            if row.name.text == self.obj.name:
+                row[self.prerequisite_view.ACTIONS_INDEX].widget.item_select("Edit")
 
 
 @ViaWebUI.register_destination_for(Project)
@@ -457,4 +468,6 @@ class Delete(MTANavigateStep):
     prerequisite = NavigateToAttribute("parent", "All")
 
     def step(self, *args, **kwargs):
-        self.prerequisite_view.projects.delete(self.obj.name)
+        for row in self.prerequisite_view.table:
+            if row.name.text == self.obj.name:
+                row[self.prerequisite_view.ACTIONS_INDEX].widget.item_select("Delete")
