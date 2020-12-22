@@ -4,7 +4,6 @@ from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import FileInput
 from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
-from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import Button
@@ -12,7 +11,6 @@ from widgetastic_patternfly import Input
 from widgetastic_patternfly import SelectorDropdown
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Navigation
-from widgetastic_patternfly4 import PatternflyTable
 
 
 class MTANavigation(Navigation):
@@ -79,53 +77,6 @@ class SelectedApplications(Widget):
 
     def delete_application(self, app_name):
         return self._app(app_name).delete_app()
-
-
-class ProjectList(View):
-    """This is custom widget represent project list and provide actions to project"""
-
-    ACTIONS_INDEX = 4
-    table = PatternflyTable(
-        ".//table[contains(@class, 'pf-c-table')]",
-        column_widgets={
-            "Name": Text(locator=".//a"),
-            "Applications": Text(locator=".//td[@data-label='Applications']"),
-            "Status": Text(locator=".//td[@data-label='Status']"),
-            "Description": Text(locator=".//td[@data-label='Description']"),
-            ACTIONS_INDEX: Dropdown(),
-        },
-    )
-
-    def get_project(self, name):
-        for row in self.table:
-            if row.name.text == name:
-                return row
-
-    def exists(self, name):
-        for row in self.table:
-            if row.name.text == name:
-                return True
-        return False
-
-    def delete(self, name):
-        """click on delete project"""
-        for row in self.table:
-            if row.name.text == name:
-                row[self.ACTIONS_INDEX].widget.item_select("Delete")
-
-    def edit(self, name):
-        """click on edit project"""
-        for row in self.table:
-            if row.name.text == name:
-                row[self.ACTIONS_INDEX].widget.item_select("Edit")
-
-    def select_project(self, name):
-        """ Select specific project
-            Args:
-                name: name of project
-        """
-        project = self.get_project(name)
-        project.name.widget.click()
 
 
 class AnalysisResults(Widget):

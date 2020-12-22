@@ -3,6 +3,8 @@ from wait_for import wait_for
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly4 import Button
+from widgetastic_patternfly4 import Dropdown
+from widgetastic_patternfly4 import PatternflyTable
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import ViaWebUI
@@ -10,7 +12,6 @@ from mta.base.modeling import BaseCollection
 from mta.widgetastic import DropdownMenu
 from mta.widgetastic import Input
 from mta.widgetastic import MTANavigation
-from mta.widgetastic import ProjectList
 from mta.widgetastic import SortSelector
 
 
@@ -68,15 +69,26 @@ class AllProjectView(BaseLoggedInPage):
     title = Text(".//div[contains(@class, 'pf-c-content')]/h1")
     search = Input(locator=".//input[@aria-label='Filter by name']")
     sort = SortSelector("class", "btn btn-default dropdown-toggle")
-    projects = ProjectList()
-    new_project_button = Button("Create project")
+
+    ACTIONS_INDEX = 4
+    table = PatternflyTable(
+        ".//table[contains(@class, 'pf-c-table')]",
+        column_widgets={
+            "Name": Text(locator=".//a"),
+            "Applications": Text(locator=".//td[@data-label='Applications']"),
+            "Status": Text(locator=".//td[@data-label='Status']"),
+            "Description": Text(locator=".//td[@data-label='Description']"),
+            ACTIONS_INDEX: Dropdown(),
+        },
+    )
+
+    create_project = Button("Create project")
 
     @View.nested
     class no_matches(View):  # noqa
         """After search if no match found"""
 
-        text = Text(".//div[contains(@class, 'no-matches')]")
-        remove = Text(".//div[contains(@class, 'no-matches')]/a")
+        text = Text(".//div[contains(@class, 'pf-c-empty-state__body')]")
 
     def clear_search(self):
         """Clear search"""
@@ -84,10 +96,13 @@ class AllProjectView(BaseLoggedInPage):
             self.search.fill("")
 
     @property
+    def all_projects(self):
+        """Returns list of all project rows"""
+        return [row for row in self.table]
+
+    @property
     def is_displayed(self):
-        return self.is_empty or (
-            self.new_project_button.is_displayed and self.title.text == "Projects"
-        )
+        return self.is_empty or (self.create_project.is_displayed and self.title.text == "Projects")
 
 
 class ProjectView(AllProjectView):
