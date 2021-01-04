@@ -16,7 +16,7 @@ from widgetastic_patternfly4 import Navigation
 class MTANavigation(Navigation):
     """The Patternfly 4 navigation for left menu"""
 
-    ITEM_MATCHING = "//ul/li/a[contains(normalize-space(.), {})]"
+    ITEM_MATCHING = "//li/a[contains(normalize-space(.), {})]"
 
 
 class ProjectSteps(AggregateStatusCard):
@@ -33,7 +33,9 @@ class DropdownMenu(Dropdown):
     """
 
     ROOT = ParametrizedLocator("{@locator}")
-    BUTTON_LOCATOR = ".//a[contains(@class, 'dropdown-toggle')]"
+    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-context-selector__toggle')]"
+    ITEMS_LOCATOR = ".//ul/li/button"
+    ITEM_LOCATOR = ".//ul/li/button"
 
     def __init__(self, parent, locator, logger=None):
         Widget.__init__(self, parent, logger=logger)

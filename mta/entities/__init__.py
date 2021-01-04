@@ -22,7 +22,7 @@ class BlankStateView(View):
 
     title = Text(locator=".//h4")
     welcome_help = Text(locator=".//div[@class='welcome-help-text']")
-    new_project_button = Button("Create project")
+    create_project = Button("Create project")
     documentation = Text(locator=".//a[contains(text(), 'documentation')]")
 
     @property
@@ -30,7 +30,7 @@ class BlankStateView(View):
         return (
             self.title.is_displayed
             and self.title.text == "Welcome to the Migration Toolkit for Applications"
-            and self.new_project_button.is_displayed
+            and self.create_project.is_displayed
         )
 
 
@@ -63,6 +63,20 @@ class BaseWebUICollection(BaseCollection):
     pass
 
 
+class ProjectView(View):
+    project_dropdown = DropdownMenu(
+        locator="//div[@class='pf-c-context-selector' or @class='pf-c-context-selector "
+        "pf-m-expanded']"
+    )
+
+    def select_project(self, project_name):
+        self.project_dropdown.item_select(project_name)
+
+    @property
+    def is_displayed(self):
+        return self.project_dropdown.is_displayed
+
+
 class AllProjectView(BaseLoggedInPage):
     """This view represent Project All View"""
 
@@ -84,6 +98,8 @@ class AllProjectView(BaseLoggedInPage):
 
     create_project = Button("Create project")
 
+    projects = View.nested(ProjectView)
+
     @View.nested
     class no_matches(View):  # noqa
         """After search if no match found"""
@@ -103,16 +119,6 @@ class AllProjectView(BaseLoggedInPage):
     @property
     def is_displayed(self):
         return self.is_empty or (self.create_project.is_displayed and self.title.text == "Projects")
-
-
-class ProjectView(AllProjectView):
-    project_dropdown = DropdownMenu(
-        locator=".//li[contains(@class, 'dropdown') and .//span[@class='nav-item']]"
-    )
-
-    @property
-    def is_displayed(self):
-        return self.project_dropdown.is_displayed
 
 
 @ViaWebUI.register_destination_for(BaseWebUICollection)
