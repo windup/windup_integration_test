@@ -57,7 +57,7 @@ class AddProjectView(AllProjectView):
         delete_application = Text(locator=".//button[contains(@aria-label, 'delete-application')]")
         browse_button = Button("Browse")
         upload_file = HiddenFileInput(
-            locator='.//input[@accept=".ear,.har,.jar,.rar,.sar,.war,.zip"]'
+            locator='.//input[@accept=".ear, .har, .jar, .rar, .sar, .war, .zip"]'
         )
 
         next_button = Button("Next")
