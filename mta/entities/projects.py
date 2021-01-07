@@ -57,7 +57,7 @@ class AddProjectView(AllProjectView):
         delete_application = Text(locator=".//button[contains(@aria-label, 'delete-application')]")
         browse_button = Button("Browse")
         upload_file = HiddenFileInput(
-            locator='.//input[@accept=".ear, .har, .jar, .rar, .sar, .war, .zip"]'
+            locator='.//input[@accept=".ear,.har,.jar,.rar,.sar,.war,.zip"]'
         )
 
         next_button = Button("Next")
@@ -428,7 +428,7 @@ class ProjectCollection(BaseCollection):
         view.search.fill(project)
 
     def get_project(self, name):
-        view = navigate_to(self.parent, "All")
+        view = navigate_to(self, "All")
         for row in view.table:
             if row.name.text == name:
                 return row
