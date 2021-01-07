@@ -25,9 +25,8 @@ def test_project_crud(create_minimal_project):
         project.description = update_desc
 
     assert project.exists
-    view = navigate_to(project.parent, "All")
     # check name and description both updated on UI or not
-    proj = view.get_project(project.name)
+    proj = project_collection.get_project(project.name)
     assert proj.name.text == updated_name
     assert proj.description.text == update_desc
 
