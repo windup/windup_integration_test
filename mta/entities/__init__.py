@@ -63,20 +63,6 @@ class BaseWebUICollection(BaseCollection):
     pass
 
 
-class ProjectView(View):
-    project_dropdown = DropdownMenu(
-        locator="//div[@class='pf-c-context-selector' or @class='pf-c-context-selector "
-        "pf-m-expanded']"
-    )
-
-    def select_project(self, project_name):
-        self.project_dropdown.item_select(project_name)
-
-    @property
-    def is_displayed(self):
-        return self.project_dropdown.is_displayed
-
-
 class AllProjectView(BaseLoggedInPage):
     """This view represent Project All View"""
 
@@ -86,7 +72,7 @@ class AllProjectView(BaseLoggedInPage):
 
     ACTIONS_INDEX = 4
     table = PatternflyTable(
-        ".//table[contains(@class, 'pf-c-table')]",
+        ".//table[contains(@class, 'pf-c-table pf-m-grid-md')]",
         column_widgets={
             "Name": Text(locator=".//a"),
             "Applications": Text(locator=".//td[@data-label='Applications']"),
@@ -97,8 +83,6 @@ class AllProjectView(BaseLoggedInPage):
     )
 
     create_project = Button("Create project")
-
-    projects = View.nested(ProjectView)
 
     @View.nested
     class no_matches(View):  # noqa
@@ -119,6 +103,25 @@ class AllProjectView(BaseLoggedInPage):
     @property
     def is_displayed(self):
         return self.is_empty or (self.create_project.is_displayed and self.title.text == "Projects")
+
+    def select_project(self, name):
+        for row in self.table:
+            if row.name.text == name:
+                row.click()
+
+
+class ProjectView(AllProjectView):
+    project_dropdown = DropdownMenu(
+        locator="//div[@class='pf-c-context-selector' or @class='pf-c-context-selector "
+        "pf-m-expanded']"
+    )
+
+    def select_project_dropdown(self, project_name):
+        self.project_dropdown.item_select(project_name)
+
+    @property
+    def is_displayed(self):
+        return self.project_dropdown.is_displayed
 
 
 @ViaWebUI.register_destination_for(BaseWebUICollection)
