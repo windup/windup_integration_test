@@ -1,7 +1,7 @@
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
 from widgetastic.widget import Text
-from widgetastic_patternfly import Button
+from widgetastic_patternfly4 import Button
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import NavigatableMixin
@@ -17,8 +17,8 @@ from mta.widgetastic import TransformationPath
 
 class AnalysisConfigurationView(BaseLoggedInPage):
 
-    save_and_run_button = Button("Save & Run")
-    title = Text(locator=".//div/h2[normalize-space(.)='Analysis Configuration']")
+    save_and_run_button = Button("Save and run")
+    title = Text(locator=".//div/h1/span[normalize-space(.)='Analysis Configuration']")
     transformation_path = TransformationPath()
     selected_applications = SelectedApplications()
     select_none = Button("Select None")
@@ -38,6 +38,10 @@ class AnalysisConfiguration(Updateable, NavigatableMixin):
     def __init__(self, application, project_name):
         self.application = application
         self.project_name = project_name
+
+    def save_and_run_configuration(self):
+        view = navigate_to(self, "AnalysisConfigurationPage")
+        view.save_and_run_button.click()
 
     def delete_application(self, app_name):
         """ Delete application to be analysed
@@ -74,7 +78,7 @@ class SelectProject(MTANavigateStep):
     prerequisite = NavigateToSibling("AllProject")
 
     def step(self):
-        self.prerequisite_view.projects.select_project(self.obj.project_name)
+        self.prerequisite_view.select_project(self.obj.project_name)
 
 
 @ViaWebUI.register_destination_for(AnalysisConfiguration)
@@ -83,4 +87,4 @@ class AnalysisConfigurationPage(MTANavigateStep):
     VIEW = AnalysisConfigurationView
 
     def step(self):
-        self.prerequisite_view.navigation.select("Analysis Configuration")
+        self.prerequisite_view.navigation.select("Analysis configuration")

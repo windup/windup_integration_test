@@ -428,7 +428,7 @@ class ProjectCollection(BaseCollection):
         view.search.fill(project)
 
     def get_project(self, name):
-        view = navigate_to(self.parent, "All")
+        view = navigate_to(self, "All")
         for row in view.table:
             if row.name.text == name:
                 return row

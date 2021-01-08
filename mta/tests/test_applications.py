@@ -16,13 +16,13 @@ def test_applications_page(application, create_project):
 
     # search app in list
     applications.search_application(name="acmeair-webapp-1.0-SNAPSHOT.war")
-    assert view.application_row(
-        name="acmeair-webapp-1.0-SNAPSHOT.war"
-    ).application_name.is_displayed
+    for row in view.table:
+        assert row.application.text == "acmeair-webapp-1.0-SNAPSHOT.war"
     view.clear_search()
     # search row 2 in list
     applications.search_application(name="cadmium-war-0.1.0.war")
-    assert view.application_row(name="cadmium-war-0.1.0.war").application_name.is_displayed
+    for row in view.table:
+        assert row.application.text == "cadmium-war-0.1.0.war"
     view.clear_search()
 
 
@@ -62,7 +62,5 @@ def test_sort_applications(application, create_project_with_two_apps):
     project, project_collection = create_project_with_two_apps
     assert project.exists
     applications = Applications(application, project.name)
-    view = applications.create_view(ApplicationsView)
     # Sort application
-    applications.sort_application()
-    assert view.application_row(name=1).row.text < view.application_row(name=2).row.text
+    applications.sort_application("Application", "ascending")

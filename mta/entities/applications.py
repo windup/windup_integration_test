@@ -13,6 +13,7 @@ from mta.base.application.implementations.web_ui import ViaWebUI
 from mta.entities import AllProjectView
 from mta.entities import BaseLoggedInPage
 from mta.entities import ProjectView
+from mta.entities.analysis_configuration import AnalysisConfiguration
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
@@ -41,7 +42,7 @@ class ApplicationsView(BaseLoggedInPage):
         locator=".//wu-select-packages/h3[normalize-space(.)='Application packages']"
     )
     sort_application = Text(locator=".//th[contains(normalize-space(.), 'Application')]//i[1]")
-    save_and_run_button = Button("Save & Run")
+    save_and_run_button = Button("Save and run")
     delete_button = Button("Delete")
     cancel_button = Button("Cancel")
 
@@ -53,7 +54,6 @@ class ApplicationsView(BaseLoggedInPage):
         """Clear search"""
         if self.search.value:
             self.search.fill("")
-            self.browser.refresh()
 
 
 class Applications(Updateable, NavigatableMixin):
@@ -99,8 +99,9 @@ class Applications(Updateable, NavigatableMixin):
         view.upload_file.fill(file_path)
         view.done_button.click()
         # Save Configuration
-        wait_for(lambda: view.application_packages.is_displayed, delay=0.6, timeout=240)
-        view.save_and_run_button.click()
+        view = navigate_to(self, "AllProject")
+        analysis_configuration = AnalysisConfiguration(self.application, self.project_name)
+        analysis_configuration.save_and_run_configuration()
         # wait for analysis to finish
         view = self.create_view(AnalysisResultsView)
         view.wait_displayed("60s")
@@ -109,9 +110,9 @@ class Applications(Updateable, NavigatableMixin):
         wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
         assert view.analysis_results.is_analysis_complete()
 
-    def sort_application(self):
+    def sort_application(self, criteria, order):
         view = navigate_to(self, "ApplicationsPage")
-        view.sort_application.click()
+        view.table.sort_by(criteria, order)
 
 
 @ViaWebUI.register_destination_for(Applications)
@@ -130,7 +131,7 @@ class SelectProject(MTANavigateStep):
     prerequisite = NavigateToSibling("AllProject")
 
     def step(self):
-        self.prerequisite_view.projects.select_project(self.obj.project_name)
+        self.prerequisite_view.select_project(self.obj.project_name)
 
 
 @ViaWebUI.register_destination_for(Applications)
