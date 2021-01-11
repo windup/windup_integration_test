@@ -127,16 +127,19 @@ class AddProjectView(AllProjectView):
             select_all_packages = Text(locator=".//input[@class='ant-checkbox-input']")
             all_packages = Text(
                 ParametrizedLocator(
-                    ".//div[@class='ant-tree-treenode'])"
-                    "/span[text()[normalize-space(.)={pkg|quote}]]"
+                    ".//div[contains(@class, 'ant-tree-treenode-switcher')]"
+                    "//span[text()[normalize-space(.)={pkg|quote}]]"
                 )
             )
             included_packages = Text(
                 ParametrizedLocator(
                     ".//li[@class='ant-transfer-list-content-item']"
-                    "/span[text()[normalize-space(.)={pkg|quote}]]"
+                    "//span[text()[normalize-space(.)={pkg|quote}]]"
                 )
             )
+            include = Text('.//span[@class="anticon anticon-right"]')
+            exclude = Text('.//span[@class="anticon anticon-left"]')
+
             next_button = Button("Next")
             back_button = Button("Back")
             cancel_button = Button("Cancel")
@@ -146,19 +149,27 @@ class AddProjectView(AllProjectView):
             def is_displayed(self):
                 return self.title.is_displayed and self.select_all_packages.is_displayed
 
-            def fill(self, values):
-                """
-                Args:
-                    values: application packages to be selected
-                """
-                if values.get("pkg"):
-                    self.app_checkbox(values.get("pkg")).click()
-                was_change = True
-                self.after_fill(was_change)
-                return was_change
-
-            def after_fill(self, was_change):
-                self.next_button.click()
+            # def fill(self, values, include_package=True):
+            #     """
+            #     Args:
+            #         values: application packages to be selected
+            #         include_package: True if package is going to be included
+            #     """
+            #     import ipdb;ipdb.set_trace()
+            #     if include_package:
+            #         for pkg in values:
+            #             self.all_packages(pkg).click()
+            #         self.include.click()
+            #     else:
+            #         for pkg in values:
+            #             self.included_packages(pkg).click()
+            #         self.exclude.click()
+            #     was_change = True
+            #     self.after_fill(was_change)
+            #     return was_change
+            #
+            # def after_fill(self, was_change):
+            #     self.next_button.click()
 
     class advanced(View):  # noqa
         @View.nested
