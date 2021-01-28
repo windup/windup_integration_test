@@ -11,7 +11,6 @@ from mta.entities import AllProjectView
 from mta.entities import BaseLoggedInPage
 from mta.entities import ProjectView
 from mta.utils.update import Updateable
-from mta.widgetastic import SelectedApplications
 from mta.widgetastic import TransformationPath
 
 
@@ -20,7 +19,6 @@ class AnalysisConfigurationView(BaseLoggedInPage):
     save_and_run_button = Button("Save and run")
     title = Text(locator=".//div/h1/span[normalize-space(.)='Analysis Configuration']")
     transformation_path = TransformationPath()
-    selected_applications = SelectedApplications()
     select_none = Button("Select None")
     select_app_msg = Text(
         locator=".//span[normalize-space(.)= "

@@ -117,4 +117,4 @@ class AnalysisResultsPage(MTANavigateStep):
     VIEW = AnalysisResultsView
 
     def step(self):
-        self.prerequisite_view.navigation.select("Analysis Results")
+        self.prerequisite_view.navigation.select("Analysis results")

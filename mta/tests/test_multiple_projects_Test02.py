@@ -1,8 +1,7 @@
 import fauxfactory
-from wait_for import wait_for
 
-from mta.entities.analysis_configuration import AnalysisConfiguration
-from mta.entities.analysis_results import AnalysisResultsView
+from mta.entities.analysis_results import AnalysisResults
+from mta.entities.applications import Applications
 
 
 def test_multiple_applications_upload(request, application):
@@ -22,13 +21,9 @@ def test_multiple_applications_upload(request, application):
         ],
         transformation_path="Containerization",
     )
-    analysis_configuration = AnalysisConfiguration(application, project_name)
-    analysis_configuration.delete_application("arit-ear-0.8.1-SNAPSHOT.ear")
+    applications = Applications(application, project_name)
+    applications.delete_application("arit-ear-0.8.1-SNAPSHOT.ear")
     # Verify that analysis completes
-    view = analysis_configuration.create_view(AnalysisResultsView)
-    view.wait_displayed()
-    assert view.is_displayed
-    wait_for(lambda: view.analysis_results.in_progress(), delay=0.6, timeout=450)
-    wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
-    assert view.analysis_results.is_analysis_complete()
-    project.delete()
+    analysis = AnalysisResults(application, project_name)
+    analysis.run_analysis()
+    request.addfinalizer(project.delete())
