@@ -71,12 +71,13 @@ class Applications(Updateable, NavigatableMixin):
         view = navigate_to(self, "ApplicationsPage")
         view.search.fill(name)
 
-    def delete_application(self, name, cancel=True):
+    def delete_application(self, name, cancel=False):
         """ Delete application
         Args:
             name: name of app
         """
         view = navigate_to(self, "ApplicationsPage")
+        view.table.wait_displayed("20s")
         for row in view.table:
             if row.application.text == name:
                 row[view.ACTIONS_INDEX].widget.item_select("Delete")
