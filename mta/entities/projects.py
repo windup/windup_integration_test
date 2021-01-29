@@ -24,6 +24,7 @@ from mta.utils.update import Updateable
 from mta.widgetastic import AddButton
 from mta.widgetastic import HiddenFileInput
 from mta.widgetastic import Input
+from mta.widgetastic import MultiBoxSelect
 from mta.widgetastic import TransformationPath
 
 
@@ -57,7 +58,7 @@ class AddProjectView(AllProjectView):
         delete_application = Text(locator=".//button[contains(@aria-label, 'delete-application')]")
         browse_button = Button("Browse")
         upload_file = HiddenFileInput(
-            locator='.//input[@accept=".ear,.har,.jar,.rar,.sar,.war,.zip"]'
+            locator='.//input[@accept=".ear, .har, .jar, .rar, .sar, .war, .zip"]'
         )
 
         next_button = Button("Next")
@@ -125,18 +126,18 @@ class AddProjectView(AllProjectView):
             PARAMETERS = ("pkg",)
 
             select_all_packages = Text(locator=".//input[@class='ant-checkbox-input']")
-            all_packages = Text(
-                ParametrizedLocator(
-                    ".//div[@class='ant-tree-treenode'])"
-                    "/span[text()[normalize-space(.)={pkg|quote}]]"
+            # all_pkgs = MultiBoxSelect()
+
+            class PackagesMultiBoxSelect(MultiBoxSelect):
+                all_packages = Text(
+                    locator=ParametrizedLocator(".//span[contains(text(), {@pkg|quote})]")
                 )
-            )
-            included_packages = Text(
-                ParametrizedLocator(
-                    ".//li[@class='ant-transfer-list-content-item']"
-                    "/span[text()[normalize-space(.)={pkg|quote}]]"
+                included_packages = Text(
+                    locator=ParametrizedLocator(".//span[contains(text(), {@pkg|quote})]")
                 )
-            )
+                move_into_button = Button(locator=".//span[contains(@class, anticon anticon-right")
+                move_from_button = Button(locator=".//span[contains(@class, anticon anticon-left")
+
             next_button = Button("Next")
             back_button = Button("Back")
             cancel_button = Button("Cancel")
