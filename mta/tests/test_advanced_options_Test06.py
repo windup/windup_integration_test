@@ -23,9 +23,25 @@ def test_select_packages(application):
     view.add_applications.next_button.wait_displayed()
     wait_for(lambda: view.add_applications.next_button.is_enabled, delay=0.2, timeout=60)
     view.add_applications.next_button.click()
-    view.configure_analysis.set_transformation_target().wait_displayed()
-    view.configure_analysis.set_transformation_target().next_button.click()
+    view.configure_analysis.set_transformation_target.wait_displayed()
+    view.configure_analysis.set_transformation_target.next_button.click()
     wait_for(lambda: view.configure_analysis.select_packages.is_displayed, delay=0.6, timeout=240)
+    # Add package net and assert
+    view.configure_analysis.select_packages("net").fill_pkg()
+    assert view.configure_analysis.select_packages("net").included_packages.is_displayed
+    assert not view.configure_analysis.select_packages("net").packages.is_displayed
+    # Add package 'org' and assert
+    view.configure_analysis.select_packages("org").fill_pkg()
+    assert view.configure_analysis.select_packages("org").included_packages.is_displayed
+    assert not view.configure_analysis.select_packages("org").packages.is_displayed
+    # Remove package 'org' and assert
+    view.configure_analysis.select_packages("org").remove()
+    assert not view.configure_analysis.select_packages("org").included_packages.is_displayed
+    assert view.configure_analysis.select_packages("org").packages.is_displayed
+    # Remove  package 'net' and assert
+    view.configure_analysis.select_packages("net").remove()
+    assert not view.configure_analysis.select_packages("net").included_packages.is_displayed
+    assert view.configure_analysis.select_packages("net").packages.is_displayed
 
 
 def test_advanced_options(application):

@@ -24,7 +24,6 @@ from mta.utils.update import Updateable
 from mta.widgetastic import AddButton
 from mta.widgetastic import HiddenFileInput
 from mta.widgetastic import Input
-from mta.widgetastic import MultiBoxSelect
 from mta.widgetastic import TransformationPath
 
 
@@ -125,18 +124,20 @@ class AddProjectView(AllProjectView):
             title = Text(locator=".//h5[normalize-space(.)='Select packages']")
             PARAMETERS = ("pkg",)
 
-            select_all_packages = Text(locator=".//input[@class='ant-checkbox-input']")
-            # all_pkgs = MultiBoxSelect()
-
-            class PackagesMultiBoxSelect(MultiBoxSelect):
-                all_packages = Text(
-                    locator=ParametrizedLocator(".//span[contains(text(), {@pkg|quote})]")
+            packages = Text(
+                ParametrizedLocator(
+                    ".//div[contains(@class, 'ant-tree-treenode')]/span/span"
+                    "/span[normalize-space(.)={pkg|quote}]"
                 )
-                included_packages = Text(
-                    locator=ParametrizedLocator(".//span[contains(text(), {@pkg|quote})]")
+            )
+            included_packages = Text(
+                ParametrizedLocator(
+                    ".//li[@class='ant-transfer-list-content-item']"
+                    "/span[normalize-space(.)={pkg|quote}]"
                 )
-                move_into_button = Button(locator=".//span[contains(@class, anticon anticon-right")
-                move_from_button = Button(locator=".//span[contains(@class, anticon anticon-left")
+            )
+            move_into_button = Button(locator=".//span[contains(@class, 'anticon anticon-right')]")
+            move_from_button = Button(locator=".//span[contains(@class, 'anticon anticon-left')]")
 
             next_button = Button("Next")
             back_button = Button("Back")
@@ -147,15 +148,24 @@ class AddProjectView(AllProjectView):
             def is_displayed(self):
                 return self.title.is_displayed and self.select_all_packages.is_displayed
 
-            def fill(self, values):
-                """
-                Args:
-                    values: application packages to be selected
-                """
-                if values.get("pkg"):
-                    self.app_checkbox(values.get("pkg")).click()
+            def fill_pkg(self):
+                """ Add packages """
+                self.packages.click()
+                self.move_into_button.click()
                 was_change = True
-                self.after_fill(was_change)
+                return was_change
+
+            def remove(self):
+                """ Remove packages"""
+                self.included_packages.click()
+                self.move_from_button.click()
+                was_change = True
+                return was_change
+
+            def fill(self, values):
+                if values:
+                    was_change = self.fill_pkg()
+                    self.after_fill(was_change)
                 return was_change
 
             def after_fill(self, was_change):

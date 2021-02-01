@@ -1,12 +1,9 @@
 from selenium.webdriver.common.keys import Keys
 from wait_for import wait_for
-from widgetastic.utils import Parameter
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import FileInput
 from widgetastic.widget import ParametrizedView
-from widgetastic.widget import Select
 from widgetastic.widget import Text
-from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import Button
@@ -150,65 +147,3 @@ class Input(Input):
         self.browser.send_keys(f"{Keys.CONTROL}+a", self)
         self.browser.send_keys(value, self)
         return True
-
-
-class MultiBoxSelect(View):
-
-    """This view combines two `<select>` elements and buttons for moving items between them.
-    This view can be found in policy profile, alert profiles adding screens; assigning actions to an
-    event, assigning conditions to a policy screens and so on.
-    Args:
-        available_items (str): provided value of `<select>` id for available items
-        chosen_items (str): provided value of `<select>` id for available items
-        move_into (str): provided value of `data-submit` attribute for 'move_into' button
-        move_from (str): provided value of `data-submit` attribute for 'move_from' button
-    """
-
-    available_options = Select(id=Parameter("@available_items"))
-    chosen_options = Select(id=Parameter("@chosen_items"))
-    move_into_button = Button(**{"data-submit": Parameter("@move_into")})
-    move_from_button = Button(**{"data-submit": Parameter("@move_from")})
-
-    def __init__(
-        self,
-        parent,
-        move_into="choices_chosen_div",
-        move_from="members_chosen_div",
-        available_items="choices_chosen",
-        chosen_items="members_chosen",
-        logger=None,
-    ):
-        View.__init__(self, parent, logger=logger)
-        self.available_items = available_items
-        self.chosen_items = chosen_items
-        self.move_into = move_into
-        self.move_from = move_from
-
-    def _values_to_remove(self, values):
-        return list(set(self.all_options) - set(values))
-
-    def _values_to_add(self, values):
-        return list(set(values) - set(self.all_options))
-
-    def fill(self, values):
-        if set(values) == self.all_options:
-            return False
-        else:
-            values_to_remove = self._values_to_remove(values)
-            values_to_add = self._values_to_add(values)
-            if values_to_remove:
-                self.chosen_options.fill(values_to_remove)
-                self.move_from_button.click()
-                self.browser.plugin.ensure_page_safe()
-            if values_to_add:
-                self.available_options.fill(values_to_add)
-                self.move_into_button.click()
-                self.browser.plugin.ensure_page_safe()
-            return True
-
-    @property
-    def all_options(self):
-        return [option.text for option in self.chosen_options.all_options]
-
-    def read(self):
-        return self.all_options
