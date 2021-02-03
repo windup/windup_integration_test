@@ -11,6 +11,7 @@ from widgetastic_patternfly import Input
 from widgetastic_patternfly import SelectorDropdown
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Navigation
+from widgetastic_patternfly4 import Select
 
 
 class MTANavigation(Navigation):
@@ -147,3 +148,19 @@ class Input(Input):
         self.browser.send_keys(f"{Keys.CONTROL}+a", self)
         self.browser.send_keys(value, self)
         return True
+
+
+class Select(Select):
+    """Multiple buttons with same name are present in UI.
+       So need to specify the locator.
+    """
+
+    def item_select(self, item, handle_alert=None, **kwargs):
+        """Opens the dropdown and selects the desired item.
+        Args:
+            item: Item to be selected
+            handle_alert: How to handle alerts. None - no handling, True - confirm, False - dismiss.
+        Raises:
+            DropdownItemDisabled
+        """
+        self.browser.click(self.item_element(item, close=False, **kwargs))

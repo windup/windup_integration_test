@@ -4,9 +4,7 @@ from taretto.navigate import NavigateToSibling
 from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.utils import WaitFillViewStrategy
-from widgetastic.widget import Checkbox
 from widgetastic.widget import ParametrizedView
-from widgetastic.widget import Select
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly4 import Button
@@ -21,9 +19,9 @@ from mta.entities.analysis_results import AnalysisResultsView
 from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import Updateable
-from mta.widgetastic import AddButton
 from mta.widgetastic import HiddenFileInput
 from mta.widgetastic import Input
+from mta.widgetastic import Select
 from mta.widgetastic import TransformationPath
 
 
@@ -123,11 +121,13 @@ class AddProjectView(AllProjectView):
         class select_packages(ParametrizedView):  # noqa
             title = Text(locator=".//h5[normalize-space(.)='Select packages']")
             PARAMETERS = ("pkg",)
+            select_all_packages = Text(locator=".//input[@class='ant-checkbox-input']")
 
             packages = Text(
                 ParametrizedLocator(
-                    ".//div[contains(@class, 'ant-tree-treenode')]/span/span"
-                    "/span[normalize-space(.)={pkg|quote}]"
+                    ".//div[contains(@class, 'ant-tree-treenode-switcher-close') "
+                    "and not(contains(@class, 'ant-tree-treenode-disabled'))]"
+                    "/span/span/span[normalize-space(.)={pkg|quote}]"
                 )
             )
             included_packages = Text(
@@ -176,12 +176,9 @@ class AddProjectView(AllProjectView):
         class custom_rules(View):  # noqa
             title = Text(locator=".//h5[normalize-space(.)='Custom rules']")
             add_rule_button = Button("Add rule")
-            upload_rule = HiddenFileInput(id="fileUpload")
-            add_rules_button = AddButton("Add")
-            select_all_rules = Checkbox(locator=".//input[@title='Select All Rows']")
-            rule = Text(
-                locator=".//option[text()[normalize-space()='custom.Test1rules.rhamt.xml']]"
-            )
+            upload_rule = HiddenFileInput(locator='.//input[contains(@accept,".xml")]')
+            close_button = Button("Close")
+            enabled_button = Text(locator=".//label/span[contains(@class, 'pf-c-switch__toggle')]")
             next_button = Button("Next")
             back_button = Button("Back")
             cancel_button = Button("Cancel")
@@ -209,12 +206,9 @@ class AddProjectView(AllProjectView):
         class custom_labels(View):  # noqa
             title = Text(locator=".//h5[normalize-space(.)='Custom labels']")
             add_label_button = Button("Add label")
-            upload_label = HiddenFileInput(id="fileUpload")
-            add_labels_button = AddButton("Add")
-            select_all_labels = Checkbox(locator=".//input[@value='allRowsSelected']")
-            label = Text(
-                locator=".//option[text()[normalize-space()='customWebLogic.windup.label.xml']]"
-            )
+            upload_label = HiddenFileInput(locator='.//input[contains(@accept,".xml")]')
+            enabled_button = Text(locator=".//label/span[contains(@class, 'pf-c-switch__toggle')]")
+            close_button = Button("Close")
             next_button = Button("Next")
             back_button = Button("Back")
             cancel_button = Button("Cancel")
@@ -242,9 +236,42 @@ class AddProjectView(AllProjectView):
         class options(View):  # noqa
             title = Text(locator=".//h5[normalize-space(.)='Advanced options']")
             select_target = Input(locator='.//input[@placeholder="Select targets"]')
-            add_option_button = Button("Add option")
-            option_select = Select(name="newOptionTypeSelection")
-            select_value = Checkbox(locator=".//input[@name='currentOptionInput']")
+            select_target1 = Select(
+                locator=".//div[contains(@class, 'pf-c-select')]/div/div"
+                "/input[contains(@placeholder, 'Select targets')]"
+            )
+
+            export_csv = Text(
+                locator=".//span[./preceding-sibling::input[@aria-label='Export CSV']]"
+            )
+            disable_tattletale = Text(
+                locator=".//span[./preceding-sibling::input[@aria-label='Disable Tattletale']]"
+            )
+            class_not_found_analysis = Text(
+                locator=".//span[./preceding-sibling::input"
+                "[@aria-label='Class Not Found analysis']]"
+            )
+            compatible_files_report = Text(
+                locator=".//span[./preceding-sibling::input"
+                "[@aria-label='Compatible Files report']]"
+            )
+            exploded_app = Text(
+                locator=".//span[./preceding-sibling::input[@aria-label='Exploded app']]"
+            )
+            keep_work_dirs = Text(
+                locator=".//span[./preceding-sibling::input[@aria-label='Keep work dirs']]"
+            )
+            skip_reports = Text(
+                locator=".//span[./preceding-sibling::input[@aria-label='Skip reports']]"
+            )
+            allow_network_access = Text(
+                locator=".//span[./preceding-sibling::input[@aria-label='Allow network access']]"
+            )
+            mavenize = Text(locator=".//span[./preceding-sibling::input[@aria-label='Mavenize']]")
+            source_mode = Text(
+                locator=".//span[./preceding-sibling::input[@aria-label='Source mode']]"
+            )
+
             add_button = Button("Add")
             cancel_button = Button("Cancel")
             next_button = Button("Next")
