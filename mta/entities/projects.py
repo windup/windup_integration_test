@@ -21,7 +21,7 @@ from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import Updateable
 from mta.widgetastic import HiddenFileInput
 from mta.widgetastic import Input
-from mta.widgetastic import Select
+from mta.widgetastic import MTASelect
 from mta.widgetastic import TransformationPath
 
 
@@ -235,10 +235,13 @@ class AddProjectView(AllProjectView):
         @View.nested
         class options(View):  # noqa
             title = Text(locator=".//h5[normalize-space(.)='Advanced options']")
-            select_target = Input(locator='.//input[@placeholder="Select targets"]')
-            select_target1 = Select(
-                locator=".//div[contains(@class, 'pf-c-select')]/div/div"
-                "/input[contains(@placeholder, 'Select targets')]"
+            select_target = MTASelect(
+                locator='.//div/input[contains(@placeholder, "Select targets")]'
+                '/ancestor::div[contains(@class, "pf-c-select")]'
+            )
+            select_source = MTASelect(
+                locator='.//div/input[contains(@placeholder, "Select sources")]'
+                '/ancestor::div[contains(@class, "pf-c-select")]'
             )
 
             export_csv = Text(

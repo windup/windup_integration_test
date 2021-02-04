@@ -8,7 +8,7 @@ from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
 
 
-def test_select_packages(application):
+def test_advanced_options(application):
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
     project_collection = application.collections.projects
     view = navigate_to(project_collection, "Add")
@@ -46,6 +46,7 @@ def test_select_packages(application):
     assert view.configure_analysis.select_packages("net").packages.is_displayed
     view.configure_analysis.select_packages("net").next_button.click()
 
+    view.advanced.custom_rules.wait_displayed()
     view.advanced.custom_rules.add_rule_button.click()
     # upload custom rules
     env = conf.get_config("env")
@@ -53,9 +54,11 @@ def test_select_packages(application):
     file_path = fs1.download("custom.Test1rules.rhamt.xml")
     view.advanced.custom_rules.upload_rule.fill(file_path)
     view.advanced.custom_rules.close_button.click()
+    view.advanced.custom_rules.enabled_button.wait_displayed()
     view.advanced.custom_rules.enabled_button.click()
     view.advanced.custom_rules.next_button.click()
 
+    view.advanced.custom_labels.wait_displayed()
     view.advanced.custom_labels.add_label_button.click()
     # upload custom rules
     env = conf.get_config("env")
@@ -81,4 +84,20 @@ def test_select_packages(application):
     view.advanced.options.mavenize.click()
     view.advanced.options.source_mode.click()
 
-    view.advanced.options.select_target1.item_select("cloud-readiness")
+    view.advanced.options.select_target.item_select("cloud-readiness")
+    view.advanced.options.next_button.click()
+    view.review.wait_displayed()
+    view.review.save_and_run.click()
+    # Verify that analysis completes
+    view = project_collection.create_view(AnalysisResultsView)
+    view.wait_displayed()
+    view.wait_displayed("60s")
+    assert view.is_displayed
+    wait_for(lambda: view.analysis_results.in_progress(), delay=0.2, timeout=450)
+    wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
+    assert view.analysis_results.is_analysis_complete()
+
+    # Verify that report opens
+    view.analysis_results.show_report()
+    view = project_collection.create_view(AllApplicationsView)
+    assert view.is_displayed

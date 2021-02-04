@@ -150,17 +150,7 @@ class Input(Input):
         return True
 
 
-class Select(Select):
-    """Multiple buttons with same name are present in UI.
-       So need to specify the locator.
-    """
+class MTASelect(Select):
+    """Select for MTA"""
 
-    def item_select(self, item, handle_alert=None, **kwargs):
-        """Opens the dropdown and selects the desired item.
-        Args:
-            item: Item to be selected
-            handle_alert: How to handle alerts. None - no handling, True - confirm, False - dismiss.
-        Raises:
-            DropdownItemDisabled
-        """
-        self.browser.click(self.item_element(item, close=False, **kwargs))
+    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-select__toggle-button')]"
