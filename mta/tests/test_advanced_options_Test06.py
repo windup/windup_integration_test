@@ -9,6 +9,14 @@ from mta.utils.ftp import FTPClientWrapper
 
 
 def test_advanced_options(application):
+    """ Validates Web console Test 06
+    1) Select advanced options in analysis configuration page
+    2) Upload custom rules
+    2) Upload custom label
+    3) Select advanced options like "enablecompatiblefile"
+    4) Run analysis
+    5) Open Report
+    """
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
     project_collection = application.collections.projects
     view = navigate_to(project_collection, "Add")
