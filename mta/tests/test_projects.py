@@ -98,15 +98,3 @@ def test_search_project(create_minimal_project):
     project_collection.search_project(project.name)
     view = project_collection.create_view(AllProjectView)
     assert project.name in [row.name.text for row in view.table]
-
-
-def test_send_feedback(create_minimal_project):
-    """
-    Test send feedback
-    """
-    project, project_collection = create_minimal_project
-    view = project_collection.create_view(AnalysisResultsView)
-    view.wait_displayed()
-    view.analysis_results.show_report()
-    view = project_collection.create_view(AllApplicationsView)
-    view.send_feedback.click()
