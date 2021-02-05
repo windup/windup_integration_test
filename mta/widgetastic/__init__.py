@@ -11,6 +11,7 @@ from widgetastic_patternfly import Input
 from widgetastic_patternfly import SelectorDropdown
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Navigation
+from widgetastic_patternfly4 import Select
 
 
 class MTANavigation(Navigation):
@@ -147,3 +148,9 @@ class Input(Input):
         self.browser.send_keys(f"{Keys.CONTROL}+a", self)
         self.browser.send_keys(value, self)
         return True
+
+
+class MTASelect(Select):
+    """Select for MTA"""
+
+    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-select__toggle-button')]"

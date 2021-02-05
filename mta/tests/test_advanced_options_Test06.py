@@ -31,99 +31,79 @@ def test_advanced_options(application):
     view.add_applications.next_button.wait_displayed()
     wait_for(lambda: view.add_applications.next_button.is_enabled, delay=0.2, timeout=60)
     view.add_applications.next_button.click()
-    view.configure_analysis.wait_displayed()
+    view.configure_analysis.set_transformation_target.wait_displayed()
+    view.configure_analysis.set_transformation_target.next_button.click()
     wait_for(
-        lambda: view.configure_analysis.application_packages.is_displayed, delay=0.6, timeout=240
+        lambda: view.configure_analysis.select_packages("com").is_displayed, delay=0.6, timeout=240
     )
+    # Add package net and assert
+    view.configure_analysis.select_packages("net").fill_pkg()
+    assert view.configure_analysis.select_packages("net").included_packages.is_displayed
+    assert not view.configure_analysis.select_packages("net").packages.is_displayed
+    # Add package 'org' and assert
+    view.configure_analysis.select_packages("org").fill_pkg()
+    assert view.configure_analysis.select_packages("org").included_packages.is_displayed
+    assert not view.configure_analysis.select_packages("org").packages.is_displayed
+    # Remove package 'org' and assert
+    view.configure_analysis.select_packages("org").remove()
+    assert not view.configure_analysis.select_packages("org").included_packages.is_displayed
+    assert view.configure_analysis.select_packages("org").packages.is_displayed
+    # Remove  package 'net' and assert
+    view.configure_analysis.select_packages("net").remove()
+    assert not view.configure_analysis.select_packages("net").included_packages.is_displayed
+    assert view.configure_analysis.select_packages("net").packages.is_displayed
+    view.configure_analysis.select_packages("net").next_button.click()
 
-    view.configure_analysis.application_package("com").app_checkbox.click()
-    assert not view.configure_analysis.application_package("com").include_pkg.is_displayed
-
-    view.configure_analysis.application_package("org").app_checkbox.click()
-    assert not view.configure_analysis.application_package("org").include_pkg.is_displayed
-    assert view.configure_analysis.application_package("org").exclude_pkg.is_displayed
-
-    view.configure_analysis.application_package("com").app_checkbox.click()
-    view.configure_analysis.application_package("org").app_checkbox.click()
-
-    # Select third party package and see if it is included
-    # in include package and not in excluded package
-    view.configure_analysis.application_package("javax").app_checkbox.click()
-    assert view.configure_analysis.application_package("javax").include_pkg.is_displayed
-    assert not view.configure_analysis.application_package("javax").exclude_pkg.is_displayed
-
-    view.configure_analysis.application_package("javax").app_checkbox.click()
-    assert not view.configure_analysis.application_package("javax").include_pkg.is_displayed
-    assert view.configure_analysis.application_package("javax").exclude_pkg.is_displayed
-
-    # Custom rules validation
-    view.configure_analysis.use_custom_rules.expand_custom_rules.click()
-    view.configure_analysis.use_custom_rules.add_button.click()
+    view.advanced.custom_rules.wait_displayed()
+    view.advanced.custom_rules.add_rule_button.click()
     # upload custom rules
     env = conf.get_config("env")
     fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
     file_path = fs1.download("custom.Test1rules.rhamt.xml")
-    view.configure_analysis.use_custom_rules.upload_file.fill(file_path)
-    view.configure_analysis.use_custom_rules.add_rules_button.wait_displayed()
-    wait_for(
-        lambda: view.configure_analysis.use_custom_rules.add_rules_button.is_enabled,
-        delay=0.2,
-        timeout=60,
-    )
-    view.configure_analysis.use_custom_rules.add_rules_button.click()
-    wait_for(
-        lambda: view.configure_analysis.use_custom_rules.select_all_rules.is_enabled,
-        delay=0.2,
-        timeout=60,
-    )
-    view.configure_analysis.use_custom_rules.select_all_rules.click()
-    assert view.configure_analysis.use_custom_rules.rule.is_displayed
-    view.configure_analysis.use_custom_rules.expand_custom_rules.click()
+    view.advanced.custom_rules.upload_rule.fill(file_path)
+    view.advanced.custom_rules.close_button.click()
+    view.advanced.custom_rules.enabled_button.wait_displayed()
+    view.advanced.custom_rules.enabled_button.click()
+    view.advanced.custom_rules.next_button.click()
 
-    # Custom label validation
-    view.configure_analysis.use_custom_labels.expand_custom_labels.click()
-    view.configure_analysis.use_custom_labels.add_button.click()
-    # upload custom label
+    view.advanced.custom_labels.wait_displayed()
+    view.advanced.custom_labels.add_label_button.click()
+    # upload custom rules
     env = conf.get_config("env")
     fs2 = FTPClientWrapper(env.ftpserver.entities.mta)
     file_path = fs2.download("customWebLogic.windup.label.xml")
-    view.configure_analysis.use_custom_labels.upload_file.fill(file_path)
-    view.configure_analysis.use_custom_labels.add_labels_button.wait_displayed()
-    wait_for(
-        lambda: view.configure_analysis.use_custom_labels.add_labels_button.is_enabled,
-        delay=0.2,
-        timeout=60,
-    )
-    view.configure_analysis.use_custom_labels.add_labels_button.click()
-    view.configure_analysis.use_custom_labels.select_all_labels.click()
-    assert view.configure_analysis.use_custom_labels.label.is_displayed
-    view.configure_analysis.use_custom_labels.expand_custom_labels.click()
+    view.advanced.custom_labels.upload_label.fill(file_path)
+    view.advanced.custom_labels.close_button.click()
+    view.advanced.custom_labels.enabled_button.wait_displayed()
+    view.advanced.custom_labels.enabled_button.click()
+    view.advanced.custom_labels.next_button.click()
+    view.advanced.options.wait_displayed()
+    # select disable_tattletale and de-select it
+    view.advanced.options.disable_tattletale.click()
+    view.advanced.options.disable_tattletale.click()
+    # select other options
+    view.advanced.options.export_csv.click()
+    view.advanced.options.class_not_found_analysis.click()
+    view.advanced.options.compatible_files_report.click()
+    view.advanced.options.exploded_app.click()
+    view.advanced.options.keep_work_dirs.click()
+    view.advanced.options.skip_reports.click()
+    view.advanced.options.allow_network_access.click()
+    view.advanced.options.mavenize.click()
+    view.advanced.options.source_mode.click()
 
-    # advanced options
-    view.configure_analysis.advanced_options.expand_advanced_options.click()
-    view.configure_analysis.advanced_options.add_option_button.click()
-    view.configure_analysis.advanced_options.option_select.fill("enableCompatibleFilesReport")
-    view.configure_analysis.advanced_options.select_value.click()
-    view.configure_analysis.advanced_options.cancel_button.click()
-
-    view.configure_analysis.advanced_options.add_option_button.click()
-    view.configure_analysis.advanced_options.option_select.fill("enableCompatibleFilesReport")
-    view.configure_analysis.advanced_options.select_value.click()
-    view.configure_analysis.advanced_options.add_button.click()
-    # Delete added option
-    view.configure_analysis.advanced_options.delete_button.click()
-    # Add option and submit and run analysis
-    view.configure_analysis.advanced_options.expand_advanced_options.click()
-    view.configure_analysis.advanced_options.add_option_button.click()
-    view.configure_analysis.advanced_options.option_select.fill("exportCSV")
-    view.configure_analysis.advanced_options.select_value.click()
-    view.configure_analysis.advanced_options.add_button.click()
-    view.configure_analysis.save_and_run.click()
+    view.advanced.options.select_target.item_select("cloud-readiness")
+    view.advanced.options.next_button.click()
+    view.review.wait_displayed()
+    view.review.save_and_run.click()
     # Verify that analysis completes
     view = project_collection.create_view(AnalysisResultsView)
-    wait_for(lambda: view.analysis_results.in_progress(), delay=0.6, timeout=450)
+    view.wait_displayed()
+    assert view.is_displayed
+    wait_for(lambda: view.analysis_results.in_progress(), delay=0.2, timeout=450)
     wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
     assert view.analysis_results.is_analysis_complete()
+
     # Verify that report opens
     view.analysis_results.show_report()
     view = project_collection.create_view(AllApplicationsView)
