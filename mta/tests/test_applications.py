@@ -26,6 +26,7 @@ def test_applications_page(application, create_project):
     view.clear_search()
 
 
+# Bug WINDUP-2995 Fail
 def test_add_applications_to_project(application, create_minimal_project):
     """ Validates Web console Test 03
     1) Upload one application into a project to analyse
