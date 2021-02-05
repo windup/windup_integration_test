@@ -11,6 +11,7 @@ class AllApplicationsView(BaseLoggedInPage):
 
     filter_by_name = Input(id="filter")
     title = Text(locator=".//div[text()[normalize-space(.)='Application List']]")
+    send_feedback = Text(locator=".//a[contains(text(), 'Send Feedback')]")
 
     @property
     def is_displayed(self):
