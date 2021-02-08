@@ -40,6 +40,8 @@ class AddProjectView(AllProjectView):
         description = Input(locator='.//textarea[@name="description"]')
         next_button = Button("Next")
         cancel_button = Button("Cancel")
+        yes_button = Button("Yes")
+        no_button = Button("No")
         fill_strategy = WaitFillViewStrategy("20s")
 
         @property
@@ -163,9 +165,14 @@ class AddProjectView(AllProjectView):
                 return was_change
 
             def fill(self, values):
-                if values:
-                    was_change = self.fill_pkg()
-                    self.after_fill(was_change)
+                """
+                Args:
+                    values: application packages to be selected
+                """
+                if values.get("pkg"):
+                    self.fill_pkg()
+                was_change = True
+                self.after_fill(was_change)
                 return was_change
 
             def after_fill(self, was_change):

@@ -56,6 +56,7 @@ def test_delete_application(application):
     view.add_applications.back_button.click()
     view.add_applications.cancel_button.wait_displayed()
     view.add_applications.cancel_button.click()
+    view.create_project.yes_button.click()
 
 
 def test_application_report(create_minimal_project):

@@ -26,4 +26,7 @@ def test_multiple_applications_upload(request, application):
     # Verify that analysis completes
     analysis = AnalysisResults(application, project_name)
     analysis.run_analysis()
-    request.addfinalizer(project.delete())
+
+    @request.addfinalizer
+    def _finalize():
+        project.delete()

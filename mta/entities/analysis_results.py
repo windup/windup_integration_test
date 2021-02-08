@@ -22,8 +22,7 @@ class AnalysisResultsView(BaseLoggedInPage):
 
     run_analysis_button = Button("Run analysis")
     title = Text(locator=".//div/h1[normalize-space(.)='Analysis results']")
-    search = Input("searchValue")
-    close_search = Text(locator=".//span[@class='pficon pficon-close']")
+    search = Input(locator=".//input[@aria-label='Filter by analysis id or status']")
     analysis_results = AnalysisResults()
     confirm_delete = Button("Yes")
     cancel_delete = Button("No")
@@ -35,19 +34,20 @@ class AnalysisResultsView(BaseLoggedInPage):
 
     def clear_search(self):
         """Clear search"""
-        if self.search.value:
-            self.close_search.click()
+        self.search.fill("")
 
     @ParametrizedView.nested
     class analysis_row(ParametrizedView):  # noqa
         PARAMETERS = ("row",)
 
-        analysis_number = Text(ParametrizedLocator(".//tr[{row}]//a[@class='pointer link']"))
-        delete_analysis = Text(ParametrizedLocator(".//tr[{row}]//a[@title='Delete']//i"))
+        analysis_number = Text(ParametrizedLocator(".//tr[{row}]/td[1]/a"))
+        delete_analysis = Text(
+            ParametrizedLocator(".//tr[{row}]//button[@class='pf-c-button pf-m-link']")
+        )
 
         @property
         def is_displayed(self):
-            return self.delete_analysis.is_displayed and self.analysis_number.is_displayed
+            return self.analysis_number.is_displayed
 
 
 class AnalysisResults(Updateable, NavigatableMixin):
@@ -108,7 +108,7 @@ class SelectProject(MTANavigateStep):
     prerequisite = NavigateToSibling("AllProject")
 
     def step(self):
-        self.prerequisite_view.projects.select_project(self.obj.project_name)
+        self.prerequisite_view.select_project(self.obj.project_name)
 
 
 @ViaWebUI.register_destination_for(AnalysisResults)

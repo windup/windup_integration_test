@@ -35,7 +35,9 @@ class ApplicationsView(BaseLoggedInPage):
         },
     )
     add_application_button = Button("Add application")
-    upload_file = HiddenFileInput(locator='.//input[@accept=".ear,.har,.jar,.rar,.sar,.war,.zip"]')
+    upload_file = HiddenFileInput(
+        locator='.//input[@accept=".ear, .har, .jar, .rar, .sar, .war, .zip"]'
+    )
     search = Input(locator=".//input[@aria-label='Filter by name']")
     done_button = Button("Close")
     application_packages = Text(
@@ -102,6 +104,7 @@ class Applications(Updateable, NavigatableMixin):
         # Save Configuration
         view = navigate_to(self, "AllProject")
         analysis_configuration = AnalysisConfiguration(self.application, self.project_name)
+        # Bug WINDUP-2995
         analysis_configuration.save_and_run_configuration()
         # wait for analysis to finish
         view = self.create_view(AnalysisResultsView)
