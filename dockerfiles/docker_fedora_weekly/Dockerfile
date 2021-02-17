@@ -1,5 +1,4 @@
-FROM registry.access.redhat.com/ubi8/ubi:8.1
-RUN subscription-manager register --username username --password password --auto-attach
+FROM fedora:31
 
 MAINTAINER Shveta Sachdeva <sshveta@redhat.com>
 LABEL description="Migration Toolkit for Applications Web-Console"
@@ -10,18 +9,20 @@ RUN dnf -y install java java-devel unzip wget xterm python3-virtualenv && dnf cl
 
 # set java env
 ENV JAVA_HOME /usr/lib/jvm/java-openjdk
-ENV BASE_URL="https://repo1.maven.org/maven2/org/jboss/windup"
+ENV BASE_URL="https://oss.sonatype.org/content/repositories/snapshots/org/jboss/windup"
 ENV WEB_CONSOLE="mta-web-distribution"
-ENV VERSION="5.0.1.Final"
-ENV WEB_DISTRIBUTION="${WEB_CONSOLE}-${VERSION}"
-ENV WEB_CONSOLE_FILE="${WEB_DISTRIBUTION}-with-authentication.zip"
-ENV WEB_CONSOLE_FILE_PATH="${BASE_URL}/web/${WEB_CONSOLE}/${VERSION}/${WEB_CONSOLE_FILE}"
 
+# Provide snapshot build value
+ENV SNAPSHOT_BUILD=snapshot_build
+ENV VERSION=build_version
 
-RUN wget -o - $WEB_CONSOLE_FILE_PATH -P /tmp| wc -l > /number && unzip -o /tmp/$WEB_CONSOLE_FILE -d /tmp
+ENV WEB_DISTRIBUTION="${WEB_CONSOLE}/${VERSION}-SNAPSHOT"
+ENV WEB_CONSOLE_FILE_PATH="${BASE_URL}/web/${WEB_DISTRIBUTION}/${SNAPSHOT_BUILD}"
+
 
 RUN echo $WEB_CONSOLE_FILE_PATH
-RUN echo $WEB_CONSOLE_FILE
+
+RUN wget -o - $WEB_CONSOLE_FILE_PATH -P /tmp| wc -l > /number && unzip -o /tmp/$SNAPSHOT_BUILD -d /tmp
 
 RUN useradd jboss \
         && usermod -G jboss jboss \
@@ -31,7 +32,8 @@ RUN useradd jboss \
 
 WORKDIR /opt/mta
 
-RUN mv /tmp/${WEB_DISTRIBUTION}/* ./ && chown jboss:jboss /opt -R
+ENV FILE="${WEB_CONSOLE}-${VERSION}-SNAPSHOT"
+RUN mv /tmp/${FILE}/* ./ && chown jboss:jboss /opt -R
 
 # For some reason this dir is not empty on docker image and build fails
 # TODO investigate and remove this
