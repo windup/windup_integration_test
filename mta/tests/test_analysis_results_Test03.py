@@ -27,7 +27,7 @@ def test_analysis_results_search_sort_delete(application):
     analysis_results = AnalysisResults(application, project_name)
     analysis_results.run_analysis()
     view = analysis_results.create_view(AnalysisResultsView)
-
+    view.wait_displayed("30s")
     # search row 1 in list
     analysis_results.search_analysis(row=1)
     assert view.analysis_row(row=1).analysis_number.is_displayed
@@ -36,17 +36,11 @@ def test_analysis_results_search_sort_delete(application):
     analysis_results.search_analysis(row=2)
     view.clear_search()
     # Sort Analysis
+    before_sort_analysis_number = analysis_results.get_analysis_number(view, row=1)
     analysis_results.sort_analysis()
-    assert analysis_results.get_analysis_number(view, row=1) > analysis_results.get_analysis_number(
-        view, row=2
-    )
+    assert analysis_results.get_analysis_number(view, row=1) != before_sort_analysis_number
 
-    # delete analysis of row 1 and cancel
+    # delete analysis of row 1
     analysis_results.delete_analysis(row=1)
-    view.cancel_delete.wait_displayed()
-    view.cancel_delete.click()
-    # delete analysis of row 1 and confirm
-    view.wait_displayed()
-    analysis_results.delete_analysis(row=1)
-    view.confirm_delete.wait_displayed()
-    view.confirm_delete.click()
+    # Cancel analysis of row 2 and cancel
+    analysis_results.delete_analysis(row=2, cancel=True)

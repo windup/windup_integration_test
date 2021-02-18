@@ -4,6 +4,7 @@ from wait_for import wait_for
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
+from widgetastic.widget import View
 from widgetastic_patternfly4 import Button
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
@@ -26,7 +27,7 @@ class AnalysisResultsView(BaseLoggedInPage):
     analysis_results = AnalysisResults()
     confirm_delete = Button("Yes")
     cancel_delete = Button("No")
-    sort_analysis = Text(locator=".//th[contains(normalize-space(.), 'Analysis')]//i[1]")
+    sort_analysis = Text(locator=".//th[contains(normalize-space(.), 'Analysis')]//button")
 
     @property
     def is_displayed(self):
@@ -34,7 +35,8 @@ class AnalysisResultsView(BaseLoggedInPage):
 
     def clear_search(self):
         """Clear search"""
-        self.search.fill("")
+        self.search.fill(" ")
+        self.browser.refresh()
 
     @ParametrizedView.nested
     class analysis_row(ParametrizedView):  # noqa
@@ -48,6 +50,18 @@ class AnalysisResultsView(BaseLoggedInPage):
         @property
         def is_displayed(self):
             return self.analysis_number.is_displayed
+
+
+class AnalysisDeleteView(View):
+    """View to delete analysis results"""
+
+    title = Text('.//div[contains(@id, "pf-modal-part")]//h1')
+    delete = Text('.//button[contains(text(),"Delete")]')
+    cancel = Text('.//button[contains(text(),"Cancel")]')
+
+    @property
+    def is_displayed(self):
+        return self.delete.is_displayed and self.title.is_displayed
 
 
 class AnalysisResults(Updateable, NavigatableMixin):
@@ -69,6 +83,7 @@ class AnalysisResults(Updateable, NavigatableMixin):
             row: row number to search
         """
         view = navigate_to(self, "AnalysisResultsPage")
+        view.wait_displayed("20s")
         view.search.fill(self.get_analysis_number(view, row))
 
     def run_analysis(self):
@@ -79,13 +94,18 @@ class AnalysisResults(Updateable, NavigatableMixin):
         wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
         assert view.analysis_results.is_analysis_complete()
 
-    def delete_analysis(self, row):
+    def delete_analysis(self, row, cancel=False):
         """ Delete analysis results with analysis number
             Args:
             row: row number
         """
         view = navigate_to(self, "AnalysisResultsPage")
         view.analysis_row(row).delete_analysis.click()
+        view = self.create_view(AnalysisDeleteView)
+        if cancel:
+            view.cancel.click()
+        else:
+            view.delete.click()
 
     def sort_analysis(self):
         view = navigate_to(self, "AnalysisResultsPage")
