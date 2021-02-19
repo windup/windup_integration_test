@@ -35,8 +35,7 @@ class AnalysisResultsView(BaseLoggedInPage):
 
     def clear_search(self):
         """Clear search"""
-        self.search.fill(" ")
-        self.browser.refresh()
+        self.search.fill("")
 
     @ParametrizedView.nested
     class analysis_row(ParametrizedView):  # noqa

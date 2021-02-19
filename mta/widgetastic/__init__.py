@@ -145,7 +145,7 @@ class Input(Input):
             return False
         # Clear and type everything
         self.browser.click(self)
-        self.browser.send_keys(f"{Keys.CONTROL}+a", self)
+        self.browser.send_keys(f"{Keys.CONTROL}+a,{Keys.DELETE}", self)
         self.browser.send_keys(value, self)
         return True
 
