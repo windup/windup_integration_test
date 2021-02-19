@@ -1,6 +1,7 @@
 import importscan
 
 from mta.base.application.implementations.web_ui import ViaWebUI
+from mta.base.application.implementations.operator_ui import ViaOperatorWebUI
 from mta.utils import conf
 
 
@@ -11,13 +12,15 @@ class Application(object):
         self.config = config or conf.get_config("env")
         # Set up hostnames/paths
         self.hostname = hostname or self.config.application.hostname
+        self.ocphostname = self.config.application.ocphostname
         self.user = user or self.config.application.user
         self.web_ui = ViaWebUI(owner=self)
+        self.operator_ui = ViaOperatorWebUI(owner=self)
 
         from mta.base.application.implementations import MTAImplementationContext
 
         # TODO: include other context in future
-        self.context = MTAImplementationContext.from_instances([self.web_ui])
+        self.context = MTAImplementationContext.from_instances([self.web_ui, self.operator_ui])
         #    [self.browser])
 
     @classmethod

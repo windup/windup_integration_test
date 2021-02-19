@@ -19,6 +19,17 @@ def main():
     "-h", "--hostname", default="http://localhost:8080", help="Hostname of the target application"
 )
 @click.option(
+    "-ocph", "--ocphostname",
+    default="http://mta.apps.sshveta.f2aa.sandbox1745.opentlc.com",
+    help="Hostname of OCP"
+)
+@click.option(
+    "-ocps", "--ocpsecurehostname",
+    default="https://secure-mta.apps.sshveta.f2aa.sandbox1745.opentlc.com/",
+    help="Secure Hostname of OCP"
+)
+@click.option("-ocpp", "--ocp-password", default=None, help="OCP MTA server password")
+@click.option(
     "-d",
     "--webdriver",
     default="Remote",
@@ -43,12 +54,16 @@ def main():
 @click.option("-fp", "--ftp-password", default=None, help="FTP server password")
 @click.option("-o", "--output-file", default=ENV_LOCAL_CONF, help="Output file for yaml dump")
 def local_env(
-    hostname, webdriver, wharf, executor, browser, ftp_host, ftp_username, ftp_password, output_file
+    hostname, ocphostname, ocpsecurehostname, ocp_password, webdriver, wharf, executor, browser,
+    ftp_host, ftp_username, ftp_password, output_file
 ):
     with open(ENV_CONF, "r") as env_conf:
         conf = safe_load(env_conf)
 
     conf["application"]["hostname"] = hostname
+    conf["application"]["ocphostname"] = ocphostname
+    conf["application"]["ocpsecurehostname"] = ocpsecurehostname
+    conf["application"]["password"] = ocp_password
     conf["browser"]["webdriver"] = webdriver
     conf["browser"]["webdriver_options"]["command_executor"] = executor
     conf["browser"]["webdriver_options"]["desired_capabilities"]["browserName"] = browser
