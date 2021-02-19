@@ -354,6 +354,7 @@ class Project(BaseEntity, Updateable):
     def exists(self):
         """Check project exist or not"""
         view = navigate_to(self.parent, "All")
+        view.wait_displayed("30s")
         for row in view.table:
             if row.name.text == self.name:
                 return True

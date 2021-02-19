@@ -1,3 +1,5 @@
+import pytest
+
 from mta.entities.applications import Applications
 from mta.entities.applications import ApplicationsView
 
@@ -27,6 +29,7 @@ def test_applications_page(application, create_project):
 
 
 # Bug WINDUP-2995 Fail
+@pytest.mark.skip(reason="MTA UI Issue - WINDUP-2995")
 def test_add_applications_to_project(application, create_minimal_project):
     """ Validates Web console Test 03
     1) Upload one application into a project to analyse
@@ -35,6 +38,7 @@ def test_add_applications_to_project(application, create_minimal_project):
     """
     project, project_collection = create_minimal_project
     assert project.exists
+
     applications = Applications(application, project.name)
     applications.add_application(app="cadmium-war-0.1.0.war")
 

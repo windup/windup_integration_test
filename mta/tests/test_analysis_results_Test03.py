@@ -4,7 +4,7 @@ from mta.entities.analysis_results import AnalysisResults
 from mta.entities.analysis_results import AnalysisResultsView
 
 
-def test_analysis_results_search_sort_delete(application):
+def test_analysis_results_search_sort_delete(request, application):
     """ Validates Web console Test 03
     1) Upload more than one application into a project to analyse
     2) Search analysis
@@ -23,30 +23,28 @@ def test_analysis_results_search_sort_delete(application):
         transformation_path="Containerization",
     )
     assert project.exists
-
+    request.addfinalizer(project.delete_if_exists)
     analysis_results = AnalysisResults(application, project_name)
     analysis_results.run_analysis()
     view = analysis_results.create_view(AnalysisResultsView)
-
+    view.wait_displayed("30s")
     # search row 1 in list
     analysis_results.search_analysis(row=1)
     assert view.analysis_row(row=1).analysis_number.is_displayed
     view.clear_search()
+    view.wait_displayed("30s")
     # search row 2 in list
     analysis_results.search_analysis(row=2)
     view.clear_search()
+    view.wait_displayed("30s")
     # Sort Analysis
     analysis_results.sort_analysis()
-    assert analysis_results.get_analysis_number(view, row=1) > analysis_results.get_analysis_number(
+    assert analysis_results.get_analysis_number(view, row=1) < analysis_results.get_analysis_number(
         view, row=2
     )
-
-    # delete analysis of row 1 and cancel
+    view.wait_displayed("30s")
+    # delete analysis of row 1
     analysis_results.delete_analysis(row=1)
-    view.cancel_delete.wait_displayed()
-    view.cancel_delete.click()
-    # delete analysis of row 1 and confirm
-    view.wait_displayed()
-    analysis_results.delete_analysis(row=1)
-    view.confirm_delete.wait_displayed()
-    view.confirm_delete.click()
+    # Cancel delete operation of remaining analysis row
+    view.wait_displayed("30s")
+    analysis_results.delete_analysis(row=1, cancel=True)
