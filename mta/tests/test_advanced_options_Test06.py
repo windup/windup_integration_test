@@ -8,7 +8,7 @@ from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
 
 
-def test_advanced_options(application):
+def test_advanced_options(request, application):
     """ Validates Web console Test 06
     1) Select advanced options in analysis configuration page
     2) Upload custom rules
@@ -63,7 +63,8 @@ def test_advanced_options(application):
     view.advanced.custom_rules.upload_rule.fill(file_path)
     view.advanced.custom_rules.close_button.click()
     view.advanced.custom_rules.enabled_button.wait_displayed()
-    view.advanced.custom_rules.enabled_button.click()
+    # Issue with rule enabled. Uncomment once this issue resolved - WINDUP-3013
+    # view.advanced.custom_rules.enabled_button.click()
     view.advanced.custom_rules.next_button.click()
 
     view.advanced.custom_labels.wait_displayed()
@@ -87,7 +88,6 @@ def test_advanced_options(application):
     view.advanced.options.compatible_files_report.click()
     view.advanced.options.exploded_app.click()
     view.advanced.options.keep_work_dirs.click()
-    view.advanced.options.skip_reports.click()
     view.advanced.options.allow_network_access.click()
     view.advanced.options.mavenize.click()
     view.advanced.options.source_mode.click()
@@ -107,4 +107,10 @@ def test_advanced_options(application):
     # Verify that report opens
     view.analysis_results.show_report()
     view = project_collection.create_view(AllApplicationsView)
+
+    def _finalizer():
+        # Close report details window
+        view.browser.close_window()
+
+    request.addfinalizer(lambda: _finalizer())
     assert view.is_displayed
