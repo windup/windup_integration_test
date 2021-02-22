@@ -1,9 +1,7 @@
 #!/bin/sh
 
-#Make it executable by default (might not be needed)
-chmod +x exec_test.sh
-
-function argsHelp()
+#Keeping for future use, where the script can be used to run test case by passing the -t flag directly
+: 'function argsHelp()
 {
     echo -e "\n *** Usage help ***"
     echo -e "\n $0 [-t path/to/testcase.py] \n"
@@ -21,12 +19,12 @@ done
 #Check if t param is missing
 if [ -z "$testcase" ]
 then
-    echo -e "\n ### Command line param missing ! ###"
+    echo -e "\n ### Command line param -t missing. Please provide the test case to be executed ! ###"
     argsHelp
 fi
-
+'
 #Build the mta docker image from dockerfile
-docker build dockerfiles/docker_fedora31/
+docker build -t mta:latest dockerfiles/docker_fedora31/
 
 #Run the mta container on port 8080 in detached mode
 if [[ $(docker ps | grep windup_mta) = *windup_mta* ]]
@@ -39,7 +37,7 @@ else
         docker start windup_mta
     else
         echo -e "\n Starting new MTA web console container !"
-        docker run -d -p 8080:8080 --name windup_mta -it mta
+        docker run -d -p 8080:8080 --name windup_mta -it mta:latest
     fi
 fi
 
@@ -66,7 +64,7 @@ source ./.mta_venv/bin/activate
 pip install -e .
 
 #Start selenium container
-if [[ $(docker ps | grep mta_selenium) = *mta_selenium* ]]
+if [[ $(mta selenium status) == Running ]]
 then
     echo -e "\n mta selenium container is already running !"
 else
@@ -76,18 +74,21 @@ else
 fi
 
 #Start tiger vnc viewer
-echo -e '#!/bin/sh\n mta selenium viewer' > selenium-viewer.sh
+mta selenium viewer
+
+: 'echo -e '#!/bin/sh\n mta selenium viewer' > selenium-viewer.sh
 chmod +x selenium-viewer.sh
 ./selenium-viewer.sh &
 sleep 2
 
 #Setup ftp(can be used, but need to handle passwords, hence skipping for now)
 
-#Run the test
-py.test $testcase
+#Run the test(for future use)
+#py.test $testcase
 
 #Remove selenium-viewer file
-rm selenium-viewer.sh
+#rm selenium-viewer.sh
 
-#stop selenium
-mta selenium stop
+#stop selenium (enable only if test is run via this script)
+#mta selenium stop
+'
