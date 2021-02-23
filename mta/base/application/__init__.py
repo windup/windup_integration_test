@@ -1,23 +1,29 @@
 import importscan
+import attr
+import sentaku
 
+from mta.base.modeling import BaseEntity
 from mta.base.application.implementations.web_ui import ViaWebUI
+from mta.base.application.implementations.operator_ui import ViaOperatorUI
 from mta.utils import conf
 
 
 class Application(object):
     def __init__(
-        self, hostname=None, user=None, *, config=None,
+        self, hostname=None, ocphostname=None, user=None, *, config=None,
     ):
         self.config = config or conf.get_config("env")
         # Set up hostnames/paths
         self.hostname = hostname or self.config.application.hostname
+        self.ocphostname = ocphostname or self.config.application.ocphostname
         self.user = user or self.config.application.user
         self.web_ui = ViaWebUI(owner=self)
+        self.operator_ui = ViaOperatorUI(owner=self)
 
         from mta.base.application.implementations import MTAImplementationContext
 
         # TODO: include other context in future
-        self.context = MTAImplementationContext.from_instances([self.web_ui])
+        self.context = MTAImplementationContext.from_instances([self.web_ui, self.operator_ui])
         #    [self.browser])
 
     @classmethod

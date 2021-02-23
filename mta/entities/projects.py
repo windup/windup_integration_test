@@ -14,7 +14,7 @@ from mta.base.application.implementations.web_ui import navigate_to
 from mta.base.application.implementations.web_ui import ViaWebUI
 from mta.base.modeling import BaseCollection
 from mta.base.modeling import BaseEntity
-from mta.entities import AllProjectView
+from mta.entities.webui import AllProjectView
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper

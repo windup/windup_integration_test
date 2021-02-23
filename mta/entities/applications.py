@@ -10,9 +10,9 @@ from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import NavigatableMixin
 from mta.base.application.implementations.web_ui import navigate_to
 from mta.base.application.implementations.web_ui import ViaWebUI
-from mta.entities import AllProjectView
-from mta.entities import BaseLoggedInPage
-from mta.entities import ProjectView
+from mta.entities.webui import AllProjectView
+from mta.entities.webui import BaseLoggedInPage
+from mta.entities.webui import ProjectView
 from mta.entities.analysis_configuration import AnalysisConfiguration
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.utils import conf
