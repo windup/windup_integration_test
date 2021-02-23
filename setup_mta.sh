@@ -58,37 +58,17 @@ done
 
 echo -e "\n MTA web console is available now ! \n"
 
-#Setup python3 virtual environment (version issue needs to be sorted)
+#Setup python3 virtual environment
+echo -e "\n Activating python venv !"
 python3.7 -m venv .mta_venv
 source ./.mta_venv/bin/activate
 pip install -e .
 
-#Start selenium container
-if [[ $(mta selenium status) == Running ]]
-then
-    echo -e "\n mta selenium container is already running !"
-else
-    echo -e "\n Starting mta selenium container !"
-    mta selenium start
-    sleep 10
-fi
+#Setup ftp
+echo -e "\n Setting up ftp host details ..."
+source mta/.creds/ftp_host
+mta conf local-env --ftp-host $ftp_host --ftp-username $ftp_user --ftp-password $ftp_password
 
-#Start tiger vnc viewer
-mta selenium viewer
-
-: 'echo -e '#!/bin/sh\n mta selenium viewer' > selenium-viewer.sh
-chmod +x selenium-viewer.sh
-./selenium-viewer.sh &
-sleep 2
-
-#Setup ftp(can be used, but need to handle passwords, hence skipping for now)
-
-#Run the test(for future use)
-#py.test $testcase
-
-#Remove selenium-viewer file
-#rm selenium-viewer.sh
-
-#stop selenium (enable only if test is run via this script)
-#mta selenium stop
-'
+#Start selenium container and vnc viewer
+echo -e "\n Starting selenium container and VNC Viewer ..."
+mta selenium start -w
