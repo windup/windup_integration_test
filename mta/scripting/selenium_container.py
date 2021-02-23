@@ -33,6 +33,7 @@ class SeleniumContainer(object):
                 "run",
                 "-d",
                 "--rm",
+                "--shm-size=2g",
                 "--expose",
                 "5999",
                 "--expose",
