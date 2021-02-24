@@ -6,6 +6,5 @@ mta = mta.test_framework.pytest_plugin
 mta = mta.scripting.cli:cli
 
 [mta.application_collections]
-base = mta.entities.webui:BaseWebUICollection
-operatorbase = mta.entities.operator_ui:BaseOperatorUICollection
+base = mta.entities:BaseWebUICollection
 projects = mta.entities.projects:ProjectCollection
