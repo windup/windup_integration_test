@@ -66,7 +66,7 @@ pip install -e .
 
 #Setup ftp
 echo -e "\n Setting up ftp host details ..."
-source mta/.creds/ftp_host
+source mta/ftp_host_cred
 mta conf local-env --ftp-host $ftp_host --ftp-username $ftp_user --ftp-password $ftp_password
 
 #Start selenium container and vnc viewer
