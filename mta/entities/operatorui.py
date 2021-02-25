@@ -30,9 +30,6 @@ class LoggedIn(MTANavigateStep):
     prerequisite = NavigateToSibling("OCPLoginScreen")
 
     def step(self):
-        print("&&&&&&&&&&&&&&&&7")
-        print(self.application.context)
-        print("&&&&&&&&&&&&&&&&7")
         self.prerequisite_view.login(self.application.user, self.application.password)
         wait_for(lambda: self.view.is_displayed, timeout="30s")
 
@@ -42,5 +39,5 @@ class OCPLoginScreen(MTANavigateStep):
     VIEW = LoginPage
 
     def step(self):
-        self.application.web_ui.widgetastic_browser.url = self.application.ocphostname
+        self.application.operator_ui.widgetastic_browser.url = self.application.ocphostname
         wait_for(lambda: self.view.is_displayed, timeout="30s")
