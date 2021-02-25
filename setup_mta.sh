@@ -9,7 +9,7 @@
 }
 while getopts ":t:" flag
 do
-    case "$flag" in 
+    case "$flag" in
         t) testcase=${OPTARG} ;;
         :) argsHelp ;;
         \?) argsHelp ;;
