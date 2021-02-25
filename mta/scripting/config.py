@@ -18,6 +18,7 @@ def main():
 @click.option(
     "-h", "--hostname", default="http://localhost:8080", help="Hostname of the target application"
 )
+@click.option("-p", "--password", default=None, help="MTA password")
 @click.option(
     "-d",
     "--webdriver",
@@ -43,12 +44,22 @@ def main():
 @click.option("-fp", "--ftp-password", default=None, help="FTP server password")
 @click.option("-o", "--output-file", default=ENV_LOCAL_CONF, help="Output file for yaml dump")
 def local_env(
-    hostname, webdriver, wharf, executor, browser, ftp_host, ftp_username, ftp_password, output_file
+    hostname,
+    password,
+    webdriver,
+    wharf,
+    executor,
+    browser,
+    ftp_host,
+    ftp_username,
+    ftp_password,
+    output_file,
 ):
     with open(ENV_CONF, "r") as env_conf:
         conf = safe_load(env_conf)
 
     conf["application"]["hostname"] = hostname
+    conf["application"]["password"] = password
     conf["browser"]["webdriver"] = webdriver
     conf["browser"]["webdriver_options"]["command_executor"] = executor
     conf["browser"]["webdriver_options"]["desired_capabilities"]["browserName"] = browser

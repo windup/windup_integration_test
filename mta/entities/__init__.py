@@ -1,19 +1,22 @@
 import attr
-from navmazing import NavigateToSibling
-from wait_for import wait_for
+import importscan
+import sentaku
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly4 import Button
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import PatternflyTable
 
-from mta.base.application.implementations.web_ui import MTANavigateStep
-from mta.base.application.implementations.web_ui import ViaWebUI
 from mta.base.modeling import BaseCollection
 from mta.widgetastic import DropdownMenu
 from mta.widgetastic import Input
 from mta.widgetastic import MTANavigation
 from mta.widgetastic import SortSelector
+
+
+@attr.s
+class BaseWebUICollection(BaseCollection, sentaku.modeling.ElementMixin):
+    pass
 
 
 class BlankStateView(View):
@@ -57,11 +60,6 @@ class BaseLoggedInPage(View):
     @property
     def is_displayed(self):
         return self.header.is_displayed and self.help.is_displayed
-
-
-@attr.s
-class BaseWebUICollection(BaseCollection):
-    pass
 
 
 class AllProjectView(BaseLoggedInPage):
@@ -125,47 +123,7 @@ class ProjectView(AllProjectView):
         return self.project_dropdown.is_displayed
 
 
-class LoginPage(View):
-    username = Input(id="username")
-    password = Input(id="password")
-    login_button = Text(locator=".//div/input[@id='kc-login']")
+from mta.entities import webui, operatorui  # NOQA last for import cycles
 
-    @property
-    def is_displayed(self):
-        return self.username.is_displayed and self.login_button.is_displayed
-
-    def login(self):
-        self.fill({"username": "mta", "password": "password"})
-        self.login_button.click()
-
-
-@ViaWebUI.register_destination_for(BaseWebUICollection)
-class LoggedIn(MTANavigateStep):
-    VIEW = BaseLoggedInPage
-
-    def step(self):
-        self.application.web_ui.widgetastic_browser.url = self.application.hostname
-        wait_for(lambda: self.view.is_displayed, timeout="30s")
-
-    def resetter(self, *args, **kwargs):
-        # If some views stuck while navigation; reset navigation by clicking logo
-        self.view.header.click()
-
-
-@ViaWebUI.register_destination_for(BaseWebUICollection)
-class OCPLoggedIn(MTANavigateStep):
-    VIEW = BaseLoggedInPage
-    prerequisite = NavigateToSibling("OCPLoginScreen")
-
-    def step(self):
-        self.prerequisite_view.login()
-        wait_for(lambda: self.view.is_displayed, timeout="30s")
-
-
-@ViaWebUI.register_destination_for(BaseWebUICollection)
-class OCPLoginScreen(MTANavigateStep):
-    VIEW = LoginPage
-
-    def step(self):
-        self.application.web_ui.widgetastic_browser.url = self.application.ocphostname
-        wait_for(lambda: self.view.is_displayed, timeout="30s")
+importscan.scan(webui)
+importscan.scan(operatorui)

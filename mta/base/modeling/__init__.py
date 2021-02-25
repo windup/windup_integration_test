@@ -11,6 +11,11 @@ from mta.utils.log import logger
 def load_appliance_collections():
     from pkg_resources import iter_entry_points
 
+    for ep in iter_entry_points("mta.application_collections"):
+        print(ep)
+        # print("=============ep===========")
+        # print(ep.name)
+        # print(ep.resolve())
     return {ep.name: ep.resolve() for ep in iter_entry_points("mta.application_collections")}
 
 
@@ -32,6 +37,10 @@ class EntityCollections(object):
 
     @classmethod
     def for_application(cls, application):
+        print("=======here======")
+        print(load_appliance_collections())
+        print("============cls========")
+        print(cls(parent=application, availiable_collections=load_appliance_collections()))
         return cls(parent=application, availiable_collections=load_appliance_collections())
 
     @classmethod
