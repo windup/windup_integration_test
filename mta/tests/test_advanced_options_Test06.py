@@ -9,13 +9,28 @@ from mta.utils.ftp import FTPClientWrapper
 
 
 def test_advanced_options(request, application):
-    """ Validates Web console Test 06
-    1) Select advanced options in analysis configuration page
-    2) Upload custom rules
-    2) Upload custom label
-    3) Select advanced options like "enablecompatiblefile"
-    4) Run analysis
-    5) Open Report
+    """ Test advanced options and run analysis
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: MTA
+        testSteps:
+            1. Go to project all page and click on `Create project` button
+            2. Add name and description and click on `Next`
+            3. Select applications file and click on `Next`
+            4. Select transformation target and click on `Next`
+            5. Select packages and click on `Next`
+            6. Add custom rule and click on `Next`
+            7. Add custom label and click on `Next`
+            8. Select all advanced options except `Skip reports` and click on `Next`
+            9. Review project details and click on `Save and run`
+            10. Go to analysis results page and click on show reports action button
+        expectedResults:
+            1. Analysis should be completed properly and new tab should open with detailed analysis
     """
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
     project_collection = application.collections.projects

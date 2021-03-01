@@ -5,17 +5,29 @@ from mta.entities.applications import ApplicationsView
 
 
 def test_applications_page(application, create_project):
-    """ Validates Web console Test 03
-    1) Upload more than one application into a project to analyse
-    2) Go to Applications page
-    2) Search app
-    3) Delete app
+    """ Test search applications
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: MTA
+        testSteps:
+            1. Create project with multiple applications files
+            2. Go to applications page
+            3. Search applications by full name or substring
+            4. Delete any application and search by it's name
+        expectedResults:
+            1. It should show only those applications files matching search string
+            2. Deleted application should not be visible in search results
     """
     project, project_collection = create_project
     assert project.exists
     applications = Applications(application, project.name)
     view = applications.create_view(ApplicationsView)
-
+    # TODO(ghubale): Step 4 not performed in automation
     # search app in list
     applications.search_application(name="acmeair-webapp-1.0-SNAPSHOT.war")
     for row in view.table:
@@ -31,11 +43,24 @@ def test_applications_page(application, create_project):
 # Bug WINDUP-2995 Fail
 @pytest.mark.skip(reason="MTA UI Issue - WINDUP-2995")
 def test_add_applications_to_project(application, create_minimal_project):
-    """ Validates Web console Test 03
-    1) Upload one application into a project to analyse
-    2) Go to Applications page
-    3) Add another app
+    """ Test add applications
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: MTA
+        testSteps:
+            1. Create project and add a application file
+            2. Go to applications page and add new application file
+            3. Go to `Analysis configuration` page and run analysis
+        expectedResults:
+            1. It should be added successfully
+            2. Analysis should get complete successfully
     """
+    # TODO(ghubale): Step 3 is skiped due to issue - WINDUP-2995
     project, project_collection = create_minimal_project
     assert project.exists
 
@@ -44,10 +69,23 @@ def test_add_applications_to_project(application, create_minimal_project):
 
 
 def test_delete_application_from_project(application, create_project_with_two_apps):
-    """ Validates Web console Test 03
-    1) Upload one or more application into a project to analyse
-    2) Go to Applications page
-    3) Delete app
+    """ Test delete application from project
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: MTA
+        testSteps:
+            1. Create project and add multiple application files
+            2. Go to applications page
+            3. Delete application files
+            4. Delete cancel application files
+        expectedResults:
+            1. It should be deleted successfully
+            2. On canceling application delete. It should navigate to applications all page
     """
     project, project_collection = create_project_with_two_apps
     assert project.exists
@@ -59,10 +97,23 @@ def test_delete_application_from_project(application, create_project_with_two_ap
 
 
 def test_sort_applications(application, create_project_with_two_apps):
-    """ Validates Web console Test 03
-    1) Upload one or more application into a project to analyse
-    2) Go to Applications page
-    3) Sort app
+    """ Test sort applications
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: MTA
+        testSteps:
+            1. Create project and add multiple application files
+            2. Go to applications page
+            3. Sort applications by
+                {"Application" > "ascending" and "descending",
+                 "Date added" > "ascending" and "descending"}
+        expectedResults:
+            1. All values should get sorted properly
     """
     project, project_collection = create_project_with_two_apps
     assert project.exists

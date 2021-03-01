@@ -5,9 +5,22 @@ from mta.entities.applications import Applications
 
 
 def test_multiple_applications_upload(request, application):
-    """ Validates Web console Test 02
-    1) Upload more than one application into a project to analyse
-    2) Delete one application and analyse
+    """Test multiple applications upload
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: MTA
+        testSteps:
+            1. Create project
+            2. While creating project browse multiple applications files
+            3. Go to applications page and delete one application
+            4. Run the analysis
+        expectedResults:
+            1. Analysis should get complete properly
     """
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
     project_collection = application.collections.projects
