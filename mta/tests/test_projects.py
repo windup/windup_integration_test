@@ -1,4 +1,5 @@
 import fauxfactory
+import pytest
 
 from mta.base.application.implementations.web_ui import navigate_to
 from mta.entities import AllProjectView
@@ -9,7 +10,9 @@ from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import update
 
 
-def test_project_crud(create_minimal_project):
+@pytest.mark.parametrize("mta_context", ["ViaWebUI", "ViaOperatorUI"])
+def test_project_crud(application, create_minimal_project, mta_context):
+    application.mta_context = mta_context
     project, project_collection = create_minimal_project
     assert project.exists
 

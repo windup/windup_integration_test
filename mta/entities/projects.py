@@ -24,6 +24,9 @@ from mta.widgetastic import Input
 from mta.widgetastic import MTASelect
 from mta.widgetastic import TransformationPath
 
+# from mta.base.application.implementations.operator_ui import MTANavigateStep as OCPMTANavigateStep
+# from mta.base.application.implementations.operator_ui import navigate_to
+
 
 class AddProjectView(AllProjectView):
     fill_strategy = WaitFillViewStrategy("15s")
@@ -350,9 +353,12 @@ class Project(BaseEntity, Updateable):
     app_list = attr.ib(default=None)
     transformation_path = attr.ib(default=None)
 
+    # navigate_to = lambda: op_nav if self.application.context is ViaOperatorUI else web_nav
+
     @property
     def exists(self):
         """Check project exist or not"""
+        # navigate_to = op_nav if self.application.context is ViaOperatorUI else web_nav
         view = navigate_to(self.parent, "All")
         view.wait_displayed("30s")
         for row in view.table:
@@ -361,6 +367,7 @@ class Project(BaseEntity, Updateable):
         return False
 
     def update(self, updates):
+        # navigate_to = op_nav if self.application.context is ViaOperatorUI else web_nav
         view = navigate_to(self, "Edit")
         view.wait_displayed()
         changed = view.fill(updates)
@@ -378,6 +385,7 @@ class Project(BaseEntity, Updateable):
             cancel: cancel deletion
             wait: wait for delete
         """
+        # navigate_to = op_nav if self.application.context is ViaOperatorUI else web_nav
         view = navigate_to(self, "Delete")
         view.fill({"delete_project_name": self.name})
         if cancel:
@@ -398,8 +406,11 @@ class ProjectCollection(BaseCollection):
 
     ENTITY = Project
 
+    # navigate_to = lambda: op_nav if self.application.context is ViaOperatorUI else web_nav
+
     def all(self):
         """Return all projects instance of Project class"""
+        # navigate_to = op_nav if self.application.context is ViaOperatorUI else web_nav
         view = navigate_to(self, "All")
         if view.is_empty:
             return []
@@ -432,6 +443,7 @@ class ProjectCollection(BaseCollection):
             file_label: Label
             options: Options
         """
+        # navigate_to = op_nav if self.application.context is ViaOperatorUI else web_nav
         view = navigate_to(self, "Add")
         view.create_project.fill({"name": name, "description": description})
         view.add_applications.wait_displayed()
@@ -469,14 +481,17 @@ class ProjectCollection(BaseCollection):
         return project
 
     def sort_projects(self, criteria, order):
+        # navigate_to = op_nav if self.application.context is ViaOperatorUI else web_nav
         view = navigate_to(self, "All")
         view.table.sort_by(criteria, order)
 
     def search_project(self, project):
+        # navigate_to = op_nav if self.application.context is ViaOperatorUI else web_nav
         view = navigate_to(self, "All")
         view.search.fill(project)
 
     def get_project(self, name):
+        # navigate_to = op_nav if self.application.context is ViaOperatorUI else web_nav
         view = navigate_to(self, "All")
         for row in view.table:
             if row.name.text == name:
@@ -484,6 +499,7 @@ class ProjectCollection(BaseCollection):
 
 
 @ViaWebUI.register_destination_for(ProjectCollection)
+# @ViaOperatorUI.register_destination_for(ProjectCollection)
 class All(MTANavigateStep):
     VIEW = AllProjectView
     prerequisite = NavigateToAttribute("application.collections.base", "LoggedIn")
@@ -494,6 +510,7 @@ class All(MTANavigateStep):
 
 
 @ViaWebUI.register_destination_for(ProjectCollection)
+# @ViaOperatorUI.register_destination_for(ProjectCollection)
 class Add(MTANavigateStep):
     VIEW = AddProjectView
     prerequisite = NavigateToSibling("All")
@@ -506,6 +523,7 @@ class Add(MTANavigateStep):
 
 
 @ViaWebUI.register_destination_for(Project)
+# @ViaOperatorUI.register_destination_for(Project)
 class Edit(MTANavigateStep):
     VIEW = EditProjectView
     prerequisite = NavigateToAttribute("parent", "All")
@@ -517,6 +535,7 @@ class Edit(MTANavigateStep):
 
 
 @ViaWebUI.register_destination_for(Project)
+# @ViaOperatorUI.register_destination_for(Project)
 class Delete(MTANavigateStep):
     VIEW = DeleteProjectView
     prerequisite = NavigateToAttribute("parent", "All")
