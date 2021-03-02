@@ -14,10 +14,10 @@ def test_project_crud(create_minimal_project):
     Polarion:
         assignee: ghubale
         initialEstimate: 1/12h
-        caseimportance: High
+        caseimportance: high
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Create project
             2. Edit project name or description
@@ -57,7 +57,7 @@ def test_delete_application(application):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Go to project all page and click on `Create project` button
             2. Add name and description and click on `Next` button
@@ -99,7 +99,7 @@ def test_application_report(create_minimal_project):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Create project and run analysis
             2. Click on `report` action button
@@ -124,7 +124,7 @@ def test_sort_projects(create_minimal_project, create_project_with_two_apps, cre
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Create three different projects
             2. Go to project all page
@@ -161,7 +161,7 @@ def test_search_project(create_minimal_project):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Create project
             2. Go to project all page and search by name

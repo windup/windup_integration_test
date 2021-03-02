@@ -13,7 +13,7 @@ def test_multiple_applications_upload(request, application):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Create project
             2. While creating project browse multiple applications files

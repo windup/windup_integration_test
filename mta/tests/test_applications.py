@@ -13,7 +13,7 @@ def test_applications_page(application, create_project):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Create project with multiple applications files
             2. Go to applications page
@@ -51,7 +51,7 @@ def test_add_applications_to_project(application, create_minimal_project):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Create project and add a application file
             2. Go to applications page and add new application file
@@ -77,7 +77,7 @@ def test_delete_application_from_project(application, create_project_with_two_ap
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Create project and add multiple application files
             2. Go to applications page
@@ -105,7 +105,7 @@ def test_sort_applications(application, create_project_with_two_apps):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Create project and add multiple application files
             2. Go to applications page

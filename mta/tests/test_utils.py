@@ -12,7 +12,7 @@ def test_mta_command():
         caseimportance: low
         caseposneg: positive
         testtype: smoke
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Run `mta` command
         expectedResults:

@@ -17,7 +17,7 @@ def test_advanced_options(request, application):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Go to project all page and click on `Create project` button
             2. Add name and description and click on `Next`

@@ -14,7 +14,7 @@ def test_login(application):
         caseimportance: medium
         caseposneg: positive
         testtype: smoke
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Login to MTA project
         expectedResults:

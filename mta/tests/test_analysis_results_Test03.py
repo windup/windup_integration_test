@@ -13,7 +13,7 @@ def test_analysis_results_search_sort_delete(request, application):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: MTA
+        casecomponent: Web-console
         testSteps:
             1. Create project
             2. Run the analysis
