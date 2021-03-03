@@ -13,7 +13,7 @@ def test_applications_page(application, create_project):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: Web-console
+        casecomponent: WebConsole
         testSteps:
             1. Create project with multiple applications files
             2. Go to applications page
@@ -27,7 +27,6 @@ def test_applications_page(application, create_project):
     assert project.exists
     applications = Applications(application, project.name)
     view = applications.create_view(ApplicationsView)
-    # TODO(ghubale): Step 4 not performed in automation
     # search app in list
     applications.search_application(name="acmeair-webapp-1.0-SNAPSHOT.war")
     for row in view.table:
@@ -51,7 +50,7 @@ def test_add_applications_to_project(application, create_minimal_project):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: Web-console
+        casecomponent: WebConsole
         testSteps:
             1. Create project and add a application file
             2. Go to applications page and add new application file
@@ -60,7 +59,7 @@ def test_add_applications_to_project(application, create_minimal_project):
             1. It should be added successfully
             2. Analysis should get complete successfully
     """
-    # TODO(ghubale): Step 3 is skiped due to issue - WINDUP-2995
+    # TODO(ghubale): Step 3 is skipped due to issue - WINDUP-2995
     project, project_collection = create_minimal_project
     assert project.exists
 
@@ -77,7 +76,7 @@ def test_delete_application_from_project(application, create_project_with_two_ap
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: Web-console
+        casecomponent: WebConsole
         testSteps:
             1. Create project and add multiple application files
             2. Go to applications page
@@ -105,7 +104,7 @@ def test_sort_applications(application, create_project_with_two_apps):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: Web-console
+        casecomponent: WebConsole
         testSteps:
             1. Create project and add multiple application files
             2. Go to applications page

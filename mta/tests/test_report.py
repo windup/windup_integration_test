@@ -11,7 +11,7 @@ def test_send_feedback(create_minimal_project):
         caseimportance: medium
         caseposneg: positive
         testtype: functional
-        casecomponent: Web-console
+        casecomponent: WebConsole
         testSteps:
             1. Create project and run analysis
             2. Click on report action to see detailed report
