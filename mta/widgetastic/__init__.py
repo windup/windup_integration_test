@@ -43,6 +43,20 @@ class DropdownMenu(Dropdown):
         self.locator = locator
 
 
+class MTADropdownMenu(Dropdown):
+    """This is custom dropdown menu"""
+
+    ROOT = ParametrizedLocator("{@locator}")
+    BUTTON_LOCATOR = ".//span[@class='filter-by']/parent::button"
+    ITEMS_LOCATOR = ".//ul/li/a"
+    ITEM_LOCATOR = "//ul/li/a[normalize-space(.)={}]"
+
+    @property
+    def is_open(self):
+        """Returns True if the Dropdown is open"""
+        return "open" in self.browser.classes(self)
+
+
 class SortSelector(SelectorDropdown):
     def item_select(self, item, *args, **kwargs):
         super(SelectorDropdown, self).item_select(item, *args, **kwargs)
@@ -154,3 +168,18 @@ class MTASelect(Select):
     """Select for MTA"""
 
     BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-select__toggle-button')]"
+
+
+class FilterInput(Input):
+    """Customized filter Input widget."""
+
+    def fill(self, value):
+        current_value = self.value
+        if value == current_value:
+            return False
+        # Clear and type everything
+        self.browser.click(self)
+        self.browser.send_keys(f"{Keys.CONTROL}+a,{Keys.DELETE}", self)
+        self.browser.send_keys(value, self)
+        self.browser.send_keys(Keys.ENTER, self)
+        return True

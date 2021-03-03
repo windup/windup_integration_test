@@ -25,3 +25,21 @@ def test_send_feedback(create_minimal_project):
     view.analysis_results.show_report()
     view = project_collection.create_view(AllApplicationsView)
     view.send_feedback.click()
+
+
+def test_filter_application_list(create_project_with_two_apps):
+    """
+    Test filter applications
+    """
+    project, project_collection = create_project_with_two_apps
+    view = project_collection.create_view(AnalysisResultsView)
+    view.wait_displayed()
+    view.analysis_results.show_report()
+    view = project_collection.create_view(AllApplicationsView)
+    view.search("acm", "Name")
+    apps_list = view.get_applications_list
+    assert "acmeair-webapp-1.0-SNAPSHOT.war" in apps_list[:-1]
+    view.clear_filters
+    view.search("JTA", "Tag")
+    apps_list = view.get_applications_list
+    assert "acmeair-webapp-1.0-SNAPSHOT.war" in apps_list[:-1]
