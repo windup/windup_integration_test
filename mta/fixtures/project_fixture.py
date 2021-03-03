@@ -2,7 +2,7 @@ import fauxfactory
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def mta_app(application, request):
     context = getattr(request, "param", "ViaOperatorUI")
     application.mta_context = context

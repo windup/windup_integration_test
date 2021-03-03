@@ -49,7 +49,7 @@ class BaseLoggedInPage(View):
     # only if no project available
     blank_state = View.nested(BlankStateView)
 
-    def get_url(self):
+    def validate_url(self):
         """The logged in Page in both web console and operator are same
         so added a url check to differentiate in the view"""
         url = (
@@ -62,11 +62,11 @@ class BaseLoggedInPage(View):
     @property
     def is_empty(self):
         """Check project is available or not; blank state"""
-        return self.blank_state.is_displayed and self.get_url()
+        return self.blank_state.is_displayed and self.validate_url()
 
     @property
     def is_displayed(self):
-        return self.header.is_displayed and self.help.is_displayed and self.get_url()
+        return self.header.is_displayed and self.help.is_displayed and self.validate_url()
 
 
 @attr.s
@@ -114,7 +114,9 @@ class AllProjectView(BaseLoggedInPage):
     @property
     def is_displayed(self):
         return self.is_empty or (
-            self.create_project.is_displayed and self.title.text == "Projects" and self.get_url()
+            self.create_project.is_displayed
+            and self.title.text == "Projects"
+            and self.validate_url()
         )
 
     def select_project(self, name):
