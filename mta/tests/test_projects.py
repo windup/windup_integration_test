@@ -10,9 +10,9 @@ from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import update
 
 
-@pytest.mark.parametrize("mta_context", ["ViaWebUI", "ViaOperatorUI"])
-def test_project_crud(application, create_minimal_project, mta_context):
-    application.mta_context = mta_context
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
+def test_project_crud(mta_app, create_minimal_project):
+
     project, project_collection = create_minimal_project
     assert project.exists
 
@@ -34,7 +34,7 @@ def test_project_crud(application, create_minimal_project, mta_context):
     assert proj.description.text == update_desc
 
 
-def test_delete_application(application):
+def test_delete_application(application, mta_context):
     """
     Test01 -08
     Delete uploaded application file and check if next button gets disabled

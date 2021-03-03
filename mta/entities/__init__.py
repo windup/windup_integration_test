@@ -49,14 +49,24 @@ class BaseLoggedInPage(View):
     # only if no project available
     blank_state = View.nested(BlankStateView)
 
+    def get_url(self):
+        """The logged in Page in both web console and operator are same
+        so added a url check to differentiate in the view"""
+        url = (
+            self.context["object"].application.ocphostname
+            if self.context["object"].application.mta_context == "ViaOperatorUI"
+            else self.context["object"].application.hostname
+        )
+        return url in self.context["object"].application.web_ui.widgetastic_browser.url
+
     @property
     def is_empty(self):
         """Check project is available or not; blank state"""
-        return self.blank_state.is_displayed
+        return self.blank_state.is_displayed and self.get_url()
 
     @property
     def is_displayed(self):
-        return self.header.is_displayed and self.help.is_displayed
+        return self.header.is_displayed and self.help.is_displayed and self.get_url()
 
 
 @attr.s
@@ -103,7 +113,9 @@ class AllProjectView(BaseLoggedInPage):
 
     @property
     def is_displayed(self):
-        return self.is_empty or (self.create_project.is_displayed and self.title.text == "Projects")
+        return self.is_empty or (
+            self.create_project.is_displayed and self.title.text == "Projects" and self.get_url()
+        )
 
     def select_project(self, name):
         for row in self.table:
