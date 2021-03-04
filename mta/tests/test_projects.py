@@ -73,7 +73,7 @@ def test_application_report(mta_app, create_minimal_project):
     assert view.is_displayed
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
 def test_sort_projects(
     mta_app, create_minimal_project, create_project_with_two_apps, create_project
 ):
@@ -97,7 +97,7 @@ def test_sort_projects(
     project_collection.sort_projects("Status", "descending")
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
 def test_search_project(mta_app, create_minimal_project):
     """
     Search Projects

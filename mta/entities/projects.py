@@ -113,6 +113,7 @@ class AddProjectView(AllProjectView):
                         card_name=values.get("transformation_path")
                     )
                 was_change = True
+                wait_for(lambda: self.next_button.is_enabled, delay=0.2, timeout=60)
                 self.after_fill(was_change)
                 return was_change
 
@@ -308,6 +309,7 @@ class AddProjectView(AllProjectView):
             return self.title.is_displayed and self.save_and_run.is_displayed
 
         def after_fill(self, was_change):
+            wait_for(lambda: self.save_and_run.is_enabled, delay=5, timeout=30)
             self.save_and_run.click()
 
 
@@ -358,8 +360,7 @@ class Project(BaseEntity, Updateable):
     def exists(self):
         """Check project exist or not"""
         view = navigate_to(self.parent, "All")
-        view.wait_displayed("40s")
-        wait_for(lambda: view.table.is_displayed, delay=5, timeout=30)
+        view.table.wait_displayed("20s")
         for row in view.table:
             if row.name.text == self.name:
                 return True
@@ -398,7 +399,7 @@ class Project(BaseEntity, Updateable):
     def delete_if_exists(self):
         """Check project exist and delete"""
         if self.exists:
-            self.delete(wait=True)
+            self.delete()
 
 
 @attr.s
