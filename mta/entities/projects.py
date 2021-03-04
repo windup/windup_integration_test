@@ -42,7 +42,7 @@ class AddProjectView(AllProjectView):
         cancel_button = Button("Cancel")
         yes_button = Button("Yes")
         no_button = Button("No")
-        fill_strategy = WaitFillViewStrategy("20s")
+        fill_strategy = WaitFillViewStrategy("30s")
 
         @property
         def is_displayed(self):
@@ -203,6 +203,7 @@ class AddProjectView(AllProjectView):
                 if values.get("file_rule"):
                     self.expand_custom_rules.click()
                 was_change = True
+                wait_for(lambda: self.next_button.is_enabled, delay=0.2, timeout=60)
                 self.after_fill(was_change)
                 return was_change
 
@@ -232,6 +233,7 @@ class AddProjectView(AllProjectView):
                 """
                 if values.get("file_label"):
                     self.expand_custom_labels.click()
+                wait_for(lambda: self.next_button.is_enabled, delay=0.2, timeout=60)
                 was_change = True
                 self.after_fill(was_change)
                 return was_change
@@ -324,6 +326,7 @@ class EditProjectView(AllProjectView):
     description = Input(name="description")
     save_button = Button("Save")
     cancel_button = Button("Cancel")
+    fill_strategy = WaitFillViewStrategy("35s")
 
     @property
     def is_displayed(self):
@@ -333,6 +336,7 @@ class EditProjectView(AllProjectView):
 class DeleteProjectView(AllProjectView):
     title = Text(locator=".//h1[normalize-space(.)='Project details']")
     delete_project_name = Input(id="matchText")
+    fill_strategy = WaitFillViewStrategy("35s")
 
     delete_button = Button("Delete")
     cancel_button = Button("Cancel")
@@ -354,7 +358,8 @@ class Project(BaseEntity, Updateable):
     def exists(self):
         """Check project exist or not"""
         view = navigate_to(self.parent, "All")
-        view.wait_displayed("30s")
+        view.wait_displayed("40s")
+        wait_for(lambda: view.table.is_displayed, delay=5, timeout=30)
         for row in view.table:
             if row.name.text == self.name:
                 return True
@@ -366,6 +371,7 @@ class Project(BaseEntity, Updateable):
         changed = view.fill(updates)
         if changed:
             view.save_button.click()
+            view.wait_displayed("30s")
         else:
             view.cancel_button.click()
         view = self.create_view(AllProjectView, override=updates)
@@ -379,10 +385,12 @@ class Project(BaseEntity, Updateable):
             wait: wait for delete
         """
         view = navigate_to(self, "Delete")
+        view.wait_displayed("30s")
         view.fill({"delete_project_name": self.name})
         if cancel:
             view.cancel_button.click()
         else:
+            wait_for(lambda: view.delete_button.is_enabled, delay=5, timeout=30)
             view.delete_button.click()
             if wait:
                 wait_for(lambda: not self.exists, delay=5, timeout=30)
@@ -390,7 +398,7 @@ class Project(BaseEntity, Updateable):
     def delete_if_exists(self):
         """Check project exist and delete"""
         if self.exists:
-            self.delete()
+            self.delete(wait=True)
 
 
 @attr.s

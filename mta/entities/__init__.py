@@ -40,6 +40,7 @@ class BaseLoggedInPage(View):
 
     header = Text(locator=".//img[@alt='brand']")
     navigation = MTANavigation(locator='//ul[@class="pf-c-nav__list"]')
+    logout_button = Dropdown(locator="//div[@class='pf-c-dropdown']")
 
     setting = DropdownMenu(
         locator=".//li[contains(@class, 'dropdown') and .//span[@class='pficon pficon-user']]"
@@ -67,6 +68,9 @@ class BaseLoggedInPage(View):
     @property
     def is_displayed(self):
         return self.header.is_displayed and self.help.is_displayed and self.validate_url()
+
+    def logout(self):
+        self.view.logout_button.item_select("Logout")
 
 
 @attr.s
@@ -171,6 +175,7 @@ class LoggedIn(MTANavigateStep):
     def resetter(self, *args, **kwargs):
         # If some views stuck while navigation; reset navigation by clicking logo
         self.view.header.click()
+        self.view.wait_displayed("30s")
 
 
 @ViaWebUI.register_destination_for(BaseWebUICollection)
