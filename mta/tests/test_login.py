@@ -1,7 +1,6 @@
 import pytest
 
 from mta.base.application.implementations.web_ui import navigate_to
-from mta.base.application.implementations.operator_ui import ViaOperatorUI
 
 @pytest.mark.smoke
 @pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
