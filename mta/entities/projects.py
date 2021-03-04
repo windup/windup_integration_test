@@ -408,7 +408,6 @@ class ProjectCollection(BaseCollection):
 
     def all(self):
         """Return all projects instance of Project class"""
-        # navigate_to = op_nav if self.application.context is ViaOperatorUI else web_nav
         view = navigate_to(self, "All")
         if view.is_empty:
             return []
