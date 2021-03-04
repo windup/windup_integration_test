@@ -2,6 +2,7 @@ import pytest
 
 from mta.base.application.implementations.web_ui import navigate_to
 
+
 @pytest.mark.smoke
 @pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
 def test_login(mta_app):
