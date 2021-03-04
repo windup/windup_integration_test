@@ -5,11 +5,27 @@ from mta.entities.analysis_results import AnalysisResultsView
 
 
 def test_analysis_results_search_sort_delete(request, application):
-    """ Validates Web console Test 03
-    1) Upload more than one application into a project to analyse
-    2) Search analysis
-    3) Delete analysis
+    """ Test search and sort analysis
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: WebConsole
+        testSteps:
+            1. Create project
+            2. Run the analysis
+            3. Go to Analysis results page and search analysis by ID or status
+            4. Delete analysis and  search analysis by ID or status
+        expectedResults:
+            1. All the analysis rows should get collected which matched ID or status from search
+               value
+            2. Deleted analysis results should not appear on analysis results page
     """
+    # TODO(ghubale): Sort analysis is not covered in automation
+    # TODO(ghubale): Search analysis by status is not covered in automation
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
     project_collection = application.collections.projects
     project = project_collection.create(
