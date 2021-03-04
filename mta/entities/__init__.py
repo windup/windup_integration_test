@@ -40,7 +40,7 @@ class BaseLoggedInPage(View):
 
     header = Text(locator=".//img[@alt='brand']")
     navigation = MTANavigation(locator='//ul[@class="pf-c-nav__list"]')
-    logout_button = Dropdown(locator="//div[@class='pf-c-dropdown']")
+    logout_button = Dropdown(text="mta")
 
     setting = DropdownMenu(
         locator=".//li[contains(@class, 'dropdown') and .//span[@class='pficon pficon-user']]"
@@ -147,10 +147,24 @@ class LoginPage(View):
     username = Input(id="username")
     password = Input(id="password")
     login_button = Text(locator=".//div/input[@id='kc-login']")
+    header = Text(locator=".//img[@alt='brand']")
+    logout_button = Dropdown(text="mta")
+
+    def validate_url(self):
+        """The logged in Page in both web console and operator are same
+        so added a url check to differentiate in the view"""
+        url = (
+            self.context["object"].application.ocphostname
+            if self.context["object"].application.mta_context == "ViaOperatorUI"
+            else self.context["object"].application.hostname
+        )
+        return url in self.context["object"].application.web_ui.widgetastic_browser.url
 
     @property
     def is_displayed(self):
-        return self.username.is_displayed and self.login_button.is_displayed
+        return (self.username.is_displayed and self.login_button.is_displayed) or (
+            self.validate_url() and self.header.is_displayed
+        )
 
     def login(self, user, password):
         self.fill({"username": user, "password": password})
