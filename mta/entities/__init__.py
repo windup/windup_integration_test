@@ -7,6 +7,7 @@ from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import PatternflyTable
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
+from mta.base.application.implementations.web_ui import navigate_to
 from mta.base.application.implementations.web_ui import ViaWebUI
 from mta.base.modeling import BaseCollection
 from mta.widgetastic import DropdownMenu
@@ -39,6 +40,7 @@ class BaseLoggedInPage(View):
 
     header = Text(locator=".//img[@alt='brand']")
     navigation = MTANavigation(locator='//ul[@class="pf-c-nav__list"]')
+    logout_button = Dropdown(text="mta")
 
     setting = DropdownMenu(
         locator=".//li[contains(@class, 'dropdown') and .//span[@class='pficon pficon-user']]"
@@ -48,14 +50,27 @@ class BaseLoggedInPage(View):
     # only if no project available
     blank_state = View.nested(BlankStateView)
 
+    def validate_url(self):
+        """The logged in Page in both web console and operator are same
+        so added a url check to differentiate in the view"""
+        url = (
+            self.context["object"].application.ocphostname
+            if self.context["object"].application.mta_context == "ViaOperatorUI"
+            else self.context["object"].application.hostname
+        )
+        return url in self.context["object"].application.web_ui.widgetastic_browser.url
+
     @property
     def is_empty(self):
         """Check project is available or not; blank state"""
-        return self.blank_state.is_displayed
+        return self.blank_state.is_displayed and self.validate_url()
 
     @property
     def is_displayed(self):
-        return self.header.is_displayed and self.help.is_displayed
+        return self.header.is_displayed and self.help.is_displayed and self.validate_url()
+
+    def logout(self):
+        self.view.logout_button.item_select("Logout")
 
 
 @attr.s
@@ -102,7 +117,11 @@ class AllProjectView(BaseLoggedInPage):
 
     @property
     def is_displayed(self):
-        return self.is_empty or (self.create_project.is_displayed and self.title.text == "Projects")
+        return self.is_empty or (
+            self.create_project.is_displayed
+            and self.title.text == "Projects"
+            and self.validate_url()
+        )
 
     def select_project(self, name):
         for row in self.table:
@@ -124,14 +143,59 @@ class ProjectView(AllProjectView):
         return self.project_dropdown.is_displayed
 
 
+class LoginPage(View):
+    username = Input(id="username")
+    password = Input(id="password")
+    login_button = Text(locator=".//div/input[@id='kc-login']")
+    header = Text(locator=".//img[@alt='brand']")
+    logout_button = Dropdown(text="mta")
+
+    def validate_url(self):
+        """The logged in Page in both web console and operator are same
+        so added a url check to differentiate in the view"""
+        url = (
+            self.context["object"].application.ocphostname
+            if self.context["object"].application.mta_context == "ViaOperatorUI"
+            else self.context["object"].application.hostname
+        )
+        return url in self.context["object"].application.web_ui.widgetastic_browser.url
+
+    @property
+    def is_displayed(self):
+        return (self.username.is_displayed and self.login_button.is_displayed) or (
+            self.validate_url() and self.header.is_displayed
+        )
+
+    def login(self, user, password):
+        self.fill({"username": user, "password": password})
+        self.login_button.click()
+
+
 @ViaWebUI.register_destination_for(BaseWebUICollection)
 class LoggedIn(MTANavigateStep):
     VIEW = BaseLoggedInPage
 
+    def prerequisite(self):
+        if self.application.mta_context == "ViaOperatorUI":
+            return navigate_to(self.obj, "OCPLoginScreen")
+
     def step(self):
-        self.application.web_ui.widgetastic_browser.url = self.application.hostname
+        if self.application.mta_context == "ViaOperatorUI":
+            self.prerequisite_view.login(self.application.user, self.application.password)
+        else:
+            self.application.web_ui.widgetastic_browser.url = self.application.hostname
         wait_for(lambda: self.view.is_displayed, timeout="30s")
 
     def resetter(self, *args, **kwargs):
         # If some views stuck while navigation; reset navigation by clicking logo
         self.view.header.click()
+        self.view.wait_displayed("30s")
+
+
+@ViaWebUI.register_destination_for(BaseWebUICollection)
+class OCPLoginScreen(MTANavigateStep):
+    VIEW = LoginPage
+
+    def step(self):
+        self.application.web_ui.widgetastic_browser.url = self.application.ocphostname
+        wait_for(lambda: self.view.is_displayed, timeout="30s")

@@ -6,14 +6,16 @@ from mta.utils import conf
 
 class Application(object):
     def __init__(
-        self, hostname=None, user=None, *, config=None,
+        self, hostname=None, ocphostname=None, user=None, password=None, *, config=None,
     ):
         self.config = config or conf.get_config("env")
         # Set up hostnames/paths
         self.hostname = hostname or self.config.application.hostname
+        self.ocphostname = ocphostname or self.config.application.ocphostname
         self.user = user or self.config.application.user
+        self.password = password or self.config.application.password
         self.web_ui = ViaWebUI(owner=self)
-
+        self.mta_context = "ViaWebUI"
         from mta.base.application.implementations import MTAImplementationContext
 
         # TODO: include other context in future

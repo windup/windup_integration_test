@@ -2,9 +2,16 @@ import fauxfactory
 import pytest
 
 
+@pytest.fixture(scope="session")
+def mta_app(application, request):
+    context = getattr(request, "param", "ViaOperatorUI")
+    application.mta_context = context
+    return application
+
+
 @pytest.fixture(scope="function")
-def create_minimal_project(application):
-    project_collection = application.collections.projects
+def create_minimal_project(mta_app):
+    project_collection = mta_app.collections.projects
     project = project_collection.create(
         name=fauxfactory.gen_alphanumeric(12, start="project_"),
         description=fauxfactory.gen_alphanumeric(start="desc_"),
@@ -15,9 +22,9 @@ def create_minimal_project(application):
 
 
 @pytest.fixture(scope="function")
-def create_project_with_two_apps(application):
+def create_project_with_two_apps(mta_app):
     app_list = ["acmeair-webapp-1.0-SNAPSHOT.war", "arit-ear-0.8.1-SNAPSHOT.ear"]
-    project_collection = application.collections.projects
+    project_collection = mta_app.collections.projects
     project = project_collection.create(
         name=fauxfactory.gen_alphanumeric(12, start="project_"),
         description=fauxfactory.gen_alphanumeric(start="desc_"),
@@ -29,8 +36,8 @@ def create_project_with_two_apps(application):
 
 
 @pytest.fixture(scope="function")
-def create_project(application):
-    project_collection = application.collections.projects
+def create_project(mta_app):
+    project_collection = mta_app.collections.projects
     project = project_collection.create(
         name=fauxfactory.gen_alphanumeric(12, start="project_"),
         description=fauxfactory.gen_alphanumeric(start="desc_"),

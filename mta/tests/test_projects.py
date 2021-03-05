@@ -1,4 +1,6 @@
 import fauxfactory
+import pytest
+from wait_for import wait_for
 
 from mta.base.application.implementations.web_ui import navigate_to
 from mta.entities import AllProjectView
@@ -9,7 +11,8 @@ from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import update
 
 
-def test_project_crud(create_minimal_project):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
+def test_project_crud(mta_app, create_minimal_project):
     """
     Polarion:
         assignee: ghubale
@@ -42,13 +45,10 @@ def test_project_crud(create_minimal_project):
         project.description = update_desc
 
     assert project.exists
-    # check name and description both updated on UI or not
-    proj = project_collection.get_project(project.name)
-    assert proj.name.text == updated_name
-    assert proj.description.text == update_desc
 
 
-def test_delete_application(application):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
+def test_delete_application(mta_app):
     """Delete uploaded application file and check if next button gets disabled
 
     Polarion:
@@ -68,6 +68,7 @@ def test_delete_application(application):
             1. Next button should be enabled after uploading application file
             2. Next button should be disabled after deleting application file
     """
+    application = mta_app
     project_collection = application.collections.projects
     view = navigate_to(project_collection, "Add")
     view.create_project.fill(
@@ -79,7 +80,8 @@ def test_delete_application(application):
     file_path = fs.download("acmeair-webapp-1.0-SNAPSHOT.war")
 
     view.add_applications.upload_file.fill(file_path)
-    view.add_applications.next_button.wait_displayed()
+    wait_for(lambda: view.add_applications.next_button.is_enabled, delay=0.2, timeout=60)
+    assert view.add_applications.next_button.is_enabled
     view.add_applications.delete_application.click()
 
     view.add_applications.next_button.wait_displayed()
@@ -91,7 +93,8 @@ def test_delete_application(application):
     view.create_project.yes_button.click()
 
 
-def test_application_report(create_minimal_project):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
+def test_application_report(mta_app, create_minimal_project):
     """
     Polarion:
         assignee: ghubale
@@ -115,7 +118,10 @@ def test_application_report(create_minimal_project):
     assert view.is_displayed
 
 
-def test_sort_projects(create_minimal_project, create_project_with_two_apps, create_project):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
+def test_sort_projects(
+    mta_app, create_minimal_project, create_project_with_two_apps, create_project
+):
     """ Test to sort Projects
 
      Polarion:
@@ -152,7 +158,8 @@ def test_sort_projects(create_minimal_project, create_project_with_two_apps, cre
     project_collection.sort_projects("Status", "descending")
 
 
-def test_search_project(create_minimal_project):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
+def test_search_project(mta_app, create_minimal_project):
     """Test search Projects
 
     Polarion:

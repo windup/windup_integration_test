@@ -4,8 +4,8 @@ from mta.base.application.implementations.web_ui import navigate_to
 
 
 @pytest.mark.smoke
-@pytest.mark.web_console
-def test_login(application):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
+def test_login(mta_app):
     """Test login nav destination
 
     Polarion:
@@ -21,5 +21,5 @@ def test_login(application):
             1. It should successfully navigate to project all page or
                Welcome to the Migration Toolkit for Applications page
     """
-    view = navigate_to(application.collections.base, "LoggedIn")
+    view = navigate_to(mta_app.collections.base, "LoggedIn")
     assert view.is_displayed
