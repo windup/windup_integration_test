@@ -34,13 +34,21 @@ class DropdownMenu(Dropdown):
     """
 
     ROOT = ParametrizedLocator("{@locator}")
-    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-context-selector__toggle')]"
-    ITEMS_LOCATOR = ".//ul/li/button"
-    ITEM_LOCATOR = ".//ul/li/button"
+    BUTTON_LOCATOR = (
+        ".//span[@class='filter-by']/parent::button | "
+        ".//button[contains(@class, 'pf-c-context-selector__toggle')]"
+    )
+    ITEMS_LOCATOR = ".//ul/li/button | .//ul/li/a"
+    ITEM_LOCATOR = ".//ul/li/button | .//ul/li/a[normalize-space(.)={}]"
 
     def __init__(self, parent, locator, logger=None):
         Widget.__init__(self, parent, logger=logger)
         self.locator = locator
+
+    @property
+    def is_open(self):
+        """Returns True if the Dropdown is open"""
+        return "open" or "pf-m-expanded" in self.browser.classes(self)
 
 
 class SortSelector(SelectorDropdown):
@@ -154,3 +162,30 @@ class MTASelect(Select):
     """Select for MTA"""
 
     BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-select__toggle-button')]"
+
+
+class FilterInput(Input):
+    """Customized filter Input widget."""
+
+    def fill(self, value):
+        current_value = self.value
+        if value == current_value:
+            return False
+        # Clear and type everything
+        self.browser.click(self)
+        self.browser.send_keys(f"{Keys.CONTROL}+a,{Keys.DELETE}", self)
+        self.browser.send_keys(value, self)
+        self.browser.send_keys(Keys.ENTER, self)
+        return True
+
+
+class ApplicationList(Widget):
+    """Application list widget."""
+
+    APP_ITEMS_LOCATOR = './/div[contains(@class, "fileName")]/a'
+
+    @property
+    def get_applications_list(self):
+        """Returns list of applications by name"""
+        result = [self.browser.text(el) for el in self.browser.elements(self.APP_ITEMS_LOCATOR)]
+        return result
