@@ -34,27 +34,21 @@ class DropdownMenu(Dropdown):
     """
 
     ROOT = ParametrizedLocator("{@locator}")
-    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-context-selector__toggle')]"
-    ITEMS_LOCATOR = ".//ul/li/button"
-    ITEM_LOCATOR = ".//ul/li/button"
+    BUTTON_LOCATOR = (
+        ".//span[@class='filter-by']/parent::button | "
+        ".//button[contains(@class, 'pf-c-context-selector__toggle')]"
+    )
+    ITEMS_LOCATOR = ".//ul/li/button | .//ul/li/a"
+    ITEM_LOCATOR = ".//ul/li/button | .//ul/li/a[normalize-space(.)={}]"
 
     def __init__(self, parent, locator, logger=None):
         Widget.__init__(self, parent, logger=logger)
         self.locator = locator
 
-
-class MTADropdownMenu(Dropdown):
-    """This is custom dropdown menu"""
-
-    ROOT = ParametrizedLocator("{@locator}")
-    BUTTON_LOCATOR = ".//span[@class='filter-by']/parent::button"
-    ITEMS_LOCATOR = ".//ul/li/a"
-    ITEM_LOCATOR = "//ul/li/a[normalize-space(.)={}]"
-
     @property
     def is_open(self):
         """Returns True if the Dropdown is open"""
-        return "open" in self.browser.classes(self)
+        return "open" or "pf-m-expanded" in self.browser.classes(self)
 
 
 class SortSelector(SelectorDropdown):
@@ -183,3 +177,15 @@ class FilterInput(Input):
         self.browser.send_keys(value, self)
         self.browser.send_keys(Keys.ENTER, self)
         return True
+
+
+class ApplicationList(Widget):
+    """Application list widget."""
+
+    APP_ITEMS_LOCATOR = './/div[contains(@class, "fileName")]/a'
+
+    @property
+    def get_applications_list(self):
+        """Returns list of applications by name"""
+        result = [self.browser.text(el) for el in self.browser.elements(self.APP_ITEMS_LOCATOR)]
+        return result

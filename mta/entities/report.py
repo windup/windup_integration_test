@@ -4,13 +4,13 @@ from widgetastic_patternfly import Tab
 from widgetastic_patternfly import Text
 
 from mta.entities import BaseLoggedInPage
+from mta.widgetastic import ApplicationList
+from mta.widgetastic import DropdownMenu
 from mta.widgetastic import FilterInput
-from mta.widgetastic import MTADropdownMenu
 
 
 class AllApplicationsView(BaseLoggedInPage):
-
-    APP_ITEMS_LOCATOR = './/div[contains(@class, "fileName")]/a'
+    """Class for All applications view"""
 
     filter_application = FilterInput(id="filter")
     title = Text(locator=".//div[text()[normalize-space(.)='Application List']]")
@@ -18,11 +18,9 @@ class AllApplicationsView(BaseLoggedInPage):
 
     clear = Text('.//a[@id="clear-filters"]')
 
-    filter_selector = MTADropdownMenu(
-        locator='.//span[@class="filter-by"]/parent::button/parent::div'
-    )
+    filter_selector = DropdownMenu(locator='.//span[@class="filter-by"]/parent::button/parent::div')
+    application_table = ApplicationList()
 
-    @property
     def clear_filters(self):
         if self.clear.is_displayed:
             self.clear.click()
@@ -36,12 +34,6 @@ class AllApplicationsView(BaseLoggedInPage):
         if filter_type:
             self.filter_selector.item_select(filter_type)
         self.filter_application.fill(search_value)
-
-    @property
-    def get_applications_list(self):
-        """Returns list of applications by name"""
-        result = [self.browser.text(el) for el in self.browser.elements(self.APP_ITEMS_LOCATOR)]
-        return result
 
     @property
     def is_displayed(self):
