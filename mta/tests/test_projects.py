@@ -13,7 +13,23 @@ from mta.utils.update import update
 
 @pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
 def test_project_crud(mta_app, create_minimal_project):
-
+    """
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: high
+        caseposneg: positive
+        testtype: functional
+        casecomponent: WebConsole
+        testSteps:
+            1. Create project
+            2. Edit project name or description
+            3. Click on delete action button or select delete option from kebab drop down
+        expectedResults:
+            1. Project should be created properly
+            2. Project name or description should be updated properly
+            3. Project should get deleted
+    """
     project, project_collection = create_minimal_project
     assert project.exists
 
@@ -33,9 +49,24 @@ def test_project_crud(mta_app, create_minimal_project):
 
 @pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
 def test_delete_application(mta_app):
-    """
-    Test01 -08
-    Delete uploaded application file and check if next button gets disabled
+    """Delete uploaded application file and check if next button gets disabled
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: WebConsole
+        testSteps:
+            1. Go to project all page and click on `Create project` button
+            2. Add name and description and click on `Next` button
+            3. Browse and add application file
+            4. Click on delete button
+        expectedResults:
+            1. Next button should be disabled before uploading application file
+            1. Next button should be enabled after uploading application file
+            2. Next button should be disabled after deleting application file
     """
     application = mta_app
     project_collection = application.collections.projects
@@ -64,6 +95,20 @@ def test_delete_application(mta_app):
 
 @pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI"], indirect=True)
 def test_application_report(mta_app, create_minimal_project):
+    """
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: WebConsole
+        testSteps:
+            1. Create project and run analysis
+            2. Click on `report` action button
+        expectedResults:
+            1. It should show report analysis in detail page
+    """
     project, project_collection = create_minimal_project
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()
@@ -77,8 +122,24 @@ def test_application_report(mta_app, create_minimal_project):
 def test_sort_projects(
     mta_app, create_minimal_project, create_project_with_two_apps, create_project
 ):
-    """
-    Sort Projects
+    """ Test to sort Projects
+
+     Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: WebConsole
+        testSteps:
+            1. Create three different projects
+            2. Go to project all page
+            3. Sort projects by
+                {"name" > "ascending" and "descending",
+                 "Applications" > "ascending" and "descending",
+                 "Status" > "ascending" and "descending"}
+        expectedResults:
+            1. All values should get sorted properly
     """
     project1, project_collection = create_minimal_project
     assert project1.exists
@@ -99,8 +160,20 @@ def test_sort_projects(
 
 @pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
 def test_search_project(mta_app, create_minimal_project):
-    """
-    Search Projects
+    """Test search Projects
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: WebConsole
+        testSteps:
+            1. Create project
+            2. Go to project all page and search by name
+        expectedResults:
+            1. Project with matching search value should appear
     """
     project, project_collection = create_minimal_project
     assert project.exists

@@ -21,6 +21,5 @@ def test_login(mta_app):
             1. It should successfully navigate to project all page or
                Welcome to the Migration Toolkit for Applications page
     """
-
     view = navigate_to(mta_app.collections.base, "LoggedIn")
     assert view.is_displayed
