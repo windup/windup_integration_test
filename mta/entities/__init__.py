@@ -120,6 +120,7 @@ class AllProjectView(BaseLoggedInPage):
         return self.is_empty or (
             self.create_project.is_displayed
             and self.title.text == "Projects"
+            and self.table.is_displayed
             and self.validate_url()
         )
 

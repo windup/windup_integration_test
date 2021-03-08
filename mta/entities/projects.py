@@ -369,7 +369,7 @@ class Project(BaseEntity, Updateable):
 
     def update(self, updates):
         view = navigate_to(self, "Edit")
-        view.wait_displayed()
+        view.wait_displayed("30s")
         changed = view.fill(updates)
         if changed:
             view.save_button.click()
@@ -377,7 +377,7 @@ class Project(BaseEntity, Updateable):
         else:
             view.cancel_button.click()
         view = self.create_view(AllProjectView, override=updates)
-        view.wait_displayed()
+        view.wait_displayed("40s")
         assert view.is_displayed
 
     def delete(self, cancel=False, wait=False):
