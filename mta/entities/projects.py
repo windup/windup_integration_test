@@ -373,7 +373,6 @@ class Project(BaseEntity, Updateable):
         changed = view.fill(updates)
         if changed:
             view.save_button.click()
-            view.wait_displayed("30s")
         else:
             view.cancel_button.click()
         view = self.create_view(AllProjectView, override=updates)
