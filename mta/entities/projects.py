@@ -303,6 +303,7 @@ class AddProjectView(AllProjectView):
         title = Text(locator=".//h5[normalize-space(.)='Review project details']")
         save = Button("Save")
         save_and_run = Button("Save and run")
+        fill_strategy = WaitFillViewStrategy("15s")
 
         @property
         def is_displayed(self):
@@ -460,7 +461,7 @@ class ProjectCollection(BaseCollection):
         view.advanced.custom_labels.fill({"file_label": file_label})
         view.advanced.options.wait_displayed()
         view.advanced.options.fill({"options": options})
-        view.review.wait_displayed()
+        view.review.wait_displayed("30s")
         view.review.after_fill(was_change=True)
 
         project = self.instantiate(
