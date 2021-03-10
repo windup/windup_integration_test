@@ -18,7 +18,7 @@ def main():
 @click.option(
     "-h", "--hostname", default="http://localhost:8080", help="Hostname of the target application"
 )
-@click.option("-p", "--password", default=None, help="MTA password")
+@click.option("-p", "--password", default="password", help="MTA password")
 @click.option(
     "-d",
     "--webdriver",

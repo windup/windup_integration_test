@@ -31,7 +31,7 @@ class AddProjectView(AllProjectView):
 
     @property
     def is_displayed(self):
-        return self.title.is_displayed
+        return self.title.is_displayed and self.create_project.is_displayed
 
     @View.nested
     class create_project(View):  # noqa
@@ -508,6 +508,7 @@ class Add(MTANavigateStep):
     prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
+        self.prerequisite_view.wait_displayed("20s")
         if self.prerequisite_view.is_empty:
             self.prerequisite_view.blank_state.create_project.click()
         else:
