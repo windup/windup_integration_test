@@ -21,6 +21,8 @@ class AllApplicationsView(BaseLoggedInPage):
     filter_selector = DropdownMenu(locator='.//span[@class="filter-by"]/parent::button/parent::div')
     application_table = ApplicationList()
 
+    sort_selector = DropdownMenu(locator='.//span[@id="sort-by"]/parent::button/parent::div')
+
     def clear_filters(self):
         if self.clear.is_displayed:
             self.clear.click()
@@ -34,6 +36,12 @@ class AllApplicationsView(BaseLoggedInPage):
         if filter_type:
             self.filter_selector.item_select(filter_type)
         self.filter_application.fill(search_value)
+    
+    def sort_by(self, sort_criteria="Name"):
+        """
+        Select the sort criteria among Name and Story Points to sort applications list
+        """
+        self.sort_selector.item_select(sort_criteria)
 
     @property
     def is_displayed(self):

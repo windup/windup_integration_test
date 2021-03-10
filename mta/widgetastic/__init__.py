@@ -36,6 +36,7 @@ class DropdownMenu(Dropdown):
     ROOT = ParametrizedLocator("{@locator}")
     BUTTON_LOCATOR = (
         ".//span[@class='filter-by']/parent::button | "
+        ".//span[@id='sort-by']/parent::button | "
         ".//button[contains(@class, 'pf-c-context-selector__toggle')]"
     )
     ITEMS_LOCATOR = ".//ul/li/button | .//ul/li/a"
