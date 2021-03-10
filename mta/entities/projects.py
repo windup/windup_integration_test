@@ -498,6 +498,7 @@ class All(MTANavigateStep):
     prerequisite = NavigateToAttribute("application.collections.base", "LoggedIn")
 
     def step(self, *args, **kwargs):
+        self.prerequisite_view.wait_displayed("20s")
         if not self.prerequisite_view.is_empty:
             self.prerequisite_view.navigation.select("Projects")
 

@@ -71,10 +71,11 @@ def test_delete_application(mta_app):
     application = mta_app
     project_collection = application.collections.projects
     view = navigate_to(project_collection, "Add")
+    view.wait_displayed("20s")
     view.create_project.fill(
         {"name": fauxfactory.gen_alphanumeric(12, start="project_"), "description": "desc"}
     )
-
+    view.add_applications.wait_displayed()
     env = conf.get_config("env")
     fs = FTPClientWrapper(env.ftpserver.entities.mta)
     file_path = fs.download("acmeair-webapp-1.0-SNAPSHOT.war")
