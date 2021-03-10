@@ -6,8 +6,14 @@ from mta.utils import conf
 
 class Application(object):
     def __init__(
-        self, hostname=None, ocphostname=None, ocpsecurehostname=None,
-            user=None, password=None, *, config=None,
+        self,
+        hostname=None,
+        ocphostname=None,
+        ocpsecurehostname=None,
+        user=None,
+        password=None,
+        *,
+        config=None,
     ):
         self.config = config or conf.get_config("env")
         # Set up hostnames/paths
