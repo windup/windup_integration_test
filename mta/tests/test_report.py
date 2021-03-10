@@ -1,6 +1,7 @@
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.entities.report import AllApplicationsView
 
+
 def test_send_feedback(create_minimal_project):
     """Test send feedback
 
@@ -56,6 +57,7 @@ def test_filter_application_list(create_project_with_two_apps):
     apps_list = view.application_table.get_applications_list
     assert "acmeair-webapp-1.0-SNAPSHOT.war" in apps_list[:-1]
 
+
 def test_sort_applications(create_project):
     """Test Sorting of applications
 
@@ -82,6 +84,10 @@ def test_sort_applications(create_project):
     app_list_by_name = view.application_table.get_applications_list
     assert app_list_by_name[:-1] == sorted(app_list_by_name[:-1])
     view.sort_by("Story Points")
-    expected_app_list_by_story_points = ["cadmium-war-0.1.0.war", "acmeair-webapp-1.0-SNAPSHOT.war", "bw-note-ear-4.0.0.ear"]
+    expected_app_list_by_story_points = [
+        "cadmium-war-0.1.0.war",
+        "acmeair-webapp-1.0-SNAPSHOT.war",
+        "bw-note-ear-4.0.0.ear"
+    ]
     app_list_by_story_points = view.application_table.get_applications_list
     assert app_list_by_story_points[:-1] == expected_app_list_by_story_points
