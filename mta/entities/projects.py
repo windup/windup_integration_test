@@ -31,7 +31,7 @@ class AddProjectView(AllProjectView):
 
     @property
     def is_displayed(self):
-        return self.title.is_displayed
+        return self.title.is_displayed and self.create_project.is_displayed
 
     @View.nested
     class create_project(View):  # noqa
@@ -303,6 +303,7 @@ class AddProjectView(AllProjectView):
         title = Text(locator=".//h5[normalize-space(.)='Review project details']")
         save = Button("Save")
         save_and_run = Button("Save and run")
+        fill_strategy = WaitFillViewStrategy("15s")
 
         @property
         def is_displayed(self):
@@ -368,15 +369,14 @@ class Project(BaseEntity, Updateable):
 
     def update(self, updates):
         view = navigate_to(self, "Edit")
-        view.wait_displayed()
+        view.wait_displayed("30s")
         changed = view.fill(updates)
         if changed:
             view.save_button.click()
-            view.wait_displayed("30s")
         else:
             view.cancel_button.click()
         view = self.create_view(AllProjectView, override=updates)
-        view.wait_displayed()
+        view.wait_displayed("40s")
         assert view.is_displayed
 
     def delete(self, cancel=False, wait=False):
@@ -460,7 +460,7 @@ class ProjectCollection(BaseCollection):
         view.advanced.custom_labels.fill({"file_label": file_label})
         view.advanced.options.wait_displayed()
         view.advanced.options.fill({"options": options})
-        view.review.wait_displayed()
+        view.review.wait_displayed("30s")
         view.review.after_fill(was_change=True)
 
         project = self.instantiate(
@@ -498,6 +498,7 @@ class All(MTANavigateStep):
     prerequisite = NavigateToAttribute("application.collections.base", "LoggedIn")
 
     def step(self, *args, **kwargs):
+        self.prerequisite_view.wait_displayed("20s")
         if not self.prerequisite_view.is_empty:
             self.prerequisite_view.navigation.select("Projects")
 
@@ -508,6 +509,7 @@ class Add(MTANavigateStep):
     prerequisite = NavigateToSibling("All")
 
     def step(self, *args, **kwargs):
+        self.prerequisite_view.wait_displayed("20s")
         if self.prerequisite_view.is_empty:
             self.prerequisite_view.blank_state.create_project.click()
         else:
