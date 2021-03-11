@@ -11,7 +11,7 @@ from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import update
 
 
-@pytest.mark.parametrize("mta_app", ["ViaSecure"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_project_crud(mta_app, create_minimal_project):
     """
     Polarion:

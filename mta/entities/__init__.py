@@ -57,7 +57,7 @@ class BaseLoggedInPage(View):
             url = self.context["object"].application.ocphostname
         elif self.context["object"].application.mta_context == "ViaSecure":
             url = self.context["object"].application.ocpsecurehostname
-        else:
+        elif self.context["object"].application.mta_context == "ViaWebUI":
             url = self.context["object"].application.hostname
         return url in self.context["object"].application.web_ui.widgetastic_browser.url
 
@@ -159,7 +159,7 @@ class LoginPage(View):
             url = self.context["object"].application.ocphostname
         elif self.context["object"].application.mta_context == "ViaSecure":
             url = self.context["object"].application.ocpsecurehostname
-        else:
+        elif self.context["object"].application.mta_context == "ViaWebUI":
             url = self.context["object"].application.hostname
         return url in self.context["object"].application.web_ui.widgetastic_browser.url
 
@@ -179,14 +179,14 @@ class LoggedIn(MTANavigateStep):
     VIEW = BaseLoggedInPage
 
     def prerequisite(self):
-        if self.application.mta_context == "ViaOperatorUI" or "ViaSecure":
+        if self.application.mta_context != "ViaWebUI":
             return navigate_to(self.obj, "OCPLoginScreen")
 
     def step(self):
-        if self.application.mta_context == "ViaOperatorUI" or "ViaSecure":
-            self.prerequisite_view.login(self.application.user, self.application.password)
-        else:
+        if self.application.mta_context == "ViaWebUI":
             self.application.web_ui.widgetastic_browser.url = self.application.hostname
+        else:
+            self.prerequisite_view.login(self.application.user, self.application.password)
         wait_for(lambda: self.view.is_displayed, timeout="30s")
 
     def resetter(self, *args, **kwargs):
@@ -202,6 +202,6 @@ class OCPLoginScreen(MTANavigateStep):
     def step(self):
         if self.application.mta_context == "ViaOperatorUI":
             self.application.web_ui.widgetastic_browser.url = self.application.ocphostname
-        else:
+        elif self.application.mta_context == "ViaSecure":
             self.application.web_ui.widgetastic_browser.url = self.application.ocpsecurehostname
         wait_for(lambda: self.view.is_displayed, timeout="30s")
