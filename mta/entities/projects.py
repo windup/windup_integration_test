@@ -296,6 +296,7 @@ class AddProjectView(AllProjectView):
                 return self.title.is_displayed and self.select_target.is_displayed
 
             def after_fill(self, was_change):
+                wait_for(lambda: self.next_button.is_enabled, delay=0.2, timeout=60)
                 self.next_button.click()
 
     @View.nested
