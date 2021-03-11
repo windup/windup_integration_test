@@ -123,9 +123,9 @@ def test_advanced_options(request, application):
     view.analysis_results.show_report()
     view = project_collection.create_view(AllApplicationsView)
 
-    def _finalizer():
-        # Close report details window
-        view.browser.close_window()
-
-    request.addfinalizer(lambda: _finalizer())
+    # def _finalizer():
+    #     # Close report details window
+    #     view.browser.close_window()
+    #
+    # request.addfinalizer(lambda: _finalizer())
     assert view.is_displayed
