@@ -459,7 +459,7 @@ class ProjectCollection(BaseCollection):
         view.advanced.custom_rules.fill({"file_rule": file_rule})
         view.advanced.custom_labels.wait_displayed()
         view.advanced.custom_labels.fill({"file_label": file_label})
-        view.advanced.options.wait_displayed()
+        view.advanced.options.wait_displayed("20s")
         view.advanced.options.fill({"options": options})
         view.review.wait_displayed("30s")
         view.review.after_fill(was_change=True)
