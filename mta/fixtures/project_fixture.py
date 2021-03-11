@@ -4,7 +4,7 @@ import pytest
 
 @pytest.fixture(scope="session")
 def mta_app(application, request):
-    context = getattr(request, "param", "ViaOperatorUI")
+    context = getattr(request, "param", "ViaWebUI")
     application.mta_context = context
     return application
 
