@@ -36,7 +36,7 @@ class AllApplicationsView(BaseLoggedInPage):
         if filter_type:
             self.filter_selector.item_select(filter_type)
         self.filter_application.fill(search_value)
-    
+
     def sort_by(self, sort_criteria="Name"):
         """
         Select the sort criteria among Name and Story Points to sort applications list

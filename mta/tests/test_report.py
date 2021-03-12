@@ -87,7 +87,7 @@ def test_sort_applications(create_project):
     expected_app_list_by_story_points = [
         "cadmium-war-0.1.0.war",
         "acmeair-webapp-1.0-SNAPSHOT.war",
-        "bw-note-ear-4.0.0.ear"
+        "bw-note-ear-4.0.0.ear",
     ]
     app_list_by_story_points = view.application_table.get_applications_list
     assert app_list_by_story_points[:-1] == expected_app_list_by_story_points
