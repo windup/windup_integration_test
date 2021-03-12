@@ -296,6 +296,7 @@ class AddProjectView(AllProjectView):
                 return self.title.is_displayed and self.select_target.is_displayed
 
             def after_fill(self, was_change):
+                wait_for(lambda: self.next_button.is_enabled, delay=0.2, timeout=150)
                 self.next_button.click()
 
     @View.nested
@@ -310,7 +311,7 @@ class AddProjectView(AllProjectView):
             return self.title.is_displayed and self.save_and_run.is_displayed
 
         def after_fill(self, was_change):
-            wait_for(lambda: self.save_and_run.is_enabled, delay=5, timeout=30)
+            wait_for(lambda: self.save_and_run.is_enabled, delay=0.2, timeout=30)
             self.save_and_run.click()
 
 
@@ -361,7 +362,7 @@ class Project(BaseEntity, Updateable):
     def exists(self):
         """Check project exist or not"""
         view = navigate_to(self.parent, "All")
-        view.table.wait_displayed("20s")
+        view.table.wait_displayed("30s")
         for row in view.table:
             if row.name.text == self.name:
                 return True
@@ -458,7 +459,7 @@ class ProjectCollection(BaseCollection):
         view.advanced.custom_rules.fill({"file_rule": file_rule})
         view.advanced.custom_labels.wait_displayed()
         view.advanced.custom_labels.fill({"file_label": file_label})
-        view.advanced.options.wait_displayed()
+        view.advanced.options.wait_displayed("20s")
         view.advanced.options.fill({"options": options})
         view.review.wait_displayed("30s")
         view.review.after_fill(was_change=True)

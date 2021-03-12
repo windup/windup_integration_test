@@ -88,6 +88,7 @@ class AnalysisResults(Updateable, NavigatableMixin):
     def run_analysis(self):
         """ Run analysis"""
         view = navigate_to(self, "AnalysisResultsPage")
+        wait_for(lambda: view.run_analysis_button.is_displayed, delay=5, timeout=30)
         view.run_analysis_button.click()
         wait_for(lambda: view.analysis_results.in_progress(), delay=0.2, timeout=450)
         wait_for(lambda: view.analysis_results.is_analysis_complete(), delay=0.2, timeout=450)
@@ -101,6 +102,7 @@ class AnalysisResults(Updateable, NavigatableMixin):
         view = navigate_to(self, "AnalysisResultsPage")
         view.analysis_row(row).delete_analysis.click()
         view = self.create_view(AnalysisDeleteView)
+        wait_for(lambda: view.delete.is_enabled, delay=5, timeout=30)
         if cancel:
             view.cancel.click()
         else:
@@ -108,6 +110,7 @@ class AnalysisResults(Updateable, NavigatableMixin):
 
     def sort_analysis(self):
         view = navigate_to(self, "AnalysisResultsPage")
+        wait_for(lambda: view.sort_analysis.is_displayed, delay=5, timeout=30)
         view.sort_analysis.click()
 
 

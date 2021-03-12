@@ -53,11 +53,12 @@ class BaseLoggedInPage(View):
     def validate_url(self):
         """The logged in Page in both web console and operator are same
         so added a url check to differentiate in the view"""
-        url = (
-            self.context["object"].application.ocphostname
-            if self.context["object"].application.mta_context == "ViaOperatorUI"
-            else self.context["object"].application.hostname
-        )
+        if self.context["object"].application.mta_context == "ViaOperatorUI":
+            url = self.context["object"].application.ocphostname
+        elif self.context["object"].application.mta_context == "ViaSecure":
+            url = self.context["object"].application.ocpsecurehostname
+        elif self.context["object"].application.mta_context == "ViaWebUI":
+            url = self.context["object"].application.hostname
         return url in self.context["object"].application.web_ui.widgetastic_browser.url
 
     @property
@@ -154,11 +155,12 @@ class LoginPage(View):
     def validate_url(self):
         """The logged in Page in both web console and operator are same
         so added a url check to differentiate in the view"""
-        url = (
-            self.context["object"].application.ocphostname
-            if self.context["object"].application.mta_context == "ViaOperatorUI"
-            else self.context["object"].application.hostname
-        )
+        if self.context["object"].application.mta_context == "ViaOperatorUI":
+            url = self.context["object"].application.ocphostname
+        elif self.context["object"].application.mta_context == "ViaSecure":
+            url = self.context["object"].application.ocpsecurehostname
+        elif self.context["object"].application.mta_context == "ViaWebUI":
+            url = self.context["object"].application.hostname
         return url in self.context["object"].application.web_ui.widgetastic_browser.url
 
     @property
@@ -177,14 +179,14 @@ class LoggedIn(MTANavigateStep):
     VIEW = BaseLoggedInPage
 
     def prerequisite(self):
-        if self.application.mta_context == "ViaOperatorUI":
+        if self.application.mta_context != "ViaWebUI":
             return navigate_to(self.obj, "OCPLoginScreen")
 
     def step(self):
-        if self.application.mta_context == "ViaOperatorUI":
-            self.prerequisite_view.login(self.application.user, self.application.password)
-        else:
+        if self.application.mta_context == "ViaWebUI":
             self.application.web_ui.widgetastic_browser.url = self.application.hostname
+        else:
+            self.prerequisite_view.login(self.application.user, self.application.password)
         wait_for(lambda: self.view.is_displayed, timeout="30s")
 
     def resetter(self, *args, **kwargs):
@@ -198,5 +200,8 @@ class OCPLoginScreen(MTANavigateStep):
     VIEW = LoginPage
 
     def step(self):
-        self.application.web_ui.widgetastic_browser.url = self.application.ocphostname
+        if self.application.mta_context == "ViaOperatorUI":
+            self.application.web_ui.widgetastic_browser.url = self.application.ocphostname
+        elif self.application.mta_context == "ViaSecure":
+            self.application.web_ui.widgetastic_browser.url = self.application.ocpsecurehostname
         wait_for(lambda: self.view.is_displayed, timeout="30s")

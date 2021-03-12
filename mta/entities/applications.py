@@ -71,6 +71,7 @@ class Applications(Updateable, NavigatableMixin):
             name: name to search
         """
         view = navigate_to(self, "ApplicationsPage")
+        wait_for(lambda: view.search.is_displayed, delay=5, timeout=30)
         view.search.fill(name)
 
     def delete_application(self, name, cancel=False):
@@ -83,6 +84,7 @@ class Applications(Updateable, NavigatableMixin):
         for row in view.table:
             if row.application.text == name:
                 row[view.ACTIONS_INDEX].widget.item_select("Delete")
+        wait_for(lambda: view.delete_button.is_enabled, delay=5, timeout=30)
         if cancel:
             view.cancel_button.click()
         else:
@@ -116,6 +118,7 @@ class Applications(Updateable, NavigatableMixin):
 
     def sort_application(self, criteria, order):
         view = navigate_to(self, "ApplicationsPage")
+        view.table.wait_displayed("20s")
         view.table.sort_by(criteria, order)
 
 
