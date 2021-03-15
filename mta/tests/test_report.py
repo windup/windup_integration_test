@@ -58,7 +58,7 @@ def test_filter_application_list(create_project_with_two_apps):
     assert "acmeair-webapp-1.0-SNAPSHOT.war" in apps_list[:-1]
 
 
-def test_sort_applications(create_project):
+def test_sort_application_list(create_project):
     """Test Sorting of applications
 
     Polarion:
