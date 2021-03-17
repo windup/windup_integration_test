@@ -2,6 +2,7 @@ from widgetastic.utils import WaitFillViewStrategy
 from widgetastic.widget import View
 from widgetastic_patternfly import Tab
 from widgetastic_patternfly import Text
+from widgetastic_patternfly4 import Button
 
 from mta.entities import BaseLoggedInPage
 from mta.widgetastic import ApplicationList
@@ -22,6 +23,8 @@ class AllApplicationsView(BaseLoggedInPage):
     application_table = ApplicationList()
 
     sort_selector = DropdownMenu(locator='.//span[@id="sort-by"]/parent::button/parent::div')
+    sort_dropdown_menu = Button(locator=".//div[contains(@class, 'dropdown btn-group')]")
+    alpha_sort = Button(locator=".//button[@id='sort-order']")
 
     def clear_filters(self):
         if self.clear.is_displayed:
@@ -37,10 +40,11 @@ class AllApplicationsView(BaseLoggedInPage):
             self.filter_selector.item_select(filter_type)
         self.filter_application.fill(search_value)
 
-    def sort_by(self, sort_criteria="Name"):
+    def sort_by(self, sort_criteria):
         """
         Select the sort criteria among Name and Story Points to sort applications list
         """
+        self.sort_dropdown_menu.click()
         self.sort_selector.item_select(sort_criteria)
 
     @property

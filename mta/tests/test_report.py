@@ -83,11 +83,22 @@ def test_sort_application_list(create_project):
     view.sort_by("Name")
     app_list_by_name = view.application_table.get_applications_list
     assert app_list_by_name[:-1] == sorted(app_list_by_name[:-1])
+    view.alpha_sort.click()
+    app_list_by_name = view.application_table.get_applications_list
+    assert app_list_by_name[:-1] == sorted(app_list_by_name[:-1], reverse=True)
     view.sort_by("Story Points")
-    expected_app_list_by_story_points = [
+    app_list_by_story_points = view.application_table.get_applications_list
+    app_list_story_points_desc = [
+        "bw-note-ear-4.0.0.ear",
+        "acmeair-webapp-1.0-SNAPSHOT.war",
+        "cadmium-war-0.1.0.war",
+    ]
+    assert app_list_by_story_points[:-1] == app_list_story_points_desc
+    view.alpha_sort.click()
+    app_list_story_points_asc = [
         "cadmium-war-0.1.0.war",
         "acmeair-webapp-1.0-SNAPSHOT.war",
         "bw-note-ear-4.0.0.ear",
     ]
     app_list_by_story_points = view.application_table.get_applications_list
-    assert app_list_by_story_points[:-1] == expected_app_list_by_story_points
+    assert app_list_by_story_points[:-1] == app_list_story_points_asc
