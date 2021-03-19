@@ -51,6 +51,10 @@ class DropdownMenu(Dropdown):
         """Returns True if the Dropdown is open"""
         return "open" or "pf-m-expanded" in self.browser.classes(self)
 
+    def open(self):
+        """Opens the dropdown menu"""
+        self.browser.click(self.BUTTON_LOCATOR)
+
 
 class SortSelector(SelectorDropdown):
     def item_select(self, item, *args, **kwargs):

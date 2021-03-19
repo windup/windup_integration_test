@@ -23,7 +23,6 @@ class AllApplicationsView(BaseLoggedInPage):
     application_table = ApplicationList()
 
     sort_selector = DropdownMenu(locator='.//span[@id="sort-by"]/parent::button/parent::div')
-    sort_dropdown_menu = Button(locator=".//div[contains(@class, 'dropdown btn-group')]")
     alpha_sort = Button(locator=".//button[@id='sort-order']")
 
     def clear_filters(self):
@@ -44,7 +43,7 @@ class AllApplicationsView(BaseLoggedInPage):
         """
         Select the sort criteria among Name and Story Points to sort applications list
         """
-        self.sort_dropdown_menu.click()
+        self.sort_selector.open()
         self.sort_selector.item_select(sort_criteria)
 
     @property
