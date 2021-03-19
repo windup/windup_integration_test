@@ -43,8 +43,8 @@ class AllApplicationsView(BaseLoggedInPage):
         """
         Select the sort criteria among Name and Story Points to sort applications list
         """
-        self.sort_selector.open()
-        self.sort_selector.item_select(sort_criteria)
+        if self.sort_selector.items is not None:
+            self.sort_selector.item_select(sort_criteria)
 
     @property
     def is_displayed(self):
