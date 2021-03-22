@@ -9,9 +9,11 @@ from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import Button
 from widgetastic_patternfly import Input
 from widgetastic_patternfly import SelectorDropdown
+from widgetastic_patternfly4 import CheckboxSelect
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Navigation
 from widgetastic_patternfly4 import Select
+from widgetastic_patternfly4 import Tab
 
 
 class MTANavigation(Navigation):
@@ -37,7 +39,10 @@ class DropdownMenu(Dropdown):
     BUTTON_LOCATOR = (
         ".//span[@class='filter-by']/parent::button | "
         ".//span[@id='sort-by']/parent::button | "
-        ".//button[contains(@class, 'pf-c-context-selector__toggle')]"
+        ".//button[contains(@class, 'pf-c-context-selector__toggle')] | "
+        ".//span[@class='pf-c-select__toggle-icon']/parent::div/parent::button | "
+        ".//span[@class='pf-c-select__toggle-arrow']/parent::button["
+        "contains(@aria-labelledby, 'Filter by Source')]"
     )
     ITEMS_LOCATOR = ".//ul/li/button | .//ul/li/a"
     ITEM_LOCATOR = ".//ul/li/button | .//ul/li/a[normalize-space(.)={}]"
@@ -50,6 +55,15 @@ class DropdownMenu(Dropdown):
     def is_open(self):
         """Returns True if the Dropdown is open"""
         return "open" or "pf-m-expanded" in self.browser.classes(self)
+
+
+class MTACheckboxSelect(CheckboxSelect):
+    """Represents the custom Patternfly Select."""
+
+    BUTTON_LOCATOR = (
+        ".//span[@class='pf-c-select__toggle-arrow']/parent::button["
+        "contains(@aria-labelledby, 'Filter by Source')]"
+    )
 
 
 class SortSelector(SelectorDropdown):
@@ -190,3 +204,17 @@ class ApplicationList(Widget):
         """Returns list of applications by name"""
         result = [self.browser.text(el) for el in self.browser.elements(self.APP_ITEMS_LOCATOR)]
         return result
+
+
+class MTATab(Tab):
+    """Represents the custom Patternfly Tab widget."""
+
+    # Locator of the Tab selector
+    TAB_LOCATOR = ParametrizedLocator(
+        './/div[contains(@class, "pf-c-tabs")]/ul'
+        "//li[button[normalize-space(.)={@tab_name|quote}]]"
+    )
+
+    def is_active(self):
+        """Returns a boolean detailing of the tab is active."""
+        return "pf-m-current" or "pf-c-tabs__item" in self.parent_browser.classes(self.TAB_LOCATOR)
