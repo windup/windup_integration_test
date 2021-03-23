@@ -86,7 +86,7 @@ class CustomRulesView(BaseLoggedInPage):
 
     @property
     def is_displayed(self):
-        return self.add_rule_button.is_displayed
+        return self.add_rule_button.is_displayed and self.table.is_displayed
 
     @View.nested
     class custom_rules(View):  # noqa

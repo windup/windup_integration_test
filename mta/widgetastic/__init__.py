@@ -1,9 +1,12 @@
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from wait_for import wait_for
+from widgetastic.exceptions import DoNotReadThisWidget
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import FileInput
 from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
+from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import Button
@@ -218,3 +221,47 @@ class MTATab(Tab):
     def is_active(self):
         """Returns a boolean detailing of the tab is active."""
         return "pf-m-current" or "pf-c-tabs__item" in self.parent_browser.classes(self.TAB_LOCATOR)
+
+
+class Card(View):
+    """
+    Represents a generic patternfly 4 card
+
+    This can eventually reside in the wt.pf4 repo
+    """
+
+    ROOT = ParametrizedLocator("{@locator}")
+
+    header = Text('./div[contains(@class, "pf-c-card__header")]')
+    body = Text('./div[contains(@class, "pf-c-card__body")]')
+    footer = Text('./div[contains(@class, "pf-c-card__footer")]')
+    expand_card = Text(".//button")
+
+    def __init__(self, parent, locator=None, logger=None):
+        super().__init__(parent, logger=logger)
+        if not locator:
+            self.locator = './/article[contains(@class, "pf-c-card")]'
+        else:
+            self.locator = locator
+
+    def open(self):
+        if not self.body.is_displayed:
+            self.expand_card.click()
+
+    def read(self):
+        self.open()
+        result = {}
+        for widget_name in self.widget_names:
+            widget = getattr(self, widget_name)
+            try:
+                value = widget.read()
+            except (NotImplementedError, NoSuchElementException, DoNotReadThisWidget):
+                continue
+
+            result[widget_name] = value
+
+        return result
+
+    @property
+    def is_displayed(self):
+        return self.body.is_displayed

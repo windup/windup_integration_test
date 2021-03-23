@@ -128,7 +128,7 @@ class AllProjectView(BaseLoggedInPage):
     def select_project(self, name):
         for row in self.table:
             if row.name.text == name:
-                row.click()
+                row["Name"].widget.click()
 
 
 class ProjectView(AllProjectView):
