@@ -142,3 +142,56 @@ def test_invalid_global_custom_rule(application, request):
     for rule in all_rules:
         if rule["Short path"] == file_name:
             assert int(rule["Number of rules"]) == 0
+
+
+def test_total_global_system_rule(application):
+    """ Test to upload global custom rules file
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: WebConsole
+        testSteps:
+            1. Navigate to Global > Rules configuration > System rules
+            2. Check show all rules
+        expectedResults:
+            1. Total system rules count should be 331
+    """
+    view = navigate_to(application.collections.globalconfigurations, "System")
+    view.wait_displayed()
+    view.show_all_rules.click()
+    assert view.paginator.total_items == 331
+
+
+def test_filter_global_system_rule(application):
+    """ Test to upload global custom rules file
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: WebConsole
+        testSteps:
+            1. Navigate to Global > Rules configuration > System rules
+            2. Check show all rules
+        expectedResults:
+            1. Total system rules count should be 331
+    """
+    filters = {
+        "Source": ["agroal", "amazon", "avro"],
+        "Target": ["camel", "cloud-readiness", "quarkus"],
+    }
+    view = navigate_to(application.collections.globalconfigurations, "System")
+    view.wait_displayed()
+    view.show_all_rules.click()
+    for filter_type in filters:
+        for filter_value in filters[filter_type]:
+            view.search(search_value=filter_value, filter_type=filter_type)
+            filtered_rules = view.table.read()
+            for rule in filtered_rules:
+                assert rule[filter_type] == filter_value

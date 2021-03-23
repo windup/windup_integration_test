@@ -2,7 +2,6 @@ import attr
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
 from widgetastic.utils import WaitFillViewStrategy
-from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly4 import Button
@@ -26,7 +25,9 @@ from mta.widgetastic import MTATab
 class SystemRulesView(BaseLoggedInPage):
     """This view represents System rules tab page"""
 
-    show_all_rules = Checkbox(".//input[@id='showAllRules']")
+    paginator = Pagination(locator='.//div[contains(@class, "pf-c-pagination")]')
+
+    show_all_rules = Text(".//input[@id='showAllRules']")
     table = Table(
         locator='.//table[contains(@aria-label, "Table")]',
         column_widgets={
@@ -53,7 +54,7 @@ class SystemRulesView(BaseLoggedInPage):
         """
         if clear_filters:
             self.clear_filters()
-        if filter_type:
+        if filter_type and not self.filter_type_selector.read() == "Source":
             self.filter_type_selector.item_select(filter_type)
         self.filter_by.fill(search_value)
 
@@ -73,6 +74,7 @@ class DeleteCustomRuleView(View):
 class CustomRulesView(BaseLoggedInPage):
     """This view represents Custom rules tab page"""
 
+    paginator = Pagination(locator='.//div[contains(@class, "pf-c-pagination")]')
     add_rule_button = Button("Add rule")
     search = Input(locator=".//input[@aria-label='Filter by short path']")
     table = Table(
@@ -128,7 +130,6 @@ class RulesConfigurationView(BaseLoggedInPage):
     """This view is for presenting rules configuration page"""
 
     title = Text(locator=".//h1")
-    paginator = Pagination(locator='.//div[contains(@class, "pf-c-pagination")]')
 
     @View.nested
     class system_rules(MTATab):  # noqa
