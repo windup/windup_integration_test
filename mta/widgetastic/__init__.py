@@ -43,9 +43,7 @@ class DropdownMenu(Dropdown):
         ".//span[@class='filter-by']/parent::button | "
         ".//span[@id='sort-by']/parent::button | "
         ".//button[contains(@class, 'pf-c-context-selector__toggle')] | "
-        ".//span[@class='pf-c-select__toggle-icon']/parent::div/parent::button | "
-        ".//span[@class='pf-c-select__toggle-arrow']/parent::button["
-        "contains(@aria-labelledby, 'Filter by Source')]"
+        ".//span[@class='pf-c-select__toggle-icon']/parent::div/parent::button"
     )
     ITEMS_LOCATOR = ".//ul/li/button | .//ul/li/a"
     ITEM_LOCATOR = ".//ul/li/button | .//ul/li/a[normalize-space(.)={}]"
@@ -57,7 +55,8 @@ class DropdownMenu(Dropdown):
     @property
     def is_open(self):
         """Returns True if the Dropdown is open"""
-        return "open" or "pf-m-expanded" in self.browser.classes(self)
+        all_classes = self.browser.classes(self)
+        return "open" in all_classes or "pf-m-expanded" in all_classes
 
 
 class MTACheckboxSelect(CheckboxSelect):
@@ -65,7 +64,9 @@ class MTACheckboxSelect(CheckboxSelect):
 
     BUTTON_LOCATOR = (
         ".//span[@class='pf-c-select__toggle-arrow']/parent::button["
-        "contains(@aria-labelledby, 'Filter by Source')]"
+        "contains(@aria-labelledby, 'Filter by Source')] |"
+        ".//span[@class='pf-c-select__toggle-arrow']/parent::button["
+        "contains(@aria-labelledby, 'Filter by Target')]"
     )
 
 
@@ -208,6 +209,13 @@ class ApplicationList(Widget):
         result = [self.browser.text(el) for el in self.browser.elements(self.APP_ITEMS_LOCATOR)]
         return result
 
+    def application_details(self, app_name):
+        """Clicks on specific application to navigate to it's details page"""
+        all_apps = self.browser.elements(self.APP_ITEMS_LOCATOR)
+        for el in all_apps:
+            if self.browser.text(el) == app_name:
+                self.browser.click(el)
+
 
 class MTATab(Tab):
     """Represents the custom Patternfly Tab widget."""
@@ -215,7 +223,8 @@ class MTATab(Tab):
     # Locator of the Tab selector
     TAB_LOCATOR = ParametrizedLocator(
         './/div[contains(@class, "pf-c-tabs")]/ul'
-        "//li[button[normalize-space(.)={@tab_name|quote}]]"
+        "//li[button[normalize-space(.)={@tab_name|quote}]] | "
+        ".//ul[contains(@class, 'nav')]/li[./a[normalize-space(.)={@tab_name|quote}]]"
     )
 
     def is_active(self):

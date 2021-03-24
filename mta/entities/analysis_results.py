@@ -169,8 +169,4 @@ class AnalysisDetailsPage(MTANavigateStep):
 
     def step(self):
         """This will navigate to details page of latest analysis"""
-        # TODO(ghubale): Improve it to navigate to specific analysis details page
-        self.prerequisite_view.table.wait_displayed()
-        for row in self.prerequisite_view.table:
-            row["Analysis"].widget.click()
-            break
+        self.prerequisite_view.analysis_row(row=1).analysis_number.click()

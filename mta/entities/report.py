@@ -1,6 +1,5 @@
 from widgetastic.utils import WaitFillViewStrategy
 from widgetastic.widget import View
-from widgetastic_patternfly import Tab
 from widgetastic_patternfly import Text
 from widgetastic_patternfly4 import Button
 
@@ -8,6 +7,18 @@ from mta.entities import BaseLoggedInPage
 from mta.widgetastic import ApplicationList
 from mta.widgetastic import DropdownMenu
 from mta.widgetastic import FilterInput
+from mta.widgetastic import MTATab
+
+
+class Issues(View):
+    """View to represent issues in analysis report"""
+
+    title = Text('.//h1/div[@class="main"]')
+    # TODO(ghubale): Add table widget to read all table on page
+
+    @property
+    def is_displayed(self):
+        return self.title.text == "Issues"
 
 
 class AllApplicationsView(BaseLoggedInPage):
@@ -55,17 +66,13 @@ class AllApplicationsView(BaseLoggedInPage):
         """The tabs on the page"""
 
         @View.nested
-        class all_issues(Tab):  # noqa
+        class issues(MTATab):  # noqa
             fill_strategy = WaitFillViewStrategy("15s")
-            TAB_NAME = "All Issues"
-            title = Text('.//div[contains(@class, "page-header")]/h1/div')
-
-            @property
-            def is_displayed(self):
-                return self.title.text == "All Issues"
+            TAB_NAME = "Issues"
+            including_view = View.include(Issues, use_parent=True)
 
         @View.nested
-        class technologies(Tab):  # noqa
+        class technologies(MTATab):  # noqa
             fill_strategy = WaitFillViewStrategy("20s")
             TAB_NAME = "Technologies"
             title = Text('.//div[contains(@class, "page-header")]/h1/div')

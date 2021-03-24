@@ -36,10 +36,12 @@ class SystemRulesView(BaseLoggedInPage):
             4: Dropdown(),
         },
     )
-    filter_type_selector = DropdownMenu(locator='.//div[@class="pf-c-toolbar__item"]')
+    filter_type_selector = DropdownMenu(locator='.//div[contains(@class, "pf-c-select")]')
     filter_by = MTACheckboxSelect(
         locator='.//span[@class="pf-c-select__toggle-arrow"]//parent::button['
-        'contains(@aria-labelledby, "Filter by Source")]/parent::div")'
+        'contains(@aria-labelledby, "Filter by Source")]/parent::div |'
+        ' .//span[@class="pf-c-select__toggle-arrow"]//parent::button['
+        'contains(@aria-labelledby, "Filter by Target")]/parent::div'
     )
 
     clear = Text('.//button[contains(text(), "Clear all filters")]')
@@ -54,9 +56,9 @@ class SystemRulesView(BaseLoggedInPage):
         """
         if clear_filters:
             self.clear_filters()
-        if filter_type and not self.filter_type_selector.read() == "Source":
+        if filter_type:
             self.filter_type_selector.item_select(filter_type)
-        self.filter_by.fill(search_value)
+        self.filter_by.item_select(search_value)
 
 
 class DeleteCustomRuleView(View):
