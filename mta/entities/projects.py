@@ -451,7 +451,7 @@ class ProjectCollection(BaseCollection):
             {"transformation_path": transformation_path}
         )
         wait_for(
-            lambda: view.configure_analysis.select_packages(pkg).is_displayed, delay=0.2, timeout=60
+            lambda: view.configure_analysis.select_packages(pkg).is_displayed, delay=5, timeout=300
         )
         view.configure_analysis.select_packages(pkg).wait_displayed()
         view.configure_analysis.select_packages(pkg).fill({"pkg": pkg})
