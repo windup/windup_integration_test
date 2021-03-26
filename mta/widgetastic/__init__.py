@@ -273,4 +273,4 @@ class Card(View):
 
     @property
     def is_displayed(self):
-        return self.body.is_displayed
+        return self.header.is_displayed

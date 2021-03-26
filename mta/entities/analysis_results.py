@@ -73,6 +73,8 @@ class AnalysisDeleteView(View):
 class AnalysisDetailsView(BaseLoggedInPage):
     """This view represents details page of specific analysis"""
 
+    title = Text(".//h1")
+
     transformation_path = Card('.//article[./div[(.)="Transformation path"]]')
     status = Card('.//article[./div[(.)="Status"]]')
 
@@ -81,6 +83,10 @@ class AnalysisDetailsView(BaseLoggedInPage):
     custom_rules = Card('.//article[./div[(.)="Custom rules"]]')
     custom_labels = Card('.//article[./div[(.)="Custom labels"]]')
     advanced_options = Card('.//article[./div[(.)="Advanced options"]]')
+
+    @property
+    def is_displayed(self):
+        return "Analysis" in self.title.text and self.transformation_path.is_displayed
 
 
 class AnalysisResults(Updateable, NavigatableMixin):

@@ -12,7 +12,7 @@ from mta.entities.report import Issues
 def add_global_custom_rule(application):
     """This fixture with upload global custom rule file"""
     file_name = "custom.Test1rules.rhamt.xml"
-    view = navigate_to(application.collections.globalconfigurations, "Custom")
+    view = navigate_to(application.collections.globalconfigurations, "CustomRule")
     view.custom_rules.upload_rule_file(file_name)
     view.table.wait_displayed("20s")
     return file_name
@@ -37,7 +37,7 @@ def test_crud_global_custom_rule(application):
             1. Custom rules file should be listed in table
     """
     file_name = "custom.Test1rules.rhamt.xml"
-    view = navigate_to(application.collections.globalconfigurations, "Custom")
+    view = navigate_to(application.collections.globalconfigurations, "CustomRule")
     view.custom_rules.upload_rule_file(file_name)
     view.table.wait_displayed("20s")
     assert file_name in [rules["Short path"] for rules in view.table.read()]
@@ -64,7 +64,7 @@ def test_search_global_custom_rule(application, request):
             1. Custom rules file should searched by substring
     """
     file_name = "custom.Test1rules.rhamt.xml"
-    view = navigate_to(application.collections.globalconfigurations, "Custom")
+    view = navigate_to(application.collections.globalconfigurations, "CustomRule")
     view.custom_rules.upload_rule_file(file_name)
     view.table.wait_displayed("20s")
     view.search.fill("rhamt")
@@ -93,7 +93,7 @@ def test_analysis_global_custom_rule(application, request, add_global_custom_rul
         testtype: functional
         casecomponent: WebConsole
         testSteps:
-            1. Upload global custom role file
+            1. Upload global custom rule file
             2. Create project and run analysis
             3. Go to analysis details page and check if custom rules contains global scope custom
                rule file
@@ -110,9 +110,41 @@ def test_analysis_global_custom_rule(application, request, add_global_custom_rul
     request.addfinalizer(project.delete_if_exists)
     analysis_results = AnalysisResults(application, project.name)
     view = navigate_to(analysis_results, "AnalysisDetailsPage")
-    view.wait_displayed()
+    view.custom_rules.wait_displayed("20s")
     card_info = view.custom_rules.read()
-    assert f"Global scope {file_name}" in card_info["body"]
+    assert file_name in card_info["body"].split("Global")[1]
+
+
+def test_invalid_rule_file_type(application, request):
+    """ Test to upload global custom rules file
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        caseposneg: positive
+        testtype: functional
+        casecomponent: WebConsole
+        testSteps:
+            1. Upload invalid global custom rule file
+            2. Check number of rules in it
+        expectedResults:
+            1. Invalid global custom rule file should have 0 rules
+    """
+    file_name = "customWebLogic.windup.label.xml"
+    view = navigate_to(application.collections.globalconfigurations, "CustomRule")
+    view.custom_rules.upload_rule_file(file_name)
+    view.table.wait_displayed("20s")
+
+    @request.addfinalizer
+    def _finalize():
+        view.search.fill("")
+        view.custom_rules.delete(file_name)
+
+    all_rules = view.table.read()
+    for rule in all_rules:
+        if rule["Short path"] == file_name:
+            assert int(rule["Number of rules"]) == 0
 
 
 def test_applied_global_custom_rule(application, request):
@@ -126,7 +158,7 @@ def test_applied_global_custom_rule(application, request):
         testtype: functional
         casecomponent: WebConsole
         testSteps:
-            1. Upload global custom role file - custom.Test1rules.rhamt.xml
+            1. Upload global custom rule file - custom.Test1rules.rhamt.xml
             2. Create project with application - AdministracionEfectivo.ear	and run analysis
             3. Go to analysis report page and click on application
             4. Click on Issues tab and check content of box - Migration potential
@@ -134,7 +166,7 @@ def test_applied_global_custom_rule(application, request):
             1. Global custom rule should be applied/fired in the analysis report
     """
     file_name = "custom.Test1rules.rhamt.xml"
-    view = navigate_to(application.collections.globalconfigurations, "Custom")
+    view = navigate_to(application.collections.globalconfigurations, "CustomRule")
     view.custom_rules.upload_rule_file(file_name)
     view.table.wait_displayed("20s")
     project_collection = application.collections.projects
@@ -155,38 +187,6 @@ def test_applied_global_custom_rule(application, request):
     assert view.wait_displayed
 
 
-def test_invalid_file_type(application, request):
-    """ Test to upload global custom rules file
-
-    Polarion:
-        assignee: ghubale
-        initialEstimate: 1/12h
-        caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
-        testSteps:
-            1. Upload invalid global custom role file
-            2. Check number of rules in it
-        expectedResults:
-            1. Invalid global custom rule file should have 0 rules
-    """
-    file_name = "customWebLogic.windup.label.xml"
-    view = navigate_to(application.collections.globalconfigurations, "Custom")
-    view.custom_rules.upload_rule_file(file_name)
-    view.table.wait_displayed("20s")
-
-    @request.addfinalizer
-    def _finalize():
-        view.search.fill("")
-        view.custom_rules.delete(file_name)
-
-    all_rules = view.table.read()
-    for rule in all_rules:
-        if rule["Short path"] == file_name:
-            assert int(rule["Number of rules"]) == 0
-
-
 def test_total_global_system_rule(application):
     """ Test to upload global custom rules file
 
@@ -203,8 +203,8 @@ def test_total_global_system_rule(application):
         expectedResults:
             1. Total system rules count should be 331
     """
-    view = navigate_to(application.collections.globalconfigurations, "System")
-    view.wait_displayed()
+    view = navigate_to(application.collections.globalconfigurations, "SystemRule")
+    view.show_all_rules.wait_displayed("30s")
     no_of_rules_before = view.paginator.total_items
     view.show_all_rules.click()
     assert view.paginator.total_items >= no_of_rules_before
@@ -231,8 +231,8 @@ def test_filter_global_system_rule(application):
         # "Target": ["camel", "cloud-readiness", "quarkus"],
         # TODO(ghubale): Uncomment it once fixed drop down selection for option - Target
     }
-    view = navigate_to(application.collections.globalconfigurations, "System")
-    view.wait_displayed()
+    view = navigate_to(application.collections.globalconfigurations, "SystemRule")
+    view.show_all_rules.wait_displayed("30s")
     view.show_all_rules.click()
     for filter_type in filters:
         for filter_value in filters[filter_type]:
