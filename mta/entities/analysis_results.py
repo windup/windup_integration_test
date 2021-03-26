@@ -6,6 +6,8 @@ from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly4 import Button
+from widgetastic_patternfly4 import Dropdown
+from widgetastic_patternfly4.table import Table
 
 from mta.base.application.implementations.web_ui import MTANavigateStep
 from mta.base.application.implementations.web_ui import NavigatableMixin
@@ -16,6 +18,7 @@ from mta.entities import BaseLoggedInPage
 from mta.entities import ProjectView
 from mta.utils.update import Updateable
 from mta.widgetastic import AnalysisResults
+from mta.widgetastic import Card
 from mta.widgetastic import Input
 
 
@@ -28,6 +31,10 @@ class AnalysisResultsView(BaseLoggedInPage):
     confirm_delete = Button("Yes")
     cancel_delete = Button("No")
     sort_analysis = Text(locator=".//th[contains(normalize-space(.), 'Analysis')]//button")
+    table = Table(
+        locator='.//table[contains(@aria-label, "Table")]',
+        column_widgets={"Analysis": Text(locator=".//a"), 5: Dropdown()},
+    )
 
     @property
     def is_displayed(self):
@@ -61,6 +68,19 @@ class AnalysisDeleteView(View):
     @property
     def is_displayed(self):
         return self.delete.is_displayed and self.title.is_displayed
+
+
+class AnalysisDetailsView(BaseLoggedInPage):
+    """This view represents details page of specific analysis"""
+
+    transformation_path = Card('.//article[./div[(.)="Transformation path"]]')
+    status = Card('.//article[./div[(.)="Status"]]')
+
+    applications = Card('.//article[./div[(.)="Applications"]]')
+    included_packages = Card('.//article[./div[(.)="Included packages"]]')
+    custom_rules = Card('.//article[./div[(.)="Custom rules"]]')
+    custom_labels = Card('.//article[./div[(.)="Custom labels"]]')
+    advanced_options = Card('.//article[./div[(.)="Advanced options"]]')
 
 
 class AnalysisResults(Updateable, NavigatableMixin):
@@ -140,3 +160,13 @@ class AnalysisResultsPage(MTANavigateStep):
 
     def step(self):
         self.prerequisite_view.navigation.select("Analysis results")
+
+
+@ViaWebUI.register_destination_for(AnalysisResults)
+class AnalysisDetailsPage(MTANavigateStep):
+    prerequisite = NavigateToSibling("AnalysisResultsPage")
+    VIEW = AnalysisDetailsView
+
+    def step(self):
+        """This will navigate to details page of latest analysis"""
+        self.prerequisite_view.analysis_row(row=1).analysis_number.click()

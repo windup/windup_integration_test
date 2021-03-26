@@ -1,17 +1,22 @@
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from wait_for import wait_for
+from widgetastic.exceptions import DoNotReadThisWidget
 from widgetastic.utils import ParametrizedLocator
 from widgetastic.widget import FileInput
 from widgetastic.widget import ParametrizedView
 from widgetastic.widget import Text
+from widgetastic.widget import View
 from widgetastic.widget import Widget
 from widgetastic_patternfly import AggregateStatusCard
 from widgetastic_patternfly import Button
 from widgetastic_patternfly import Input
 from widgetastic_patternfly import SelectorDropdown
+from widgetastic_patternfly4 import CheckboxSelect
 from widgetastic_patternfly4 import Dropdown
 from widgetastic_patternfly4 import Navigation
 from widgetastic_patternfly4 import Select
+from widgetastic_patternfly4 import Tab
 
 
 class MTANavigation(Navigation):
@@ -37,7 +42,8 @@ class DropdownMenu(Dropdown):
     BUTTON_LOCATOR = (
         ".//span[@class='filter-by']/parent::button | "
         ".//span[@id='sort-by']/parent::button | "
-        ".//button[contains(@class, 'pf-c-context-selector__toggle')]"
+        ".//button[contains(@class, 'pf-c-context-selector__toggle')] | "
+        ".//span[@class='pf-c-select__toggle-icon']/parent::div/parent::button"
     )
     ITEMS_LOCATOR = ".//ul/li/button | .//ul/li/a"
     ITEM_LOCATOR = ".//ul/li/button | .//ul/li/a[normalize-space(.)={}]"
@@ -49,7 +55,19 @@ class DropdownMenu(Dropdown):
     @property
     def is_open(self):
         """Returns True if the Dropdown is open"""
-        return "open" or "pf-m-expanded" in self.browser.classes(self)
+        all_classes = self.browser.classes(self)
+        return "open" in all_classes or "pf-m-expanded" in all_classes
+
+
+class MTACheckboxSelect(CheckboxSelect):
+    """Represents the custom Patternfly Select."""
+
+    BUTTON_LOCATOR = (
+        ".//span[@class='pf-c-select__toggle-arrow']/parent::button["
+        "contains(@aria-labelledby, 'Filter by Source')] |"
+        ".//span[@class='pf-c-select__toggle-arrow']/parent::button["
+        "contains(@aria-labelledby, 'Filter by Target')]"
+    )
 
 
 class SortSelector(SelectorDropdown):
@@ -190,3 +208,69 @@ class ApplicationList(Widget):
         """Returns list of applications by name"""
         result = [self.browser.text(el) for el in self.browser.elements(self.APP_ITEMS_LOCATOR)]
         return result
+
+    def application_details(self, app_name):
+        """Clicks on specific application to navigate to it's details page"""
+        all_apps = self.browser.elements(self.APP_ITEMS_LOCATOR)
+        for el in all_apps:
+            if self.browser.text(el) == app_name:
+                self.browser.click(el)
+
+
+class MTATab(Tab):
+    """Represents the custom Patternfly Tab widget."""
+
+    # Locator of the Tab selector
+    TAB_LOCATOR = ParametrizedLocator(
+        './/div[contains(@class, "pf-c-tabs")]/ul'
+        "//li[button[normalize-space(.)={@tab_name|quote}]] | "
+        ".//ul[contains(@class, 'nav')]/li[./a[normalize-space(.)={@tab_name|quote}]]"
+    )
+
+    def is_active(self):
+        """Returns a boolean detailing of the tab is active."""
+        return "pf-m-current" or "pf-c-tabs__item" in self.parent_browser.classes(self.TAB_LOCATOR)
+
+
+class Card(View):
+    """
+    Represents a generic patternfly 4 card
+
+    This can eventually reside in the wt.pf4 repo
+    """
+
+    ROOT = ParametrizedLocator("{@locator}")
+
+    header = Text('./div[contains(@class, "pf-c-card__header")]')
+    body = Text('./div[contains(@class, "pf-c-card__body")]')
+    footer = Text('./div[contains(@class, "pf-c-card__footer")]')
+    expand_card = Text(".//button")
+
+    def __init__(self, parent, locator=None, logger=None):
+        super().__init__(parent, logger=logger)
+        if not locator:
+            self.locator = './/article[contains(@class, "pf-c-card")]'
+        else:
+            self.locator = locator
+
+    def open(self):
+        if not self.body.is_displayed:
+            self.expand_card.click()
+
+    def read(self):
+        self.open()
+        result = {}
+        for widget_name in self.widget_names:
+            widget = getattr(self, widget_name)
+            try:
+                value = widget.read()
+            except (NotImplementedError, NoSuchElementException, DoNotReadThisWidget):
+                continue
+
+            result[widget_name] = value
+
+        return result
+
+    @property
+    def is_displayed(self):
+        return self.body.is_displayed
