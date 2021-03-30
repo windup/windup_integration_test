@@ -3,14 +3,18 @@ import pytest
 
 from mta.base.application.implementations.web_ui import navigate_to
 from mta.entities.analysis_results import AnalysisResults
+from mta.entities.global_configuration import CustomLabelsView
+from mta.entities.global_configuration import GlobalConfigurations
+from mta.entities.global_configuration import SystemLabelsView
 
 
 @pytest.fixture(scope="function")
 def add_global_custom_label(application):
     """This fixture with upload global custom label file"""
     file_name = "customWebLogic.windup.label.xml"
-    view = navigate_to(application.collections.globalconfigurations, "CustomLabel")
-    view.custom_labels.upload_label_file(file_name)
+    global_configurations = GlobalConfigurations(application)
+    global_configurations.upload_custom_label_file(file_name)
+    view = global_configurations.create_view(CustomLabelsView)
     view.table.wait_displayed("20s")
     return file_name
 
@@ -34,11 +38,12 @@ def test_crud_global_custom_label(application):
             1. Custom label file should be listed in table
     """
     file_name = "customWebLogic.windup.label.xml"
-    view = navigate_to(application.collections.globalconfigurations, "CustomLabel")
-    view.custom_labels.upload_label_file(file_name)
+    global_configurations = GlobalConfigurations(application)
+    global_configurations.upload_custom_label_file(file_name)
+    view = global_configurations.create_view(CustomLabelsView)
     view.table.wait_displayed("20s")
     assert file_name in [label["Short path"] for label in view.table.read()]
-    assert view.custom_labels.delete(file_name)
+    assert global_configurations.delete_custom_label_file(file_name)
 
 
 def test_search_global_custom_label(application, request):
@@ -61,15 +66,16 @@ def test_search_global_custom_label(application, request):
             1. Custom labels file should searched by substring
     """
     file_name = "customWebLogic.windup.label.xml"
-    view = navigate_to(application.collections.globalconfigurations, "CustomLabel")
-    view.custom_labels.upload_label_file(file_name)
+    global_configurations = GlobalConfigurations(application)
+    global_configurations.upload_custom_label_file(file_name)
+    view = global_configurations.create_view(CustomLabelsView)
     view.table.wait_displayed("20s")
     view.search.fill("custom")
 
     @request.addfinalizer
     def _finalize():
         view.search.fill("")
-        view.custom_labels.delete(file_name)
+        global_configurations.delete_custom_label_file(file_name)
 
     assert file_name in [label["Short path"] for label in view.table.read()]
     view.search.fill("custom-invalid")
@@ -129,14 +135,15 @@ def test_invalid_label_file_type(application, request):
             1. Invalid global custom label file should have 0 labels
     """
     file_name = "custom.Test1rules.rhamt.xml"
-    view = navigate_to(application.collections.globalconfigurations, "CustomLabel")
-    view.custom_labels.upload_label_file(file_name)
+    global_configurations = GlobalConfigurations(application)
+    global_configurations.upload_custom_label_file(file_name)
+    view = global_configurations.create_view(CustomLabelsView)
     view.table.wait_displayed("20s")
 
     @request.addfinalizer
     def _finalize():
         view.search.fill("")
-        view.custom_labels.delete(file_name)
+        global_configurations.delete_custom_label_file(file_name)
 
     all_labels = view.table.read()
     for label in all_labels:
@@ -160,7 +167,8 @@ def test_total_global_system_label(application):
         expectedResults:
             1. Total system labels count should be equal or greater than 1
     """
-    view = navigate_to(application.collections.globalconfigurations, "SystemLabel")
+    global_configurations = GlobalConfigurations(application)
+    view = navigate_to(global_configurations, "SystemLabel")
     view.wait_displayed()
     assert view.paginator.total_items >= 1
 
@@ -181,8 +189,8 @@ def test_search_global_system_label(application):
         expectedResults:
             1. It should list label with that provider ID
     """
-    view = navigate_to(application.collections.globalconfigurations, "SystemLabel")
-    view.search.wait_displayed("30s")
-    view.search.fill("core")
+    global_configurations = GlobalConfigurations(application)
+    global_configurations.search_system_labels("core")
+    view = global_configurations.create_view(SystemLabelsView)
     data = view.table.read()[0]
     assert data["Provider ID"] == "core_labels"
