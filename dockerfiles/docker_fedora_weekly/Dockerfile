@@ -12,17 +12,16 @@ ENV JAVA_HOME /usr/lib/jvm/java-openjdk
 ENV BASE_URL="https://oss.sonatype.org/content/repositories/snapshots/org/jboss/windup"
 ENV WEB_CONSOLE="mta-web-distribution"
 
-# Provide snapshot build value
-ENV SNAPSHOT_BUILD=snapshot_build
-ENV VERSION=build_version
+ENV DATE=build_date
+ENV SNAPSHOT_BUILD="mta-web-distribution-*-$DATE.*-*-with-authentication.zip"
+RUN echo $SNAPSHOT_BUILD
 
 ENV WEB_DISTRIBUTION="${WEB_CONSOLE}/${VERSION}-SNAPSHOT"
-ENV WEB_CONSOLE_FILE_PATH="${BASE_URL}/web/${WEB_DISTRIBUTION}/${SNAPSHOT_BUILD}"
-
+ENV WEB_CONSOLE_FILE_PATH="${BASE_URL}/web/${WEB_DISTRIBUTION}"
 
 RUN echo $WEB_CONSOLE_FILE_PATH
 
-RUN wget -o - $WEB_CONSOLE_FILE_PATH -P /tmp| wc -l > /number && unzip -o /tmp/$SNAPSHOT_BUILD -d /tmp
+RUN wget --user-agent="Mozilla" -r  -l1 -nd -np -e robots=off -o - $WEB_CONSOLE_FILE_PATH -A $SNAPSHOT_BUILD -P /tmp| wc -l > /tmp/number && unzip -o /tmp/$SNAPSHOT_BUILD -d /tmp
 
 RUN useradd jboss \
         && usermod -G jboss jboss \
