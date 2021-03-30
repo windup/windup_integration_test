@@ -14,7 +14,7 @@ ENV WEB_CONSOLE="mta-web-distribution"
 
 # Version of snapshot Ex: 5.1.4
 ENV VERSION=snapshot_version
-ENV DATE=date
+ENV DATE=build_date
 ENV SNAPSHOT_BUILD="mta-web-distribution-$VERSION-$DATE.*-*-with-authentication.zip"
 RUN echo $SNAPSHOT_BUILD
 
