@@ -8,4 +8,3 @@ mta = mta.scripting.cli:cli
 [mta.application_collections]
 base = mta.entities:BaseWebUICollection
 projects = mta.entities.projects:ProjectCollection
-globalconfigurations = mta.entities.rules_configuration:GlobalRulesCollection
