@@ -5,7 +5,7 @@ from mta.base.application.implementations.web_ui import navigate_to
 from mta.entities.analysis_results import AnalysisResults
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.entities.global_configuration import CustomRulesView
-from mta.entities.global_configuration import GlobalConfigurations
+from mta.entities.global_configuration import RulesConfiguration
 from mta.entities.report import AllApplicationsView
 from mta.entities.report import Issues
 
@@ -14,11 +14,11 @@ from mta.entities.report import Issues
 def add_global_custom_rule(application):
     """This fixture with upload global custom rule file"""
     file_name = "custom.Test1rules.rhamt.xml"
-    global_configurations = GlobalConfigurations(application)
-    global_configurations.upload_custom_rule_file(file_name)
-    view = global_configurations.create_view(CustomRulesView)
+    rules_configurations = RulesConfiguration(application)
+    rules_configurations.upload_custom_rule_file(file_name)
+    view = rules_configurations.create_view(CustomRulesView)
     view.table.wait_displayed("20s")
-    return file_name
+    return file_name, view, rules_configurations
 
 
 def test_crud_global_custom_rule(application):
@@ -40,15 +40,15 @@ def test_crud_global_custom_rule(application):
             1. Custom rules file should be listed in table
     """
     file_name = "custom.Test1rules.rhamt.xml"
-    global_configurations = GlobalConfigurations(application)
-    global_configurations.upload_custom_rule_file(file_name)
-    view = global_configurations.create_view(CustomRulesView)
+    rules_configurations = RulesConfiguration(application)
+    rules_configurations.upload_custom_rule_file(file_name)
+    view = rules_configurations.create_view(CustomRulesView)
     view.table.wait_displayed("20s")
     assert file_name in [rules["Short path"] for rules in view.table.read()]
-    assert global_configurations.delete_custom_rule(file_name)
+    assert rules_configurations.delete_custom_rule(file_name)
 
 
-def test_search_global_custom_rule(application, request):
+def test_search_global_custom_rule(add_global_custom_rule, request):
     """ Test to search global custom rules file from table
 
     Polarion:
@@ -67,17 +67,14 @@ def test_search_global_custom_rule(application, request):
         expectedResults:
             1. Custom rules file should searched by substring
     """
-    file_name = "custom.Test1rules.rhamt.xml"
-    global_configurations = GlobalConfigurations(application)
-    global_configurations.upload_custom_rule_file(file_name)
-    view = global_configurations.create_view(CustomRulesView)
+    file_name, view, rules_configurations = add_global_custom_rule
     view.table.wait_displayed("20s")
     view.search.fill("rhamt")
 
     @request.addfinalizer
     def _finalize():
         view.search.fill("")
-        global_configurations.delete_custom_rule(file_name)
+        rules_configurations.delete_custom_rule(file_name)
 
     assert file_name in [rules["Short path"] for rules in view.table.read()]
     view.search.fill("rhamt-invalid")
@@ -105,7 +102,7 @@ def test_analysis_global_custom_rule(application, request, add_global_custom_rul
         expectedResults:
             1. Analysis should be completed successfully
     """
-    file_name = add_global_custom_rule
+    file_name, view, rules_configurations = add_global_custom_rule
     project = application.collections.projects.create(
         name=fauxfactory.gen_alphanumeric(12, start="project_"),
         description=fauxfactory.gen_alphanumeric(start="desc_"),
@@ -137,15 +134,15 @@ def test_invalid_rule_file_type(application, request):
             1. Invalid global custom rule file should have 0 rules
     """
     file_name = "customWebLogic.windup.label.xml"
-    global_configurations = GlobalConfigurations(application)
-    global_configurations.upload_custom_rule_file(file_name)
-    view = global_configurations.create_view(CustomRulesView)
+    rules_configurations = RulesConfiguration(application)
+    rules_configurations.upload_custom_rule_file(file_name)
+    view = rules_configurations.create_view(CustomRulesView)
     view.table.wait_displayed("20s")
 
     @request.addfinalizer
     def _finalize():
         view.search.fill("")
-        global_configurations.delete_custom_rule(file_name)
+        rules_configurations.delete_custom_rule(file_name)
 
     all_rules = view.table.read()
     for rule in all_rules:
@@ -153,7 +150,7 @@ def test_invalid_rule_file_type(application, request):
             assert int(rule["Number of rules"]) == 0
 
 
-def test_applied_global_custom_rule(application, request):
+def test_applied_global_custom_rule(application, request, add_global_custom_rule):
     """ Test to upload global custom rules file and check if it fired in analysis
 
     Polarion:
@@ -171,10 +168,7 @@ def test_applied_global_custom_rule(application, request):
         expectedResults:
             1. Global custom rule should be applied/fired in the analysis report
     """
-    file_name = "custom.Test1rules.rhamt.xml"
-    global_configurations = GlobalConfigurations(application)
-    global_configurations.upload_custom_rule_file(file_name)
-    view = global_configurations.create_view(CustomRulesView)
+    file_name, view, rules_configurations = add_global_custom_rule
     view.table.wait_displayed("20s")
     project_collection = application.collections.projects
     project = project_collection.create(
@@ -210,7 +204,7 @@ def test_total_global_system_rule(application):
         expectedResults:
             1. Total system rules count should be 331
     """
-    global_configurations = GlobalConfigurations(application)
+    global_configurations = RulesConfiguration(application)
     view = navigate_to(global_configurations, "SystemRule")
     view.show_all_rules.wait_displayed("30s")
     no_of_rules_before = view.paginator.total_items
@@ -239,7 +233,7 @@ def test_filter_global_system_rule(application):
         # "Target": ["camel", "cloud-readiness", "quarkus"],
         # TODO(ghubale): Uncomment it once fixed drop down selection for option - Target
     }
-    global_configurations = GlobalConfigurations(application)
+    global_configurations = RulesConfiguration(application)
     view = navigate_to(global_configurations, "SystemRule")
     view.show_all_rules.wait_displayed("30s")
     view.show_all_rules.click()

@@ -4,7 +4,7 @@ import pytest
 from mta.base.application.implementations.web_ui import navigate_to
 from mta.entities.analysis_results import AnalysisResults
 from mta.entities.global_configuration import CustomLabelsView
-from mta.entities.global_configuration import GlobalConfigurations
+from mta.entities.global_configuration import LabelsConfigurations
 from mta.entities.global_configuration import SystemLabelsView
 
 
@@ -12,11 +12,11 @@ from mta.entities.global_configuration import SystemLabelsView
 def add_global_custom_label(application):
     """This fixture with upload global custom label file"""
     file_name = "customWebLogic.windup.label.xml"
-    global_configurations = GlobalConfigurations(application)
-    global_configurations.upload_custom_label_file(file_name)
-    view = global_configurations.create_view(CustomLabelsView)
+    labels_configurations = LabelsConfigurations(application)
+    labels_configurations.upload_custom_label_file(file_name)
+    view = labels_configurations.create_view(CustomLabelsView)
     view.table.wait_displayed("20s")
-    return file_name
+    return file_name, view, labels_configurations
 
 
 def test_crud_global_custom_label(application):
@@ -38,7 +38,7 @@ def test_crud_global_custom_label(application):
             1. Custom label file should be listed in table
     """
     file_name = "customWebLogic.windup.label.xml"
-    global_configurations = GlobalConfigurations(application)
+    global_configurations = LabelsConfigurations(application)
     global_configurations.upload_custom_label_file(file_name)
     view = global_configurations.create_view(CustomLabelsView)
     view.table.wait_displayed("20s")
@@ -46,7 +46,7 @@ def test_crud_global_custom_label(application):
     assert global_configurations.delete_custom_label_file(file_name)
 
 
-def test_search_global_custom_label(application, request):
+def test_search_global_custom_label(add_global_custom_label, request):
     """ Test to search global custom labels file from table
 
     Polarion:
@@ -65,17 +65,14 @@ def test_search_global_custom_label(application, request):
         expectedResults:
             1. Custom labels file should searched by substring
     """
-    file_name = "customWebLogic.windup.label.xml"
-    global_configurations = GlobalConfigurations(application)
-    global_configurations.upload_custom_label_file(file_name)
-    view = global_configurations.create_view(CustomLabelsView)
+    file_name, view, labels_configurations = add_global_custom_label
     view.table.wait_displayed("20s")
     view.search.fill("custom")
 
     @request.addfinalizer
     def _finalize():
         view.search.fill("")
-        global_configurations.delete_custom_label_file(file_name)
+        labels_configurations.delete_custom_label_file(file_name)
 
     assert file_name in [label["Short path"] for label in view.table.read()]
     view.search.fill("custom-invalid")
@@ -103,7 +100,7 @@ def test_analysis_global_custom_label(application, request, add_global_custom_la
         expectedResults:
             1. Analysis should be completed successfully
     """
-    file_name = add_global_custom_label
+    file_name, view, labels_configurations = add_global_custom_label
     project = application.collections.projects.create(
         name=fauxfactory.gen_alphanumeric(12, start="project_"),
         description=fauxfactory.gen_alphanumeric(start="desc_"),
@@ -135,15 +132,15 @@ def test_invalid_label_file_type(application, request):
             1. Invalid global custom label file should have 0 labels
     """
     file_name = "custom.Test1rules.rhamt.xml"
-    global_configurations = GlobalConfigurations(application)
-    global_configurations.upload_custom_label_file(file_name)
-    view = global_configurations.create_view(CustomLabelsView)
+    labels_configurations = LabelsConfigurations(application)
+    labels_configurations.upload_custom_label_file(file_name)
+    view = labels_configurations.create_view(CustomLabelsView)
     view.table.wait_displayed("20s")
 
     @request.addfinalizer
     def _finalize():
         view.search.fill("")
-        global_configurations.delete_custom_label_file(file_name)
+        labels_configurations.delete_custom_label_file(file_name)
 
     all_labels = view.table.read()
     for label in all_labels:
@@ -167,7 +164,7 @@ def test_total_global_system_label(application):
         expectedResults:
             1. Total system labels count should be equal or greater than 1
     """
-    global_configurations = GlobalConfigurations(application)
+    global_configurations = LabelsConfigurations(application)
     view = navigate_to(global_configurations, "SystemLabel")
     view.wait_displayed()
     assert view.paginator.total_items >= 1
@@ -189,7 +186,7 @@ def test_search_global_system_label(application):
         expectedResults:
             1. It should list label with that provider ID
     """
-    global_configurations = GlobalConfigurations(application)
+    global_configurations = LabelsConfigurations(application)
     global_configurations.search_system_labels("core")
     view = global_configurations.create_view(SystemLabelsView)
     data = view.table.read()[0]

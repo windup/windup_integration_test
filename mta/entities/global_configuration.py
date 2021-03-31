@@ -114,6 +114,66 @@ class RulesConfigurationView(BaseLoggedInPage):
         )
 
 
+class RulesConfiguration(Updateable, NavigatableMixin):
+    """Class for representing all the global custom/system rules methods/operations"""
+
+    def __init__(self, application):
+        self.application = application
+
+    def upload_custom_rule_file(self, value):
+        """Method for uploading custom rule file
+        Args:
+            value: custom rule file to be uploaded
+        """
+        view = navigate_to(self, "CustomRule")
+        view.wait_displayed()
+        view.add_rule_button.click()
+        # upload custom rules
+        env = conf.get_config("env")
+        fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
+        file_path = fs1.download(value)
+        view.upload_rule.fill(file_path)
+        view.close_button.click()
+
+    def delete_custom_rule(self, file_name, cancel=False):
+        """Method to delete custom rule file
+        :param file_name: file name to delete
+        """
+        view = navigate_to(self, "CustomRule")
+        view.wait_displayed()
+
+        for row in view.table:
+            if row.read()["Short path"] == file_name:
+                row[4].widget.item_select("Delete")
+        if cancel:
+            view.delete_rules.cancel_button.click()
+        else:
+            view.delete_rules.delete_button.click()
+        view.wait_displayed()
+        return file_name not in [row.read()["Short path"] for row in view.table]
+
+    def clear_filters(self):
+        """Method to clear all the system filters"""
+        view = navigate_to(self, "SystemRule")
+        view.wait_displayed()
+
+        if view.clear.is_displayed:
+            view.clear.click()
+
+    def search_system_rules(self, search_value, filter_type="Source", clear_filters=False):
+        """Fill input box with 'search_value', use 'filter_type' to choose filter selector.
+        If no filter_type is entered then the default for page is used.
+        """
+        view = navigate_to(self, "SystemRule")
+        view.wait_displayed()
+
+        if clear_filters:
+            self.clear_filters()
+        if filter_type:
+            view.filter_type_selector.item_select(filter_type)
+        view.filter_by.item_select(search_value)
+
+
 # All Global Label's views
 
 
@@ -196,8 +256,8 @@ class LabelsConfigurationView(BaseLoggedInPage):
         )
 
 
-class GlobalConfigurations(Updateable, NavigatableMixin):
-    """Class for representing all the global custom/system rules/labels methods/operations"""
+class LabelsConfigurations(Updateable, NavigatableMixin):
+    """Class for representing all the global custom/system labels methods/operations"""
 
     def __init__(self, application):
         self.application = application
@@ -238,61 +298,8 @@ class GlobalConfigurations(Updateable, NavigatableMixin):
         view = navigate_to(self, "SystemLabel")
         view.search.fill(provider_id)
 
-    def upload_custom_rule_file(self, value):
-        """Method for uploading custom rule file
-        Args:
-            value: custom rule file to be uploaded
-        """
-        view = navigate_to(self, "CustomRule")
-        view.wait_displayed()
-        view.add_rule_button.click()
-        # upload custom rules
-        env = conf.get_config("env")
-        fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
-        file_path = fs1.download(value)
-        view.upload_rule.fill(file_path)
-        view.close_button.click()
 
-    def delete_custom_rule(self, file_name, cancel=False):
-        """Method to delete custom rule file
-        :param file_name: file name to delete
-        """
-        view = navigate_to(self, "CustomRule")
-        view.wait_displayed()
-
-        for row in view.table:
-            if row.read()["Short path"] == file_name:
-                row[4].widget.item_select("Delete")
-        if cancel:
-            view.delete_rules.cancel_button.click()
-        else:
-            view.delete_rules.delete_button.click()
-        view.wait_displayed()
-        return file_name not in [row.read()["Short path"] for row in view.table]
-
-    def clear_filters(self):
-        """Method to clear all the system filters"""
-        view = navigate_to(self, "SystemRule")
-        view.wait_displayed()
-
-        if view.clear.is_displayed:
-            view.clear.click()
-
-    def search_system_rules(self, search_value, filter_type="Source", clear_filters=False):
-        """Fill input box with 'search_value', use 'filter_type' to choose filter selector.
-        If no filter_type is entered then the default for page is used.
-        """
-        view = navigate_to(self, "SystemRule")
-        view.wait_displayed()
-
-        if clear_filters:
-            self.clear_filters()
-        if filter_type:
-            view.filter_type_selector.item_select(filter_type)
-        view.filter_by.item_select(search_value)
-
-
-@ViaWebUI.register_destination_for(GlobalConfigurations, "AllRules")
+@ViaWebUI.register_destination_for(RulesConfiguration, "AllRules")
 class AllRules(MTANavigateStep):
     VIEW = RulesConfigurationView
     prerequisite = NavigateToAttribute("application.collections.base", "LoggedIn")
@@ -301,7 +308,7 @@ class AllRules(MTANavigateStep):
         self.prerequisite_view.navigation.select("Rules configuration")
 
 
-@ViaWebUI.register_destination_for(GlobalConfigurations, "AllLabels")
+@ViaWebUI.register_destination_for(LabelsConfigurations, "AllLabels")
 class AllLabels(MTANavigateStep):
     VIEW = LabelsConfigurationView
     prerequisite = NavigateToAttribute("application.collections.base", "LoggedIn")
@@ -310,7 +317,7 @@ class AllLabels(MTANavigateStep):
         self.prerequisite_view.navigation.select("Labels configuration")
 
 
-@ViaWebUI.register_destination_for(GlobalConfigurations, "SystemRule")
+@ViaWebUI.register_destination_for(RulesConfiguration, "SystemRule")
 class SystemRule(MTANavigateStep):
     VIEW = SystemRulesView
     prerequisite = NavigateToSibling("AllRules")
@@ -319,7 +326,7 @@ class SystemRule(MTANavigateStep):
         self.prerequisite_view.system_rules.click()
 
 
-@ViaWebUI.register_destination_for(GlobalConfigurations, "CustomRule")
+@ViaWebUI.register_destination_for(RulesConfiguration, "CustomRule")
 class CustomRule(MTANavigateStep):
     VIEW = CustomRulesView
     prerequisite = NavigateToSibling("AllRules")
@@ -328,7 +335,7 @@ class CustomRule(MTANavigateStep):
         self.prerequisite_view.custom_rules.click()
 
 
-@ViaWebUI.register_destination_for(GlobalConfigurations, "SystemLabel")
+@ViaWebUI.register_destination_for(LabelsConfigurations, "SystemLabel")
 class SystemLabel(MTANavigateStep):
     VIEW = SystemLabelsView
     prerequisite = NavigateToSibling("AllLabels")
@@ -337,7 +344,7 @@ class SystemLabel(MTANavigateStep):
         self.prerequisite_view.system_labels.click()
 
 
-@ViaWebUI.register_destination_for(GlobalConfigurations, "CustomLabel")
+@ViaWebUI.register_destination_for(LabelsConfigurations, "CustomLabel")
 class CustomLabel(MTANavigateStep):
     VIEW = CustomLabelsView
     prerequisite = NavigateToSibling("AllLabels")
