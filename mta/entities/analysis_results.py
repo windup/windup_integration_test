@@ -74,7 +74,7 @@ class AnalysisDetailsView(BaseLoggedInPage):
     """This view represents details page of specific analysis"""
 
     title = Text(".//h1")
-
+    execution_link = Text(".//a[contains(normalize-space(.), 'Executions')]")
     transformation_path = Card('.//article[./div[(.)="Transformation path"]]')
     status = Card('.//article[./div[(.)="Status"]]')
 
