@@ -1,28 +1,29 @@
-import fauxfactory
 import pytest
 
 from mta.base.application.implementations.web_ui import navigate_to
 from mta.entities.analysis_results import AnalysisResults
 from mta.entities.analysis_results import AnalysisResultsView
-from mta.entities.global_configuration import CustomRulesView
-from mta.entities.global_configuration import RulesConfiguration
+from mta.entities.global_config.rules_configuration import CustomRulesConfiguration
+from mta.entities.global_config.rules_configuration import CustomRulesView
+from mta.entities.global_config.rules_configuration import SystemRulesConfiguration
 from mta.entities.report import AllApplicationsView
 from mta.entities.report import Issues
 
 
 @pytest.fixture(scope="function")
 def add_global_custom_rule(application):
-    """This fixture with upload global custom rule file"""
+    """This fixture with upload global_1 custom rule file"""
     file_name = "custom.Test1rules.rhamt.xml"
-    rules_configurations = RulesConfiguration(application)
-    rules_configurations.upload_custom_rule_file(file_name)
+    rules_configurations = CustomRulesConfiguration(application, file_name)
+    rules_configurations.upload_custom_rule_file()
     view = rules_configurations.create_view(CustomRulesView)
     view.table.wait_displayed("20s")
-    return file_name, view, rules_configurations
+    yield file_name, view, rules_configurations
+    rules_configurations.delete_custom_rule()
 
 
 def test_crud_global_custom_rule(application):
-    """ Test to upload global custom rules file
+    """ Test to upload global_1 custom rules file
 
     Polarion:
         assignee: ghubale
@@ -40,16 +41,16 @@ def test_crud_global_custom_rule(application):
             1. Custom rules file should be listed in table
     """
     file_name = "custom.Test1rules.rhamt.xml"
-    rules_configurations = RulesConfiguration(application)
-    rules_configurations.upload_custom_rule_file(file_name)
+    rules_configurations = CustomRulesConfiguration(application, file_name)
+    rules_configurations.upload_custom_rule_file()
     view = rules_configurations.create_view(CustomRulesView)
     view.table.wait_displayed("20s")
     assert file_name in [rules["Short path"] for rules in view.table.read()]
-    assert rules_configurations.delete_custom_rule(file_name)
+    assert rules_configurations.delete_custom_rule()
 
 
-def test_search_global_custom_rule(add_global_custom_rule, request):
-    """ Test to search global custom rules file from table
+def test_search_global_custom_rule(add_global_custom_rule):
+    """ Test to search global_1 custom rules file from table
 
     Polarion:
         assignee: ghubale
@@ -71,21 +72,17 @@ def test_search_global_custom_rule(add_global_custom_rule, request):
     view.table.wait_displayed("20s")
     view.search.fill("rhamt")
 
-    @request.addfinalizer
-    def _finalize():
-        view.search.fill("")
-        rules_configurations.delete_custom_rule(file_name)
-
     assert file_name in [rules["Short path"] for rules in view.table.read()]
     view.search.fill("rhamt-invalid")
     try:
         assert file_name not in [rules["Short path"] for rules in view.table.read()]
     except IndexError:
+        view.search.fill("")
         pass
 
 
-def test_analysis_global_custom_rule(application, request, add_global_custom_rule):
-    """ Test to upload global custom rules file
+def test_analysis_global_custom_rule(application, add_global_custom_rule, create_minimal_project):
+    """ Test to upload global_1 custom rules file
 
     Polarion:
         assignee: ghubale
@@ -95,30 +92,35 @@ def test_analysis_global_custom_rule(application, request, add_global_custom_rul
         testtype: functional
         casecomponent: WebConsole
         testSteps:
-            1. Upload global custom rule file
+            1. Upload global_1 custom rule file
             2. Create project and run analysis
-            3. Go to analysis details page and check if custom rules contains global scope custom
+            3. Go to analysis details page and check if custom rules contains global_1 scope custom
                rule file
         expectedResults:
             1. Analysis should be completed successfully
+            2. Global custom rule should be applied/fired in the analysis report
     """
     file_name, view, rules_configurations = add_global_custom_rule
-    project = application.collections.projects.create(
-        name=fauxfactory.gen_alphanumeric(12, start="project_"),
-        description=fauxfactory.gen_alphanumeric(start="desc_"),
-        app_list=["acmeair-webapp-1.0-SNAPSHOT.war"],
-    )
-    assert project.exists
-    request.addfinalizer(project.delete_if_exists)
+    project, project_collection = create_minimal_project
     analysis_results = AnalysisResults(application, project.name)
     view = navigate_to(analysis_results, "AnalysisDetailsPage")
     view.custom_rules.wait_displayed("20s")
     card_info = view.custom_rules.read()
     assert file_name in card_info["body"].split("Global")[1]
+    view.execution_link.click()
+    view = analysis_results.create_view(AnalysisResultsView)
+    view.wait_displayed("30s")
+    view.analysis_results.show_report()
+    view = analysis_results.create_view(AllApplicationsView)
+    view.application_table.application_details("acmeair-webapp-1.0-SNAPSHOT.war")
+    view.tabs.issues.click()
+    view = analysis_results.create_view(Issues)
+    # TODO(ghubale): Updated test case with reading Migration potential table
+    assert view.wait_displayed
 
 
 def test_invalid_rule_file_type(application, request):
-    """ Test to upload global custom rules file
+    """ Test to upload global_1 custom rules file
 
     Polarion:
         assignee: ghubale
@@ -128,21 +130,21 @@ def test_invalid_rule_file_type(application, request):
         testtype: functional
         casecomponent: WebConsole
         testSteps:
-            1. Upload invalid global custom rule file
+            1. Upload invalid global_1 custom rule file
             2. Check number of rules in it
         expectedResults:
-            1. Invalid global custom rule file should have 0 rules
+            1. Invalid global_1 custom rule file should have 0 rules
     """
     file_name = "customWebLogic.windup.label.xml"
-    rules_configurations = RulesConfiguration(application)
-    rules_configurations.upload_custom_rule_file(file_name)
+    rules_configurations = CustomRulesConfiguration(application, file_name)
+    rules_configurations.upload_custom_rule_file()
     view = rules_configurations.create_view(CustomRulesView)
     view.table.wait_displayed("20s")
 
     @request.addfinalizer
     def _finalize():
         view.search.fill("")
-        rules_configurations.delete_custom_rule(file_name)
+        rules_configurations.delete_custom_rule()
 
     all_rules = view.table.read()
     for rule in all_rules:
@@ -150,46 +152,8 @@ def test_invalid_rule_file_type(application, request):
             assert int(rule["Number of rules"]) == 0
 
 
-def test_applied_global_custom_rule(application, request, add_global_custom_rule):
-    """ Test to upload global custom rules file and check if it fired in analysis
-
-    Polarion:
-        assignee: ghubale
-        initialEstimate: 1/12h
-        caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
-        testSteps:
-            1. Upload global custom rule file - custom.Test1rules.rhamt.xml
-            2. Create project with application - AdministracionEfectivo.ear	and run analysis
-            3. Go to analysis report page and click on application
-            4. Click on Issues tab and check content of box - Migration potential
-        expectedResults:
-            1. Global custom rule should be applied/fired in the analysis report
-    """
-    file_name, view, rules_configurations = add_global_custom_rule
-    view.table.wait_displayed("20s")
-    project_collection = application.collections.projects
-    project = project_collection.create(
-        name=fauxfactory.gen_alphanumeric(12, start="project_"),
-        description=fauxfactory.gen_alphanumeric(start="desc_"),
-        app_list=["AdministracionEfectivo.ear"],
-    )
-    request.addfinalizer(project.delete_if_exists)
-    view = project_collection.create_view(AnalysisResultsView)
-    view.wait_displayed("30s")
-    view.analysis_results.show_report()
-    view = project_collection.create_view(AllApplicationsView)
-    view.application_table.application_details("AdministracionEfectivo.ear")
-    view.tabs.issues.click()
-    view = project_collection.create_view(Issues)
-    # TODO(ghubale): Updated test case with reading Migration potential table
-    assert view.wait_displayed
-
-
 def test_total_global_system_rule(application):
-    """ Test to upload global custom rules file
+    """ Test to upload global_1 custom rules file
 
     Polarion:
         assignee: ghubale
@@ -204,7 +168,7 @@ def test_total_global_system_rule(application):
         expectedResults:
             1. Total system rules count should be 331
     """
-    global_configurations = RulesConfiguration(application)
+    global_configurations = SystemRulesConfiguration(application)
     view = navigate_to(global_configurations, "SystemRule")
     view.show_all_rules.wait_displayed("30s")
     no_of_rules_before = view.paginator.total_items
@@ -213,7 +177,7 @@ def test_total_global_system_rule(application):
 
 
 def test_filter_global_system_rule(application):
-    """ Test to upload global custom rules file
+    """ Test to upload global_1 custom rules file
 
     Polarion:
         assignee: ghubale
@@ -233,7 +197,7 @@ def test_filter_global_system_rule(application):
         # "Target": ["camel", "cloud-readiness", "quarkus"],
         # TODO(ghubale): Uncomment it once fixed drop down selection for option - Target
     }
-    global_configurations = RulesConfiguration(application)
+    global_configurations = SystemRulesConfiguration(application)
     view = navigate_to(global_configurations, "SystemRule")
     view.show_all_rules.wait_displayed("30s")
     view.show_all_rules.click()
