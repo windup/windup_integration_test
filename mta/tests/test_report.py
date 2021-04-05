@@ -1,3 +1,5 @@
+import pytest
+
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.entities.report import AllApplicationsView
 
@@ -12,6 +14,7 @@ def test_send_feedback(create_minimal_project):
         caseposneg: positive
         testtype: functional
         casecomponent: WebConsole
+        linkedWorkItems: MTA_Web_Console
         testSteps:
             1. Create project and run analysis
             2. Click on report action to see detailed report
@@ -37,6 +40,7 @@ def test_filter_application_list(create_project_with_two_apps):
         caseposneg: positive
         testtype: functional
         casecomponent: WebConsole
+        linkedWorkItems: MTA_Web_Console
         testSteps:
             1. Create project and run analysis
             2. Click on report action to see detailed report and select tab - All Applications

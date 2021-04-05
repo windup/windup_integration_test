@@ -1,0 +1,122 @@
+repo_address: https://github.com/windup/windup_integration_test
+polarion-project-id: MigrationToolkitAppl
+xunit_import_properties:
+    polarion-lookup-method: name
+    polarion-testrun-status-id: inprogress
+    polarion-testrun-template-id:
+    polarion-group-id:
+    polarion-testrun-title:
+    polarion-testrun-id:
+testcase_import_properties:
+    lookup-method: name
+polarion_url: https://polarion.engineering.redhat.com/polarion
+
+username:
+password:
+
+default_fields:
+    arch: ""
+    approver-ids: "akarol"
+    status-id: "proposed"
+    assignee: ""
+    automation_script: ""
+    caseautomation: automated
+    casecomponent: "-"
+    caseimportance: high
+    caselevel: component
+    caseposneg: positive
+    customerscenario: false
+    description: ""
+    endsin: ""
+    expectedResults: ""
+    initialEstimate: ""
+    legacytest: ""
+    linkedWorkItems: ""
+    multiproduct: ""
+    reqverify: ""
+    setup: ""
+    startsin: ""
+    subcomponent: ""
+    subtype1: "-"
+    subtype2: "-"
+    tags: ""
+    teardown: ""
+    testSteps: ""
+    testtier: ""
+    testtype: functional
+    title: ""
+    upstream: ""
+    work_item_id: ""
+
+custom_fields:
+    - arch
+    - automation_script
+    - caseautomation
+    - casecomponent
+    - caseimportance
+    - caselevel
+    - caseposneg
+    - customerscenario
+    - endsin
+    - legacytest
+    - multiproduct
+    - priority_id
+    - reqverify
+    - setup
+    - startsin
+    - subcomponent
+    - subtype1
+    - subtype2
+    - tags
+    - teardown
+    - testtier
+    - testtype
+    - upstream
+
+#blacklisted_tests:
+#  -
+
+docstrings:
+    required_fields:
+        - assignee
+        - initialEstimate
+        - casecomponent
+        - linkedWorkItems
+
+    marker_fields:
+        caselevel: "@pytest.mark.tier"
+        caseautomation: "@pytest.mark.manual"
+        customerscenario: "@pytest.mark.customer_scenario"
+        # default for manual mark is 'notautomated'
+        # @pytest.mark.manual('manualonly') to set 'manualonly'
+        linkedWorkItems: "@pytest.mark.requirements"
+
+    ignored_fields:
+        description: "use test docstring instead"
+        # test case title is set by function name, don't allow re-titling via meta
+        title: "test case function name is used"
+
+    valid_values:
+        caseimportance:
+            - critical
+            - high
+            - medium
+            - low
+        caseposneg:
+            - positive
+            - negative
+        testtype:
+            - functional
+            - nonfunctional
+            - structural
+        caseautomation:
+            - automated
+            - manualonly
+            - notautomated
+        caselevel:
+            - component
+            - integration
+            - system
+            - acceptance
+        casecomponent:
+            - WebConsole

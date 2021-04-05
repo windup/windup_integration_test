@@ -1,0 +1,3 @@
+MTA_Web_Console:
+    description: Covers all the test cases of MTA Web Console application.
+    assignee-id: sshveta
