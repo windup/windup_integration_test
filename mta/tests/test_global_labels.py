@@ -1,3 +1,8 @@
+"""
+Polarion:
+    casecomponent: WebConsole
+    linkedWorkItems: MTA_Web_Console
+"""
 import pytest
 
 from mta.base.application.implementations.web_ui import navigate_to
@@ -27,9 +32,6 @@ def test_crud_global_custom_label(application):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Login to MTA web console
             2. Navigate to Global > Rules configuration > Custom Labels
@@ -54,9 +56,6 @@ def test_search_global_custom_label(add_global_custom_label):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Login to MTA web console
             2. Navigate to Global > Labels configuration > Custom labels
@@ -86,9 +85,6 @@ def test_analysis_global_custom_label(application, add_global_custom_label, crea
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Upload global custom labels file
             2. Create project and run analysis
@@ -114,9 +110,6 @@ def test_invalid_label_file_type(application, request):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Upload invalid global custom label file
             2. Check number of labels in it
@@ -147,9 +140,6 @@ def test_total_global_system_label(application):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Navigate to Global > Labels configuration > System labels
             2. Check show all labels
@@ -169,9 +159,6 @@ def test_search_global_system_label(application):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Navigate to Global > Labels configuration > System labels
             2. Search by label's provider ID

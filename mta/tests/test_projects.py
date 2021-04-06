@@ -1,3 +1,8 @@
+"""
+Polarion:
+    casecomponent: WebConsole
+    linkedWorkItems: MTA_Web_Console
+"""
 import fauxfactory
 import pytest
 from wait_for import wait_for
@@ -17,10 +22,6 @@ def test_project_crud(mta_app, create_minimal_project):
     Polarion:
         assignee: ghubale
         initialEstimate: 1/12h
-        caseimportance: high
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project
             2. Edit project name or description
@@ -55,9 +56,6 @@ def test_delete_application(mta_app):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Go to project all page and click on `Create project` button
             2. Add name and description and click on `Next` button
@@ -101,9 +99,6 @@ def test_application_report(mta_app, create_minimal_project):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project and run analysis
             2. Click on `report` action button
@@ -129,9 +124,6 @@ def test_sort_projects(
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create three different projects
             2. Go to project all page
@@ -167,9 +159,6 @@ def test_search_project(mta_app, create_minimal_project):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project
             2. Go to project all page and search by name

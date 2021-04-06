@@ -73,8 +73,8 @@ custom_fields:
     - testtype
     - upstream
 
-#blacklisted_tests:
-#  -
+blacklisted_tests:
+    - mta/tests/test_utils
 
 docstrings:
     required_fields:
@@ -89,7 +89,7 @@ docstrings:
         customerscenario: "@pytest.mark.customer_scenario"
         # default for manual mark is 'notautomated'
         # @pytest.mark.manual('manualonly') to set 'manualonly'
-        linkedWorkItems: "@pytest.mark.requirements"
+#        linkedWorkItems: "@pytest.mark.requirements"
 
     ignored_fields:
         description: "use test docstring instead"

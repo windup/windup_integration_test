@@ -1,3 +1,8 @@
+"""
+Polarion:
+    casecomponent: WebConsole
+    linkedWorkItems: MTA_Web_Console
+"""
 import fauxfactory
 from wait_for import wait_for
 
@@ -8,16 +13,13 @@ from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
 
 
-def test_advanced_options(request, application):
+def test_advanced_options(application):
     """ Test advanced options and run analysis
 
     Polarion:
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Go to project all page and click on `Create project` button
             2. Add name and description and click on `Next`

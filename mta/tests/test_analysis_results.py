@@ -1,3 +1,8 @@
+"""
+Polarion:
+    casecomponent: WebConsole
+    linkedWorkItems: MTA_Web_Console
+"""
 import fauxfactory
 
 from mta.entities.analysis_results import AnalysisResults
@@ -11,9 +16,6 @@ def test_analysis_results_search_sort_delete(request, application):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project
             2. Run the analysis
