@@ -4,6 +4,7 @@ Polarion:
     linkedWorkItems: MTA_Web_Console
 """
 import pytest
+from wait_for import wait_for
 
 from mta.base.application.implementations.web_ui import navigate_to
 from mta.entities.analysis_results import AnalysisResults
@@ -24,7 +25,7 @@ def add_global_custom_rule(application):
     view = rules_configurations.create_view(CustomRulesView)
     view.table.wait_displayed("20s")
     yield file_name, view, rules_configurations
-    rules_configurations.delete_custom_rule()
+    rules_configurations.delete_if_exists()
 
 
 def test_crud_global_custom_rule(application):
@@ -46,9 +47,19 @@ def test_crud_global_custom_rule(application):
     rules_configurations = CustomRulesConfiguration(application, file_name)
     rules_configurations.upload_custom_rule_file()
     view = rules_configurations.create_view(CustomRulesView)
-    view.table.wait_displayed("20s")
-    assert file_name in [rules["Short path"] for rules in view.table.read()]
-    assert rules_configurations.delete_custom_rule()
+    view.browser.refresh()
+    view.table.wait_displayed("30s")
+
+    def _check():
+        rows = [row for row in view.table.rows()]
+        if len(rows) > 0:
+            return True
+        else:
+            return False
+
+    wait_for(_check, timeout=100, delay=0.2)
+    assert file_name in [row.read()["Short path"] for row in view.table]
+    assert rules_configurations.delete_if_exists()
 
 
 def test_search_global_custom_rule(add_global_custom_rule):
@@ -68,13 +79,22 @@ def test_search_global_custom_rule(add_global_custom_rule):
             1. Custom rules file should searched by substring
     """
     file_name, view, rules_configurations = add_global_custom_rule
-    view.table.wait_displayed("20s")
+    view.search.wait_displayed("20s")
     view.search.fill("rhamt")
+    view.table.wait_displayed("20s")
 
-    assert file_name in [rules["Short path"] for rules in view.table.read()]
+    def _check():
+        rows = [row for row in view.table.rows()]
+        if len(rows) > 0:
+            return True
+        else:
+            return False
+
+    wait_for(_check, timeout=100, delay=0.2)
+    assert file_name in [row.read()["Short path"] for row in view.table]
     view.search.fill("rhamt-invalid")
     try:
-        assert file_name not in [rules["Short path"] for rules in view.table.read()]
+        assert file_name not in [row.read()["Short path"] for row in view.table]
     except IndexError:
         view.search.fill("")
         pass
@@ -137,7 +157,7 @@ def test_invalid_rule_file_type(application, request):
     @request.addfinalizer
     def _finalize():
         view.search.fill("")
-        rules_configurations.delete_custom_rule()
+        rules_configurations.delete_if_exists()
 
     all_rules = view.table.read()
     for rule in all_rules:

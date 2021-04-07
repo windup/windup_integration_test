@@ -4,6 +4,7 @@ Polarion:
     linkedWorkItems: MTA_Web_Console
 """
 import pytest
+from wait_for import wait_for
 
 from mta.base.application.implementations.web_ui import navigate_to
 from mta.entities.analysis_results import AnalysisResults
@@ -22,7 +23,7 @@ def add_global_custom_label(application):
     view = labels_configurations.create_view(CustomLabelsView)
     view.table.wait_displayed("20s")
     yield file_name, view, labels_configurations
-    labels_configurations.delete_custom_label_file()
+    labels_configurations.delete_if_exists()
 
 
 def test_crud_global_custom_label(application):
@@ -44,9 +45,20 @@ def test_crud_global_custom_label(application):
     global_configurations = CustomLabelsConfigurations(application, file_name)
     global_configurations.upload_custom_label_file()
     view = global_configurations.create_view(CustomLabelsView)
-    view.table.wait_displayed("20s")
-    assert file_name in [label["Short path"] for label in view.table.read()]
-    assert global_configurations.delete_custom_label_file()
+    view.table.wait_displayed("30s")
+    view.browser.refresh()
+
+    def _check():
+        rows = [row for row in view.table.rows()]
+        if len(rows) > 0:
+            return True
+        else:
+            return False
+
+    wait_for(_check, timeout=500, delay=0.2)
+
+    assert file_name in [row.read()["Short path"] for row in view.table]
+    assert global_configurations.delete_if_exists()
 
 
 def test_search_global_custom_label(add_global_custom_label):
@@ -66,13 +78,24 @@ def test_search_global_custom_label(add_global_custom_label):
             1. Custom labels file should searched by substring
     """
     file_name, view, labels_configurations = add_global_custom_label
-    view.table.wait_displayed("20s")
+    view.search.wait_displayed("20s")
     view.search.fill("custom")
+    view.table.wait_displayed("20s")
 
-    assert file_name in [label["Short path"] for label in view.table.read()]
+    def _check():
+        rows = [row for row in view.table.rows()]
+        if len(rows) > 0:
+            return True
+        else:
+            return False
+
+    wait_for(_check, timeout=100, delay=0.2)
+
+    assert file_name in [row.read()["Short path"] for row in view.table]
     view.search.fill("custom-invalid")
+    view.table.wait_displayed("30s")
     try:
-        assert file_name not in [label["Short path"] for label in view.table.read()]
+        assert file_name not in [row.read()["Short path"] for row in view.table]
     except IndexError:
         view.search.fill("")
         pass

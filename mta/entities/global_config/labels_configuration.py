@@ -155,6 +155,14 @@ class CustomLabelsConfigurations(Updateable, NavigatableMixin):
         view.wait_displayed("20s")
         return self.file_name not in [row.read()["Short path"] for row in view.table]
 
+    def delete_if_exists(self):
+        view = navigate_to(self, "CustomLabel")
+        view.wait_displayed("20s")
+        if self.file_name not in [row.read()["Short path"] for row in view.table]:
+            return True
+        else:
+            return self.delete_custom_label_file()
+
     def search_system_labels(self, provider_id):
         """Method for searching system labels"""
         view = navigate_to(self, "SystemLabel")

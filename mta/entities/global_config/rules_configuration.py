@@ -183,6 +183,14 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
         view.wait_displayed("30s")
         return self.file_name not in [row.read()["Short path"] for row in view.table]
 
+    def delete_if_exists(self):
+        view = navigate_to(self, "CustomRule")
+        view.wait_displayed("20s")
+        if self.file_name not in [row.read()["Short path"] for row in view.table]:
+            return True
+        else:
+            return self.delete_custom_rule()
+
 
 @ViaWebUI.register_destination_for(SystemRulesConfiguration, "AllRules")
 @ViaWebUI.register_destination_for(CustomRulesConfiguration, "AllRules")
