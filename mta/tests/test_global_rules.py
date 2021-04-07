@@ -1,3 +1,8 @@
+"""
+Polarion:
+    casecomponent: WebConsole
+    linkedWorkItems: MTA_Web_Console
+"""
 import pytest
 
 from mta.base.application.implementations.web_ui import navigate_to
@@ -29,9 +34,6 @@ def test_crud_global_custom_rule(application):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Login to MTA web console
             2. Navigate to Global > Rules configuration > Custom rules
@@ -56,9 +58,6 @@ def test_search_global_custom_rule(add_global_custom_rule):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Login to MTA web console
             2. Navigate to Global > Rules configuration > Custom rules
@@ -88,9 +87,6 @@ def test_analysis_global_custom_rule(application, add_global_custom_rule, create
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Upload global_1 custom rule file
             2. Create project and run analysis
@@ -126,9 +122,6 @@ def test_invalid_rule_file_type(application, request):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Upload invalid global_1 custom rule file
             2. Check number of rules in it
@@ -159,9 +152,6 @@ def test_total_global_system_rule(application):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Navigate to Global > Rules configuration > System rules
             2. Check show all rules
@@ -183,9 +173,6 @@ def test_filter_global_system_rule(application):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Navigate to Global > Rules configuration > System rules
             2. Check show all rules

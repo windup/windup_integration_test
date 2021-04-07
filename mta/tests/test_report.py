@@ -1,3 +1,8 @@
+"""
+Polarion:
+    casecomponent: WebConsole
+    linkedWorkItems: MTA_Web_Console
+"""
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.entities.report import AllApplicationsView
 
@@ -8,10 +13,6 @@ def test_send_feedback(create_minimal_project):
     Polarion:
         assignee: ghubale
         initialEstimate: 1/12h
-        caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project and run analysis
             2. Click on report action to see detailed report
@@ -34,9 +35,6 @@ def test_filter_application_list(create_project_with_two_apps):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project and run analysis
             2. Click on report action to see detailed report and select tab - All Applications
@@ -65,9 +63,6 @@ def test_sort_application_list(create_project):
         assignee: nsrivast
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project and run analysis
             2. Click on report action to see detailed report and select tab - All Applications

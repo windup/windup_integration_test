@@ -1,3 +1,8 @@
+"""
+Polarion:
+    casecomponent: WebConsole
+    linkedWorkItems: MTA_Web_Console
+"""
 import pytest
 
 from mta.entities.applications import Applications
@@ -11,9 +16,6 @@ def test_applications_page(application, create_project):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project with multiple applications files
             2. Go to applications page
@@ -48,9 +50,6 @@ def test_add_applications_to_project(application, create_minimal_project):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project and add a application file
             2. Go to applications page and add new application file
@@ -74,9 +73,6 @@ def test_delete_application_from_project(application, create_project_with_two_ap
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project and add multiple application files
             2. Go to applications page
@@ -102,9 +98,6 @@ def test_sort_applications(application, create_project_with_two_apps):
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
-        caseposneg: positive
-        testtype: functional
-        casecomponent: WebConsole
         testSteps:
             1. Create project and add multiple application files
             2. Go to applications page

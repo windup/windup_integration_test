@@ -10,9 +10,6 @@ def test_mta_command():
         assignee: ghubale
         initialEstimate: 1/30h
         caseimportance: low
-        caseposneg: positive
-        testtype: smoke
-        casecomponent: WebConsole
         testSteps:
             1. Run `mta` command
         expectedResults:
