@@ -208,3 +208,4 @@ def test_default_transformation_path(mta_app, request):
         view.configure_analysis.set_transformation_target.cancel_button.click()
 
     assert default_value == "eap7"
+

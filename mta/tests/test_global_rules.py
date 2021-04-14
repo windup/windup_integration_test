@@ -128,6 +128,7 @@ def test_invalid_rule_file_type(application, request):
         expectedResults:
             1. Invalid global_1 custom rule file should have 0 rules
     """
+    # TODO(ghubale): Upload an empty xml and error should be handled
     file_name = "customWebLogic.windup.label.xml"
     rules_configurations = CustomRulesConfiguration(application, file_name)
     rules_configurations.upload_custom_rule_file()
@@ -196,3 +197,21 @@ def test_filter_global_system_rule(application):
             filtered_rules = view.table.read()
             for rule in filtered_rules:
                 assert filter_value in rule[filter_type]
+
+
+def test_add_folder_of_rules():
+    """ Test adding a folder containing both valid and invalid rules
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        testSteps:
+            1. Login to MTA web console
+            2. Navigate to Global > Rules configuration > Custom rules
+            3. Click on Add rule button and got to server path tab and browse rules folder
+            4. Click on Close button
+        expectedResults:
+            1. Error should be handled
+    """
+    pass

@@ -101,3 +101,20 @@ def test_sort_application_list(create_project):
     ]
     app_list_by_story_points = view.application_table.get_applications_list
     assert app_list_by_story_points[:-1] == app_list_story_points_asc
+
+
+def test_all_links_in_report_generated():
+    """Test all links accessible or not in report generated
+
+    Polarion:
+        assignee: nsrivast
+        initialEstimate: 1/12h
+        caseimportance: medium
+        testSteps:
+            1. Create project and run analysis
+            2. Click on report action to see detailed report
+            3. Check on application name and check all links if reachable or not.
+        expectedResults:
+            1. All links should be valid and accessible.
+    """
+    pass
