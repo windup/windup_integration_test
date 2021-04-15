@@ -202,8 +202,9 @@ def test_default_transformation_path(mta_app, request):
     default_value = view.configure_analysis.set_transformation_target.transformation_path.read_card(
         card_name="Application server migration to"
     )
-    
+
     @request.addfinalizer
     def _finalize():
         view.configure_analysis.set_transformation_target.cancel_button.click()
+
     assert default_value == "eap7"
