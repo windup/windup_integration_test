@@ -173,8 +173,8 @@ def test_search_project(mta_app, create_minimal_project):
 
 
 @pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
-def test_default_transformation_path(mta_app):
-    """Test default transormation path for Projects
+def test_default_transformation_path(mta_app, request):
+    """Test default transformation path for Projects
 
     Polarion:
         assignee: ghubale
@@ -202,5 +202,8 @@ def test_default_transformation_path(mta_app):
     default_value = view.configure_analysis.set_transformation_target.transformation_path.read_card(
         card_name="Application server migration to"
     )
+    
+    @request.addfinalizer
+    def _finalize():
+        view.configure_analysis.set_transformation_target.cancel_button.click()
     assert default_value == "eap7"
-    view.configure_analysis.set_transformation_target.cancel_button.click()

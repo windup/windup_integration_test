@@ -98,18 +98,18 @@ class TransformationPath(Widget):
         select_eap = TransformationPathSelect(locator='.//div[contains(@class, "pf-c-select")]')
 
         def click_card(self):
-            """Clicks the list item with this name."""
+            """Clicks the card with this name."""
             return self.card.click()
 
-        def read_card(self):
-            """Clicks the list item with this name."""
+        def read(self):
+            """Reads the card with this name."""
             return self.select_eap.read()
 
     def select_card(self, card_name):
         return self._card(card_name).click_card()
 
     def read_card(self, card_name):
-        return self._card(card_name).read_card()
+        return self._card(card_name).read()
 
 
 class SelectedApplications(Widget):
