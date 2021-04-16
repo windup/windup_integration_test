@@ -170,3 +170,41 @@ def test_search_project(mta_app, create_minimal_project):
     project_collection.search_project(project.name)
     view = project_collection.create_view(AllProjectView)
     assert project.name in [row.name.text for row in view.table]
+
+
+@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
+def test_default_transformation_path(mta_app, request):
+    """Test default transformation path for Projects
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        testSteps:
+            1. Create project
+            2. Go to transformation path page
+        expectedResults:
+            1. Default value should be eap7
+    """
+    project_name = fauxfactory.gen_alphanumeric(12, start="project_")
+    project_collection = mta_app.collections.projects
+    view = navigate_to(project_collection, "Add")
+    view.create_project.fill({"name": project_name, "description": "desc"})
+    view.add_applications.wait_displayed("20s")
+    env = conf.get_config("env")
+    fs = FTPClientWrapper(env.ftpserver.entities.mta)
+    file_path = fs.download("arit-ear-0.8.1-SNAPSHOT.ear")
+    view.add_applications.upload_file.fill(file_path)
+    view.add_applications.next_button.wait_displayed()
+    wait_for(lambda: view.add_applications.next_button.is_enabled, delay=0.2, timeout=60)
+    view.add_applications.next_button.click()
+    view.configure_analysis.set_transformation_target.wait_displayed()
+    default_value = view.configure_analysis.set_transformation_target.transformation_path.read_card(
+        card_name="Application server migration to"
+    )
+
+    @request.addfinalizer
+    def _finalize():
+        view.configure_analysis.set_transformation_target.cancel_button.click()
+
+    assert default_value == "eap7"

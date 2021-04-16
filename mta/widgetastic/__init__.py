@@ -76,6 +76,18 @@ class SortSelector(SelectorDropdown):
         wait_for(lambda: self.currently_selected.lower() == item.lower(), num_sec=3, delay=0.2)
 
 
+class MTASelect(Select):
+    """Select for MTA"""
+
+    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-select__toggle-button')]"
+
+
+class TransformationPathSelect(Select):
+    """Select for MTA"""
+
+    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-select__toggle')]"
+
+
 class TransformationPath(Widget):
     ROOT = './/div[contains(@class,"pf-c-empty-state__content")]'
 
@@ -83,13 +95,21 @@ class TransformationPath(Widget):
     class _card(ParametrizedView):
         PARAMETERS = ("card_name",)
         card = Text(ParametrizedLocator("//h4[contains(normalize-space(.), {card_name|quote})]"))
+        select_eap = TransformationPathSelect(locator='.//div[contains(@class, "pf-c-select")]')
 
         def click_card(self):
-            """Clicks the list item with this name."""
+            """Clicks the card with this name."""
             return self.card.click()
+
+        def read(self):
+            """Reads the card with this name."""
+            return self.select_eap.read()
 
     def select_card(self, card_name):
         return self._card(card_name).click_card()
+
+    def read_card(self, card_name):
+        return self._card(card_name).read()
 
 
 class SelectedApplications(Widget):
@@ -175,12 +195,6 @@ class Input(Input):
         self.browser.send_keys(f"{Keys.CONTROL}+a,{Keys.DELETE}", self)
         self.browser.send_keys(value, self)
         return True
-
-
-class MTASelect(Select):
-    """Select for MTA"""
-
-    BUTTON_LOCATOR = ".//button[contains(@class, 'pf-c-select__toggle-button')]"
 
 
 class FilterInput(Input):
