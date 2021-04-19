@@ -17,7 +17,7 @@ from mta.entities.report import Issues
 
 @pytest.fixture(scope="function")
 def add_global_custom_rule(application):
-    """This fixture with upload global_1 custom rule file"""
+    """This fixture with upload global custom rule file"""
     file_name = "custom.Test1rules.rhamt.xml"
     rules_configurations = CustomRulesConfiguration(application, file_name)
     rules_configurations.upload_custom_rule_file()
@@ -28,7 +28,7 @@ def add_global_custom_rule(application):
 
 
 def test_crud_global_custom_rule(application):
-    """ Test to upload global_1 custom rules file
+    """ Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
@@ -52,7 +52,7 @@ def test_crud_global_custom_rule(application):
 
 
 def test_search_global_custom_rule(add_global_custom_rule):
-    """ Test to search global_1 custom rules file from table
+    """ Test to search global custom rules file from table
 
     Polarion:
         assignee: ghubale
@@ -81,16 +81,16 @@ def test_search_global_custom_rule(add_global_custom_rule):
 
 
 def test_analysis_global_custom_rule(application, add_global_custom_rule, create_minimal_project):
-    """ Test to upload global_1 custom rules file
+    """ Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
         testSteps:
-            1. Upload global_1 custom rule file
+            1. Upload global custom rule file
             2. Create project and run analysis
-            3. Go to analysis details page and check if custom rules contains global_1 scope custom
+            3. Go to analysis details page and check if custom rules contains global scope custom
                rule file
         expectedResults:
             1. Analysis should be completed successfully
@@ -116,38 +116,42 @@ def test_analysis_global_custom_rule(application, add_global_custom_rule, create
 
 
 def test_invalid_rule_file_type(application, request):
-    """ Test to upload global_1 custom rules file
+    """ Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
         testSteps:
-            1. Upload invalid global_1 custom rule file
+            1. Upload invalid global custom rule file
             2. Check number of rules in it
         expectedResults:
-            1. Invalid global_1 custom rule file should have 0 rules
+            1. Invalid global custom rule file should have 0 rules
     """
-    # TODO(ghubale): Upload an empty xml and error should be handled
-    file_name = "customWebLogic.windup.label.xml"
-    rules_configurations = CustomRulesConfiguration(application, file_name)
-    rules_configurations.upload_custom_rule_file()
-    view = rules_configurations.create_view(CustomRulesView)
-    view.table.wait_displayed("20s")
+    file_names = ["customWebLogic.windup.label.xml", "empty_rule_file.xml"]
 
     @request.addfinalizer
     def _finalize():
-        view.search.fill("")
-        rules_configurations.delete_custom_rule()
+        for file in file_names:
+            rules = CustomRulesConfiguration(application, file)
+            rules.delete_custom_rule()
 
-    all_rules = view.table.read()
-    for rule in all_rules:
-        if rule["Short path"] == file_name:
-            assert int(rule["Number of rules"]) == 0
+    for file_name in file_names:
+        rules_configurations = CustomRulesConfiguration(application, file_name)
+        rules_configurations.upload_custom_rule_file()
+        view = rules_configurations.create_view(CustomRulesView)
+        view.table.wait_displayed("20s")
+
+        all_rules = view.table.read()
+        for rule in all_rules:
+            if rule["Short path"] == file_name:
+                assert int(rule["Number of rules"]) == 0
+    else:
+        assert False
 
 
 def test_total_global_system_rule(application):
-    """ Test to upload global_1 custom rules file
+    """ Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
@@ -168,7 +172,7 @@ def test_total_global_system_rule(application):
 
 
 def test_filter_global_system_rule(application):
-    """ Test to upload global_1 custom rules file
+    """ Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
@@ -199,7 +203,7 @@ def test_filter_global_system_rule(application):
                 assert filter_value in rule[filter_type]
 
 
-def test_add_folder_of_rules():
+def test_add_folder_of_rules(request, application):
     """ Test adding a folder containing both valid and invalid rules
 
     Polarion:
@@ -212,6 +216,23 @@ def test_add_folder_of_rules():
             3. Click on Add rule button and got to server path tab and browse rules folder
             4. Click on Close button
         expectedResults:
-            1. Error should be handled
+            1. Error should be handled and it should only upload valid rules files from folder
     """
-    pass
+    # MTA application is not recognizing this server path
+    rules_dir = "mta/applications/valid_invalid_rules/"
+
+    @request.addfinalizer
+    def _finalize():
+        rules = CustomRulesConfiguration(application, rules_dir)
+        rules.delete_custom_rule()
+
+    rules_configurations = CustomRulesConfiguration(application, rules_dir)
+    rules_configurations.upload_custom_rule_file(server_path=True, dir_path=rules_dir)
+    view = rules_configurations.create_view(CustomRulesView)
+    view.table.wait_displayed("20s")
+    all_rules = view.table.read()
+    for rule in all_rules:
+        if rule["Short path"] == rules_dir:
+            assert int(rule["Number of rules"]) == 1
+    else:
+        assert False

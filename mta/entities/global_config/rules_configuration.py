@@ -1,6 +1,7 @@
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
 from widgetastic.utils import WaitFillViewStrategy
+from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
 from widgetastic.widget import View
 from widgetastic_patternfly4 import Button
@@ -96,12 +97,28 @@ class RulesConfigurationView(BaseLoggedInPage):
         )
 
 
+class AddCustomRuleServerPathView(CustomRulesView):
+    rules_path = Input(id="serverPath")
+    scan_recursive = Checkbox("isChecked")
+    save_button = Button("Save")
+    cancel_button = Button("Cancel")
+
+    @property
+    def is_displayed(self):
+        return self.rules_path.is_displayed and self.cancel_button.is_displayed
+
+
 class AddCustomRuleView(CustomRulesView):
     title = Text(locator=".//h1[contains(normalize-space(.), 'Add rules')]")
     upload_rule = HiddenFileInput(locator='.//input[contains(@accept,".xml")]')
     browse_button = Button("Browse")
     close_button = Button("Close")
     fill_strategy = WaitFillViewStrategy("15s")
+
+    @View.nested
+    class server_path(MTATab):  # noqa
+        TAB_NAME = "Server path"
+        including_view = View.include(AddCustomRuleServerPathView, use_parent=True)
 
     @property
     def is_displayed(self):
@@ -155,17 +172,30 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
         self.application = application
         self.file_name = file_name
 
-    def upload_custom_rule_file(self):
+    def upload_custom_rule_file(self, server_path=False, dir_path=None, scan_recursive=False):
         """Method for uploading custom rule file
+
+        server_path: if True then upload rule file by server path
+        dir_path: Provide path to folder/file containing rule files
+        scan_recursive: If True and the given path is a directory, the subdirectories will also be
+        scanned for rulesets
         """
         view = navigate_to(self, "Add")
         view.wait_displayed("20s")
-        # upload custom rules
-        env = conf.get_config("env")
-        fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
-        file_path = fs1.download(self.file_name)
-        view.upload_rule.fill(file_path)
-        view.close_button.click()
+        if server_path:
+            # upload custom rules by providing server path to folder of rule files
+            view.server_path.click()
+            view.server_path.rules_path.fill(dir_path)
+            if scan_recursive:
+                view.server_path.scan_recursive.click()
+            view.server_path.save_button.click()
+        else:
+            # upload custom rules by browsing rule files
+            env = conf.get_config("env")
+            fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
+            file_path = fs1.download(self.file_name)
+            view.upload_rule.fill(file_path)
+            view.close_button.click()
 
     def delete_custom_rule(self, cancel=False):
         """Method to delete custom rule file

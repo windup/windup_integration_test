@@ -112,22 +112,3 @@ def test_sort_applications(application, create_project_with_two_apps):
     applications = Applications(application, project.name)
     # Sort application
     applications.sort_application("Application", "ascending")
-
-
-def test_application_name_advanced_option():
-    """ Test application name under advanced options
-
-    Polarion:
-        assignee: ghubale
-        initialEstimate: 1/12h
-        caseimportance: medium
-        testSteps:
-            1. Create project and while creating project give application name
-            2. Application name input present on advanced options page. Provide name and 'save and
-               run analysis".
-            4. Go to analysis results page and click on actions - 'Reports'
-            5. Check if you can see application on report's details page
-        expectedResults:
-            1. It should show provided name
-    """
-    pass

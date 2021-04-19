@@ -3,6 +3,8 @@ Polarion:
     casecomponent: WebConsole
     linkedWorkItems: MTA_Web_Console
 """
+import pytest
+
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.entities.report import AllApplicationsView
 
@@ -103,6 +105,7 @@ def test_sort_application_list(create_project):
     assert app_list_by_story_points[:-1] == app_list_story_points_asc
 
 
+@pytest.mark.manual
 def test_all_links_in_report_generated():
     """Test all links accessible or not in report generated
 

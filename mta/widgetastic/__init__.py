@@ -238,7 +238,9 @@ class MTATab(Tab):
     TAB_LOCATOR = ParametrizedLocator(
         './/div[contains(@class, "pf-c-tabs")]/ul'
         "//li[button[normalize-space(.)={@tab_name|quote}]] | "
-        ".//ul[contains(@class, 'nav')]/li[./a[normalize-space(.)={@tab_name|quote}]]"
+        ".//ul[contains(@class, 'nav')]/li[./a[normalize-space(.)={@tab_name|quote}]] |"
+        ".//ul[contains(@class, 'pf-c-tabs__list')]/li["
+        "./button[normalize-space(.)={@tab_name|quote}]]"
     )
 
     def is_active(self):
