@@ -245,6 +245,7 @@ class AddProjectView(AllProjectView):
         @View.nested
         class options(View):  # noqa
             title = Text(locator=".//h5[normalize-space(.)='Advanced options']")
+            app_name = Input(name="inputApplicationName")
             select_target = MTASelect(
                 locator='.//div/input[contains(@placeholder, "Select targets")]'
                 '/ancestor::div[contains(@class, "pf-c-select")]'
