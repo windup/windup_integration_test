@@ -176,9 +176,8 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
         """Method for uploading custom rule file
 
         server_path: if True then upload rule file by server path
-        dir_path: Provide path to folder/file containing rule files
         scan_recursive: If True and the given path is a directory, the subdirectories will also be
-        scanned for rulesets
+        scanned for rule sets
         """
         view = navigate_to(self, "Add")
         view.wait_displayed("20s")
