@@ -7,7 +7,7 @@ from mta.entities.analysis_results import AnalysisResultsView
 from mta.entities.report import AllApplicationsView
 
 
-def test_send_feedback(create_minimal_project):
+def test_send_feedback_and_validate_url(application, create_minimal_project):
     """Test send feedback
 
     Polarion:
@@ -19,11 +19,15 @@ def test_send_feedback(create_minimal_project):
             3. Click on `Send Feedback` button
         expectedResults:
             1. It should open feedback window
+            2. Report URL should have mta-ui/api/static-report
     """
     project, project_collection = create_minimal_project
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()
     view.analysis_results.show_report()
+    # Validate URL report has mta-ui/api/static-report
+    url = "/mta-ui/api/static-report"
+    assert url in application.web_ui.widgetastic_browser.url
     view = project_collection.create_view(AllApplicationsView)
     view.send_feedback.click()
 

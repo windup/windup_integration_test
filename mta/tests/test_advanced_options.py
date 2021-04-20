@@ -96,6 +96,9 @@ def test_advanced_options(application):
     view.advanced.custom_labels.enabled_button.click()
     view.advanced.custom_labels.next_button.click()
     view.advanced.options.wait_displayed()
+
+    # Add custom name to the application
+    view.advanced.options.app_name.fill("custom_app_name")
     # select disable_tattletale and de-select it
     view.advanced.options.disable_tattletale.click()
     view.advanced.options.disable_tattletale.click()
@@ -125,3 +128,6 @@ def test_advanced_options(application):
     view.analysis_results.show_report()
     view = project_collection.create_view(AllApplicationsView)
     assert view.is_displayed
+    view.search("custom_app_name", "Name")
+    apps_list = view.application_table.get_applications_list
+    assert "custom_app_name" in apps_list[:-1]
