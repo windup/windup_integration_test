@@ -13,6 +13,8 @@ from mta.entities.global_config.rules_configuration import CustomRulesView
 from mta.entities.global_config.rules_configuration import SystemRulesConfiguration
 from mta.entities.report import AllApplicationsView
 from mta.entities.report import Issues
+from mta.utils import conf
+from mta.utils.ftp import FTPClientWrapper
 
 
 @pytest.fixture(scope="function")
@@ -111,7 +113,7 @@ def test_analysis_global_custom_rule(application, add_global_custom_rule, create
     view.application_table.application_details("acmeair-webapp-1.0-SNAPSHOT.war")
     view.tabs.issues.click()
     view = analysis_results.create_view(Issues)
-    # TODO(ghubale): Updated test case with reading Migration potential table
+    # TODO(ghubale): Update test case with reading Migration potential table
     assert view.wait_displayed
 
 
@@ -218,21 +220,37 @@ def test_add_folder_of_rules(request, application):
         expectedResults:
             1. Error should be handled and it should only upload valid rules files from folder
     """
-    # MTA application is not recognizing this server path
-    rules_dir = "mta/applications/valid_invalid_rules/"
+    rule_files = [
+        "customWebLogic.windup.label.xml",
+        "empty_rule_file.xml",
+        "custom.Test1rules.rhamt.xml",
+    ]
+    server_path = "/tmp"
 
     @request.addfinalizer
     def _finalize():
-        rules = CustomRulesConfiguration(application, rules_dir)
+        rules = CustomRulesConfiguration(application, server_path)
         rules.delete_custom_rule()
 
-    rules_configurations = CustomRulesConfiguration(application, rules_dir)
-    rules_configurations.upload_custom_rule_file(server_path=True, dir_path=rules_dir)
+    rules_configurations = CustomRulesConfiguration(application, server_path)
+    view = navigate_to(rules_configurations, "Add")
+
+    for file_name in rule_files:
+        env = conf.get_config("env")
+        fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
+        fs1.download(file_name)
+
+    view.server_path.click()
+    view.server_path.rules_path.fill(server_path)
+    view.server_path.scan_recursive.click()
+    view.server_path.save_button.click()
     view = rules_configurations.create_view(CustomRulesView)
-    view.table.wait_displayed("20s")
+    view.table.wait_displayed("50s")
     all_rules = view.table.read()
     for rule in all_rules:
-        if rule["Short path"] == rules_dir:
-            assert int(rule["Number of rules"]) == 1
+        if rule["Short path"] == "/tmp":
+            # There will be older files downloaded in /tmp directory. Hence asserting number of
+            # rules equal to and greater than 1 only
+            assert int(rule["Number of rules"]) >= 1
     else:
         assert False

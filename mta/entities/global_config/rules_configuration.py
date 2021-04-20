@@ -172,7 +172,7 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
         self.application = application
         self.file_name = file_name
 
-    def upload_custom_rule_file(self, server_path=False, dir_path=None, scan_recursive=False):
+    def upload_custom_rule_file(self, server_path=False, scan_recursive=False):
         """Method for uploading custom rule file
 
         server_path: if True then upload rule file by server path
@@ -184,8 +184,12 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
         view.wait_displayed("20s")
         if server_path:
             # upload custom rules by providing server path to folder of rule files
+            env = conf.get_config("env")
+            fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
+            file_path = fs1.download(self.file_name)
+            rules_path = file_path.split(self.file_name)[0]
             view.server_path.click()
-            view.server_path.rules_path.fill(dir_path)
+            view.server_path.rules_path.fill(rules_path)
             if scan_recursive:
                 view.server_path.scan_recursive.click()
             view.server_path.save_button.click()
