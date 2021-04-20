@@ -3,8 +3,12 @@ Polarion:
     casecomponent: WebConsole
     linkedWorkItems: MTA_Web_Console
 """
+import fauxfactory
+import pytest
+
 from mta.entities.analysis_results import AnalysisResultsView
 from mta.entities.report import AllApplicationsView
+from mta.entities.report import HardCodedIP
 
 
 def test_send_feedback_and_validate_url(application, create_minimal_project):
@@ -101,3 +105,54 @@ def test_sort_application_list(create_project):
     ]
     app_list_by_story_points = view.application_table.get_applications_list
     assert app_list_by_story_points[:-1] == app_list_story_points_asc
+
+
+def test_hard_code_ip_report(request, application):
+    """Test send feedback
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        testSteps:
+            1. Create project and run analysis for "AdministracionEfectivo.ear" app with target
+               "Containerization"
+            2. Click on report action to see detailed report
+            3. Click on application for detailed application analysis report
+        expectedResults:
+            1. Analysis report should show Hard-Coded IP Addresses report generated
+    """
+    app_name = "AdministracionEfectivo.ear"
+    project_collection = application.collections.projects
+    project = project_collection.create(
+        name=fauxfactory.gen_alphanumeric(12, start="project_"),
+        description=fauxfactory.gen_alphanumeric(start="desc_"),
+        app_list=[app_name],
+        transformation_path="Containerization",
+    )
+    request.addfinalizer(project.delete_if_exists)
+    view = project_collection.create_view(AnalysisResultsView)
+    view.wait_displayed()
+    view.analysis_results.show_report()
+    view = project_collection.create_view(AllApplicationsView)
+    view.application_table.application_details(app_name)
+    view.tabs.hard_coded_ip.click()
+    view = project_collection.create_view(HardCodedIP)
+    assert view.wait_displayed
+
+
+@pytest.mark.manual
+def test_all_links_in_report_generated():
+    """Test all links accessible or not in report generated
+
+    Polarion:
+        assignee: nsrivast
+        initialEstimate: 1/12h
+        caseimportance: medium
+        testSteps:
+            1. Create project and run analysis
+            2. Click on report action to see detailed report
+            3. Check on application name and check all links if reachable or not.
+        expectedResults:
+            1. All links should be valid and accessible.
+    """
+    pass

@@ -13,11 +13,13 @@ from mta.entities.global_config.rules_configuration import CustomRulesView
 from mta.entities.global_config.rules_configuration import SystemRulesConfiguration
 from mta.entities.report import AllApplicationsView
 from mta.entities.report import Issues
+from mta.utils import conf
+from mta.utils.ftp import FTPClientWrapper
 
 
 @pytest.fixture(scope="function")
 def add_global_custom_rule(application):
-    """This fixture with upload global_1 custom rule file"""
+    """This fixture with upload global custom rule file"""
     file_name = "custom.Test1rules.rhamt.xml"
     rules_configurations = CustomRulesConfiguration(application, file_name)
     rules_configurations.upload_custom_rule_file()
@@ -28,7 +30,7 @@ def add_global_custom_rule(application):
 
 
 def test_crud_global_custom_rule(application):
-    """ Test to upload global_1 custom rules file
+    """ Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
@@ -52,7 +54,7 @@ def test_crud_global_custom_rule(application):
 
 
 def test_search_global_custom_rule(add_global_custom_rule):
-    """ Test to search global_1 custom rules file from table
+    """ Test to search global custom rules file from table
 
     Polarion:
         assignee: ghubale
@@ -81,16 +83,16 @@ def test_search_global_custom_rule(add_global_custom_rule):
 
 
 def test_analysis_global_custom_rule(application, add_global_custom_rule, create_minimal_project):
-    """ Test to upload global_1 custom rules file
+    """ Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
         testSteps:
-            1. Upload global_1 custom rule file
+            1. Upload global custom rule file
             2. Create project and run analysis
-            3. Go to analysis details page and check if custom rules contains global_1 scope custom
+            3. Go to analysis details page and check if custom rules contains global scope custom
                rule file
         expectedResults:
             1. Analysis should be completed successfully
@@ -111,42 +113,47 @@ def test_analysis_global_custom_rule(application, add_global_custom_rule, create
     view.application_table.application_details("acmeair-webapp-1.0-SNAPSHOT.war")
     view.tabs.issues.click()
     view = analysis_results.create_view(Issues)
-    # TODO(ghubale): Updated test case with reading Migration potential table
+    # TODO(ghubale): Update test case with reading Migration potential table
     assert view.wait_displayed
 
 
 def test_invalid_rule_file_type(application, request):
-    """ Test to upload global_1 custom rules file
+    """ Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
         testSteps:
-            1. Upload invalid global_1 custom rule file
+            1. Upload invalid global custom rule file
             2. Check number of rules in it
         expectedResults:
-            1. Invalid global_1 custom rule file should have 0 rules
+            1. Invalid global custom rule file should have 0 rules
     """
-    file_name = "customWebLogic.windup.label.xml"
-    rules_configurations = CustomRulesConfiguration(application, file_name)
-    rules_configurations.upload_custom_rule_file()
-    view = rules_configurations.create_view(CustomRulesView)
-    view.table.wait_displayed("20s")
+    file_names = ["customWebLogic.windup.label.xml", "empty_rule_file.xml"]
 
     @request.addfinalizer
     def _finalize():
-        view.search.fill("")
-        rules_configurations.delete_custom_rule()
+        for file in file_names:
+            rules = CustomRulesConfiguration(application, file)
+            rules.delete_custom_rule()
 
-    all_rules = view.table.read()
-    for rule in all_rules:
-        if rule["Short path"] == file_name:
-            assert int(rule["Number of rules"]) == 0
+    for file_name in file_names:
+        rules_configurations = CustomRulesConfiguration(application, file_name)
+        rules_configurations.upload_custom_rule_file()
+        view = rules_configurations.create_view(CustomRulesView)
+        view.table.wait_displayed("20s")
+
+        all_rules = view.table.read()
+        for rule in all_rules:
+            if rule["Short path"] == file_name:
+                assert int(rule["Number of rules"]) == 0
+    else:
+        assert False
 
 
 def test_total_global_system_rule(application):
-    """ Test to upload global_1 custom rules file
+    """ Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
@@ -167,7 +174,7 @@ def test_total_global_system_rule(application):
 
 
 def test_filter_global_system_rule(application):
-    """ Test to upload global_1 custom rules file
+    """ Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
@@ -196,3 +203,54 @@ def test_filter_global_system_rule(application):
             filtered_rules = view.table.read()
             for rule in filtered_rules:
                 assert filter_value in rule[filter_type]
+
+
+def test_add_folder_of_rules(request, application):
+    """ Test adding a folder containing both valid and invalid rules
+
+    Polarion:
+        assignee: ghubale
+        initialEstimate: 1/12h
+        caseimportance: medium
+        testSteps:
+            1. Login to MTA web console
+            2. Navigate to Global > Rules configuration > Custom rules
+            3. Click on Add rule button and got to server path tab and browse rules folder
+            4. Click on Close button
+        expectedResults:
+            1. Error should be handled and it should only upload valid rules files from folder
+    """
+    rule_files = [
+        "customWebLogic.windup.label.xml",
+        "empty_rule_file.xml",
+        "custom.Test1rules.rhamt.xml",
+    ]
+    server_path = "/tmp"
+
+    @request.addfinalizer
+    def _finalize():
+        rules = CustomRulesConfiguration(application, server_path)
+        rules.delete_custom_rule()
+
+    rules_configurations = CustomRulesConfiguration(application, server_path)
+    view = navigate_to(rules_configurations, "Add")
+
+    for file_name in rule_files:
+        env = conf.get_config("env")
+        fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
+        fs1.download(file_name)
+
+    view.server_path.click()
+    view.server_path.rules_path.fill(server_path)
+    view.server_path.scan_recursive.click()
+    view.server_path.save_button.click()
+    view = rules_configurations.create_view(CustomRulesView)
+    view.table.wait_displayed("50s")
+    all_rules = view.table.read()
+    for rule in all_rules:
+        if rule["Short path"] == "/tmp":
+            # There will be older files downloaded in /tmp directory. Hence asserting number of
+            # rules equal to and greater than 1 only
+            assert int(rule["Number of rules"]) >= 1
+    else:
+        assert False

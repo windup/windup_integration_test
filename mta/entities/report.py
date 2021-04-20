@@ -21,6 +21,17 @@ class Issues(View):
         return self.title.text == "Issues"
 
 
+class HardCodedIP(View):
+    """View to represent Hard Coded IP addresses report in analysis report"""
+
+    title = Text('.//h1/div[@class="main"]')
+    # TODO(ghubale): Add table widget
+
+    @property
+    def is_displayed(self):
+        return self.title.text == "Hard-coded IP Addresses"
+
+
 class AllApplicationsView(BaseLoggedInPage):
     """Class for All applications view"""
 
@@ -80,3 +91,9 @@ class AllApplicationsView(BaseLoggedInPage):
             @property
             def is_displayed(self):
                 return self.title.text == "Technologies"
+
+        @View.nested
+        class hard_coded_ip(MTATab):  # noqa
+            fill_strategy = WaitFillViewStrategy("20s")
+            TAB_NAME = "Hard-coded IP Addresses"
+            including_view = View.include(HardCodedIP, use_parent=True)
