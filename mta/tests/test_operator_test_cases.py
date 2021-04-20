@@ -1,7 +1,7 @@
 """
 Polarion:
-    casecomponent: WebConsole
-    linkedWorkItems: MTA_Web_Console
+    casecomponent: MTA Operator
+    linkedWorkItems: MTA_Operator
 """
 import fauxfactory
 import pytest
@@ -16,7 +16,7 @@ from mta.utils.update import update
 
 
 @pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure"], indirect=True)
-def test_project_crud(mta_app, create_minimal_project):
+def test_ocp_project_crud(mta_app, create_minimal_project):
     """
     Polarion:
         assignee: ghubale
@@ -48,7 +48,7 @@ def test_project_crud(mta_app, create_minimal_project):
 
 
 @pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure"], indirect=True)
-def test_delete_application(mta_app):
+def test_ocp_delete_application(mta_app):
     """Delete uploaded application file and check if next button gets disabled
 
     Polarion:
@@ -92,7 +92,7 @@ def test_delete_application(mta_app):
 
 
 @pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure"], indirect=True)
-def test_application_report(mta_app, create_minimal_project):
+def test_ocp_application_report(mta_app, create_minimal_project):
     """
     Polarion:
         assignee: ghubale
