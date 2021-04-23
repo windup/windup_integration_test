@@ -16,7 +16,7 @@ from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import update
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
 def test_project_crud(mta_app, create_minimal_project):
     """
     Polarion:
@@ -48,7 +48,7 @@ def test_project_crud(mta_app, create_minimal_project):
     assert project.exists
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
 def test_delete_application(mta_app):
     """Delete uploaded application file and check if next button gets disabled
 
@@ -92,7 +92,7 @@ def test_delete_application(mta_app):
     view.create_project.yes_button.click()
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
 def test_application_report(mta_app, create_minimal_project):
     """
     Polarion:
