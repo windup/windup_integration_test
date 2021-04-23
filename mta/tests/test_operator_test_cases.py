@@ -92,7 +92,7 @@ def test_ocp_delete_application(mta_app):
 
 
 @pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure"], indirect=True)
-def test_ocp_application_report(mta_app, create_minimal_project):
+def test_ocp_application_report(mta_app, create_minimal_project, request):
     """
     Polarion:
         assignee: ghubale
@@ -108,7 +108,12 @@ def test_ocp_application_report(mta_app, create_minimal_project):
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()
     assert view.is_displayed
+
+    @request.addfinalizer
+    def _finalize():
+        view.browser.close_window(view.browser.window_handles[0])
+
     view.analysis_results.show_report()
     view = project_collection.create_view(AllApplicationsView)
-    view.wait_displayed("120s")
+    view.wait_displayed("40s")
     assert view.is_displayed
