@@ -378,7 +378,7 @@ class Project(BaseEntity, Updateable):
         else:
             view.cancel_button.click()
         view = self.create_view(AllProjectView, override=updates)
-        view.wait_displayed("40s")
+        view.wait_displayed()
         assert view.is_displayed
 
     def delete(self, cancel=False, wait=False):

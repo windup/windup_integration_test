@@ -110,5 +110,5 @@ def test_ocp_application_report(mta_app, create_minimal_project):
     assert view.is_displayed
     view.analysis_results.show_report()
     view = project_collection.create_view(AllApplicationsView)
-    view.wait_displayed("60s")
+    view.wait_displayed("120s")
     assert view.is_displayed
