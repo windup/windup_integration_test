@@ -1,7 +1,7 @@
 """
 Polarion:
-    casecomponent: MTA Operator
-    linkedWorkItems: MTA_Operator
+    casecomponent: WebConsole
+    linkedWorkItems: MTA_Web_Console
 """
 import fauxfactory
 import pytest
