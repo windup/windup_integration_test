@@ -20,7 +20,7 @@ jobs:
         echo "SSH: ${SSH}"
         echo "Web: ${WEB}"
         echo "You can now connect to the tmate session."
-        wget https://repo1.maven.org/maven2/org/jboss/windup/web/mta-web-distribution/5.0.1.Final/mta-web-distribution-5.0.1.Final-with-authentication.zip
-        unzip -o mta-web-distribution-5.0.1.Final-with-authentication.zip
-        cd mta-web-distribution-5.0.1.Final
+        wget https://repo1.maven.org/maven2/org/jboss/windup/web/mta-web-distribution/5.1.4.Alpha1/mta-web-distribution-5.1.4.Alpha1-with-authentication.zip
+        unzip -o mta-web-distribution-5.1.4.Alpha1-with-authentication.zip
+        cd mta-web-distribution-5.1.4.Alpha1
         ./run_mta.sh
