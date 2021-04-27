@@ -24,4 +24,3 @@ jobs:
         unzip -o mta-web-distribution-5.0.1.Final-with-authentication.zip
         cd mta-web-distribution-5.0.1.Final
         ./run_mta.sh
-        sleep 200
