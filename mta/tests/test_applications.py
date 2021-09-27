@@ -9,7 +9,8 @@ from mta.entities.applications import Applications
 from mta.entities.applications import ApplicationsView
 
 
-def test_applications_page(application, create_project):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_applications_page(mta_app, create_project):
     """ Test search applications
 
     Polarion:
@@ -26,6 +27,7 @@ def test_applications_page(application, create_project):
             2. Deleted application should not be visible in search results
     """
     project, project_collection = create_project
+    application = mta_app
     assert project.exists
     applications = Applications(application, project.name)
     view = applications.create_view(ApplicationsView)
@@ -43,7 +45,8 @@ def test_applications_page(application, create_project):
 
 # Bug WINDUP-2995 Fail
 @pytest.mark.skip(reason="MTA UI Issue - WINDUP-2995")
-def test_add_applications_to_project(application, create_minimal_project):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_add_applications_to_project(mta_app, create_minimal_project):
     """ Test add applications
 
     Polarion:
@@ -62,11 +65,12 @@ def test_add_applications_to_project(application, create_minimal_project):
     project, project_collection = create_minimal_project
     assert project.exists
 
-    applications = Applications(application, project.name)
+    applications = Applications(mta_app, project.name)
     applications.add_application(app="cadmium-war-0.1.0.war")
 
 
-def test_delete_application_from_project(application, create_project_with_two_apps):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_delete_application_from_project(mta_app, create_project_with_two_apps):
     """ Test delete application from project
 
     Polarion:
@@ -84,14 +88,15 @@ def test_delete_application_from_project(application, create_project_with_two_ap
     """
     project, project_collection = create_project_with_two_apps
     assert project.exists
-    applications = Applications(application, project.name)
+    applications = Applications(mta_app, project.name)
     # Delete and Cancel
     applications.delete_application(name="acmeair-webapp-1.0-SNAPSHOT.war", cancel=True)
     # Delete
     applications.delete_application(name="acmeair-webapp-1.0-SNAPSHOT.war", cancel=False)
 
 
-def test_sort_applications(application, create_project_with_two_apps):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_sort_applications(mta_app, create_project_with_two_apps):
     """ Test sort applications
 
     Polarion:
@@ -109,6 +114,6 @@ def test_sort_applications(application, create_project_with_two_apps):
     """
     project, project_collection = create_project_with_two_apps
     assert project.exists
-    applications = Applications(application, project.name)
+    applications = Applications(mta_app, project.name)
     # Sort application
     applications.sort_application("Application", "ascending")

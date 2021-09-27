@@ -1,3 +1,5 @@
+import time
+
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
 from widgetastic.utils import WaitFillViewStrategy
@@ -60,6 +62,7 @@ class CustomRulesView(BaseLoggedInPage):
     add_rule_button = Button("Add rule")
     search = Input(locator=".//input[@aria-label='Filter by short path']")
     ACTIONS_INDEX = 4
+    title = Text(locator=".//div[contains(@class, 'pf-c-empty-state__content')]/h4")
     table = Table(
         locator='.//table[contains(@aria-label, "Table")]',
         column_widgets={
@@ -70,7 +73,11 @@ class CustomRulesView(BaseLoggedInPage):
 
     @property
     def is_displayed(self):
-        return self.add_rule_button.is_displayed and self.table.is_displayed
+        # For OCP pages takes more time to load this is the only solution
+        time.sleep(20)
+        return self.add_rule_button.is_displayed and (
+            self.table.is_displayed or self.title.is_displayed
+        )
 
 
 class RulesConfigurationView(BaseLoggedInPage):
@@ -113,7 +120,6 @@ class AddCustomRuleView(CustomRulesView):
     upload_rule = HiddenFileInput(locator='.//input[contains(@accept,".xml")]')
     browse_button = Button("Browse")
     close_button = Button("Close")
-    fill_strategy = WaitFillViewStrategy("15s")
 
     @View.nested
     class server_path(MTATab):  # noqa
@@ -180,7 +186,6 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
         scanned for rule sets
         """
         view = navigate_to(self, "Add")
-        view.wait_displayed("20s")
         if server_path:
             # upload custom rules by providing server path to folder of rule files
             env = conf.get_config("env")
@@ -206,7 +211,7 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
              cancel
         """
         view = navigate_to(self, "Delete")
-        view.wait_displayed()
+        view.wait_displayed("20s")
 
         if cancel:
             view.cancel_button.click()

@@ -56,6 +56,7 @@ class AddProjectView(AllProjectView):
         title = Text(locator=".//h5[normalize-space(.)='Add applications']")
         delete_application = Text(locator=".//button[contains(@aria-label, 'delete-application')]")
         browse_button = Button("Browse")
+        progress_bar = './/div[contains(@role, "progressbar")]'
         upload_file = HiddenFileInput(
             locator='.//input[@accept=".ear, .har, .jar, .rar, .sar, .war, .zip"]'
         )
@@ -68,6 +69,9 @@ class AddProjectView(AllProjectView):
         @property
         def is_displayed(self):
             return self.title.is_displayed and self.browse_button.is_displayed
+
+        def in_progress(self):
+            return self.browser.is_displayed(self.progress_bar)
 
         def fill(self, values):
             app_list = values.get("app_list")
@@ -363,10 +367,10 @@ class Project(BaseEntity, Updateable):
     def exists(self):
         """Check project exist or not"""
         view = navigate_to(self.parent, "All")
-        wait_for(lambda: view.table.is_displayed, delay=5, timeout=120)
-        for row in view.table:
-            if row.name.text == self.name:
-                return True
+        if view.table_loaded():
+            for row in view.table:
+                if row.name.text == self.name:
+                    return True
         return False
 
     def update(self, updates):

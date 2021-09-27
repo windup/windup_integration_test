@@ -14,18 +14,20 @@ from mta.entities.global_config.labels_configuration import SystemLabelsView
 
 
 @pytest.fixture(scope="function")
-def add_global_custom_label(application):
+def add_global_custom_label(mta_app):
     """This fixture with upload global custom label file"""
     file_name = "customWebLogic.windup.label.xml"
-    labels_configurations = CustomLabelsConfigurations(application, file_name)
+    labels_configurations = CustomLabelsConfigurations(mta_app, file_name)
     labels_configurations.upload_custom_label_file()
     view = labels_configurations.create_view(CustomLabelsView)
     view.table.wait_displayed("20s")
     yield file_name, view, labels_configurations
     labels_configurations.delete_custom_label_file()
+    view.logout()
 
 
-def test_crud_global_custom_label(application):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_crud_global_custom_label(mta_app, add_global_custom_label):
     """ Test to upload global custom labels file
 
     Polarion:
@@ -40,16 +42,12 @@ def test_crud_global_custom_label(application):
         expectedResults:
             1. Custom label file should be listed in table
     """
-    file_name = "customWebLogic.windup.label.xml"
-    global_configurations = CustomLabelsConfigurations(application, file_name)
-    global_configurations.upload_custom_label_file()
-    view = global_configurations.create_view(CustomLabelsView)
-    view.table.wait_displayed("20s")
+    file_name, view, labels_configurations = add_global_custom_label
     assert file_name in [label["Short path"] for label in view.table.read()]
-    assert global_configurations.delete_custom_label_file()
 
 
-def test_search_global_custom_label(add_global_custom_label):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_search_global_custom_label(mta_app, add_global_custom_label):
     """ Test to search global custom labels file from table
 
     Polarion:
@@ -78,7 +76,10 @@ def test_search_global_custom_label(add_global_custom_label):
         pass
 
 
-def test_analysis_global_custom_label(application, add_global_custom_label, create_minimal_project):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_analysis_global_custom_label(
+    mta_app, add_global_custom_label, create_minimal_project, request
+):
     """ Test to upload global custom labels file
 
     Polarion:
@@ -94,16 +95,16 @@ def test_analysis_global_custom_label(application, add_global_custom_label, crea
             1. Analysis should be completed successfully
     """
     file_name, view, labels_configurations = add_global_custom_label
-
     project, project_collection = create_minimal_project
-    analysis_results = AnalysisResults(application, project.name)
+    analysis_results = AnalysisResults(mta_app, project.name)
     view = navigate_to(analysis_results, "AnalysisDetailsPage")
     view.custom_labels.wait_displayed("30s")
     card_info = view.custom_labels.read()
     assert file_name in card_info["body"].split("Global")[1]
 
 
-def test_invalid_label_file_type(application, request):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_invalid_label_file_type(mta_app, request):
     """ Test to upload global custom label file
 
     Polarion:
@@ -117,7 +118,7 @@ def test_invalid_label_file_type(application, request):
             1. Invalid global custom label file should have 0 labels
     """
     file_name = "custom.Test1rules.rhamt.xml"
-    labels_configurations = CustomLabelsConfigurations(application, file_name)
+    labels_configurations = CustomLabelsConfigurations(mta_app, file_name)
     labels_configurations.upload_custom_label_file()
     view = labels_configurations.create_view(CustomLabelsView)
     view.table.wait_displayed("20s")
@@ -126,6 +127,7 @@ def test_invalid_label_file_type(application, request):
     def _finalize():
         view.search.fill("")
         labels_configurations.delete_custom_label_file()
+        view.logout()
 
     all_labels = view.table.read()
     for label in all_labels:
@@ -133,7 +135,8 @@ def test_invalid_label_file_type(application, request):
             assert int(label["Number of labels"]) == 0
 
 
-def test_total_global_system_label(application):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_total_global_system_label(mta_app, request):
     """ Test to upload global custom label file
 
     Polarion:
@@ -146,13 +149,20 @@ def test_total_global_system_label(application):
         expectedResults:
             1. Total system labels count should be equal or greater than 1
     """
-    global_configurations = SystemLabelsConfigurations(application)
+
+    @request.addfinalizer
+    def _finalize():
+        # Reset view else the URL does not change
+        view.logout()
+
+    global_configurations = SystemLabelsConfigurations(mta_app)
     view = navigate_to(global_configurations, "SystemLabel")
     view.wait_displayed()
     assert view.paginator.total_items >= 1
 
 
-def test_search_global_system_label(application):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_search_global_system_label(mta_app, request):
     """ Test to upload global custom label file
 
     Polarion:
@@ -165,7 +175,12 @@ def test_search_global_system_label(application):
         expectedResults:
             1. It should list label with that provider ID
     """
-    global_configurations = SystemLabelsConfigurations(application)
+
+    @request.addfinalizer
+    def _finalize():
+        view.logout()
+
+    global_configurations = SystemLabelsConfigurations(mta_app)
     global_configurations.search_system_labels("core")
     view = global_configurations.create_view(SystemLabelsView)
     data = view.table.read()[0]

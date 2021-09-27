@@ -146,12 +146,18 @@ class AnalysisResults(Widget):
             self.COMPLETE_STATUS_LOCATOR
         )
 
-    def show_report(self):
+    def show_report(self, request):
         self.browser.click(self.SHOW_REPORT)
-        self.switch_to_report()
+        self.switch_to_report(request)
 
-    def switch_to_report(self):
+    def switch_to_report(self, request):
         """Switch focus to report window."""
+
+        @request.addfinalizer
+        def _finalize():
+            self.browser.selenium.close()
+            self.browser.switch_to_window(main_window)
+
         main_window = self.browser.current_window_handle
         open_url_window = (set(self.browser.window_handles) - {main_window}).pop()
         self.browser.switch_to_window(open_url_window)
@@ -163,10 +169,6 @@ class HiddenFileInput(FileInput):
     Prerequisite:
         Type of input field should be file (type='file')
     """
-
-    def fill(self, filepath):
-        self.browser.set_attribute("style", "display: none;", self)
-        self.browser.send_keys(filepath, self)
 
     @property
     def is_displayed(self):

@@ -4,12 +4,14 @@ Polarion:
     linkedWorkItems: MTA_Web_Console
 """
 import fauxfactory
+import pytest
 
 from mta.entities.analysis_results import AnalysisResults
 from mta.entities.analysis_results import AnalysisResultsView
 
 
-def test_analysis_results_search_sort_delete(request, application):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
+def test_analysis_results_search_sort_delete(request, mta_app):
     """ Test search and sort analysis
 
     Polarion:
@@ -29,7 +31,7 @@ def test_analysis_results_search_sort_delete(request, application):
     # TODO(ghubale): Sort analysis is not covered in automation
     # TODO(ghubale): Search analysis by status is not covered in automation
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
-    project_collection = application.collections.projects
+    project_collection = mta_app.collections.projects
     project = project_collection.create(
         name=project_name,
         description=fauxfactory.gen_alphanumeric(),
@@ -42,7 +44,7 @@ def test_analysis_results_search_sort_delete(request, application):
     )
     assert project.exists
     request.addfinalizer(project.delete_if_exists)
-    analysis_results = AnalysisResults(application, project_name)
+    analysis_results = AnalysisResults(mta_app, project_name)
     analysis_results.run_analysis()
     view = analysis_results.create_view(AnalysisResultsView)
     view.wait_displayed("30s")

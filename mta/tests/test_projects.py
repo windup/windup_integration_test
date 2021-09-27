@@ -16,7 +16,7 @@ from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import update
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_project_crud(mta_app, create_minimal_project):
     """
     Polarion:
@@ -48,7 +48,7 @@ def test_project_crud(mta_app, create_minimal_project):
     assert project.exists
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_delete_application(mta_app):
     """Delete uploaded application file and check if next button gets disabled
 
@@ -92,8 +92,8 @@ def test_delete_application(mta_app):
     view.create_project.yes_button.click()
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
-def test_application_report(mta_app, create_minimal_project):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_application_report(mta_app, create_minimal_project, request):
     """
     Polarion:
         assignee: ghubale
@@ -109,12 +109,13 @@ def test_application_report(mta_app, create_minimal_project):
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()
     assert view.is_displayed
-    view.analysis_results.show_report()
+    view.analysis_results.show_report(request)
     view = project_collection.create_view(AllApplicationsView)
+    view.filter_application.wait_displayed("30s")
     assert view.is_displayed
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_sort_projects(
     mta_app, create_minimal_project, create_project_with_two_apps, create_project
 ):
@@ -151,7 +152,7 @@ def test_sort_projects(
     project_collection.sort_projects("Status", "descending")
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_search_project(mta_app, create_minimal_project):
     """Test search Projects
 
@@ -172,7 +173,7 @@ def test_search_project(mta_app, create_minimal_project):
     assert project.name in [row.name.text for row in view.table]
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_default_transformation_path(mta_app, request):
     """Test default transformation path for Projects
 

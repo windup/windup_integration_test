@@ -4,6 +4,7 @@ Polarion:
     linkedWorkItems: MTA_Web_Console
 """
 import fauxfactory
+import pytest
 from wait_for import wait_for
 
 from mta.base.application.implementations.web_ui import navigate_to
@@ -13,7 +14,8 @@ from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
 
 
-def test_advanced_options(application):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_advanced_options(mta_app, request):
     """ Test advanced options and run analysis
 
     Polarion:
@@ -35,26 +37,35 @@ def test_advanced_options(application):
             1. Analysis should be completed properly and new tab should open with detailed analysis
     """
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
-    project_collection = application.collections.projects
+    project_collection = mta_app.collections.projects
     view = navigate_to(project_collection, "Add")
     view.create_project.fill({"name": project_name, "description": "desc"})
     view.add_applications.wait_displayed("20s")
+
+    app_list = ["acmeair-webapp-1.0-SNAPSHOT.war", "arit-ear-0.8.1-SNAPSHOT.ear"]
     env = conf.get_config("env")
     fs = FTPClientWrapper(env.ftpserver.entities.mta)
-    file_path = fs.download("arit-ear-0.8.1-SNAPSHOT.ear")
-    view.add_applications.upload_file.fill(file_path)
-    file_path = fs.download("acmeair-webapp-1.0-SNAPSHOT.war")
-    view.add_applications.upload_file.fill(file_path)
+    for app in app_list:
+        file_path = fs.download(app)
+        view.add_applications.upload_file.fill(file_path)
+        wait_for(
+            lambda: view.browser.is_displayed(view.add_applications.progress_bar),
+            delay=0.2,
+            timeout=60,
+        )
+
     view.add_applications.next_button.wait_displayed()
     wait_for(lambda: view.add_applications.next_button.is_enabled, delay=0.2, timeout=60)
     view.add_applications.next_button.click()
+
     view.configure_analysis.set_transformation_target.wait_displayed()
     view.configure_analysis.set_transformation_target.next_button.click()
     wait_for(
-        lambda: view.configure_analysis.select_packages("com").is_displayed, delay=0.6, timeout=240
+        lambda: view.configure_analysis.select_packages("com").is_displayed, delay=0.6, timeout=350
     )
     # Add package net and assert
     view.configure_analysis.select_packages("net").fill_pkg()
+    view.configure_analysis.select_packages("com").wait_displayed("20s")
     assert view.configure_analysis.select_packages("net").included_packages.is_displayed
     assert not view.configure_analysis.select_packages("net").packages.is_displayed
     # Add package 'org' and assert
@@ -93,9 +104,9 @@ def test_advanced_options(application):
     view.advanced.custom_labels.upload_label.fill(file_path)
     view.advanced.custom_labels.close_button.click()
     view.advanced.custom_labels.enabled_button.wait_displayed()
-    view.advanced.custom_labels.enabled_button.click()
+    view.advanced.custom_labels.next_button.wait_displayed()
     view.advanced.custom_labels.next_button.click()
-    view.advanced.options.wait_displayed()
+    view.advanced.options.wait_displayed("20s")
 
     # Add custom name to the application
     view.advanced.options.app_name.fill("custom_app_name")
@@ -125,9 +136,11 @@ def test_advanced_options(application):
     assert view.analysis_results.is_analysis_complete()
 
     # Verify that report opens
-    view.analysis_results.show_report()
+    view.analysis_results.show_report(request)
     view = project_collection.create_view(AllApplicationsView)
+    view.filter_application.wait_displayed("30s")
     assert view.is_displayed
     view.search("custom_app_name", "Name")
+    view.wait_displayed("30s")
     apps_list = view.application_table.get_applications_list
     assert "custom_app_name" in apps_list[:-1]
