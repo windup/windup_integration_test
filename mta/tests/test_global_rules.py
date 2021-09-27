@@ -71,9 +71,9 @@ def test_search_global_custom_rule(mta_app, add_global_custom_rule):
     view.wait_displayed("20s")
 
     view.search.fill("rhamt")
-    view.wait_displayed("10s")
+    view.wait_displayed("20s")
     view.search.fill("rhamt-invalid")
-    view.table_loaded()
+    view.wait_displayed("20s")
     try:
         assert file_name not in [rules["Short path"] for rules in view.table.read()]
     except IndexError:
