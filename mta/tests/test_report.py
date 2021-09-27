@@ -11,7 +11,8 @@ from mta.entities.report import AllApplicationsView
 from mta.entities.report import HardCodedIP
 
 
-def test_send_feedback_and_validate_url(application, create_minimal_project):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_send_feedback_and_validate_url(mta_app, create_minimal_project):
     """Test send feedback
 
     Polarion:
@@ -31,12 +32,13 @@ def test_send_feedback_and_validate_url(application, create_minimal_project):
     view.analysis_results.show_report()
     # Validate URL report has mta-ui/api/static-report
     url = "/mta-ui/api/static-report"
-    assert url in application.web_ui.widgetastic_browser.url
+    assert url in mta_app.web_ui.widgetastic_browser.url
     view = project_collection.create_view(AllApplicationsView)
     view.send_feedback.click()
 
 
-def test_filter_application_list(create_project_with_two_apps):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_filter_application_list(mta_app, create_project_with_two_apps):
     """Test filter applications
 
     Polarion:
@@ -64,7 +66,8 @@ def test_filter_application_list(create_project_with_two_apps):
     assert "acmeair-webapp-1.0-SNAPSHOT.war" in apps_list[:-1]
 
 
-def test_sort_application_list(create_project):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_sort_application_list(mta_app, create_project):
     """Test Sorting of applications
 
     Polarion:
@@ -107,7 +110,8 @@ def test_sort_application_list(create_project):
     assert app_list_by_story_points[:-1] == app_list_story_points_asc
 
 
-def test_hard_code_ip_report(request, application):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_hard_code_ip_report(request, mta_app):
     """Test send feedback
 
     Polarion:
@@ -122,7 +126,7 @@ def test_hard_code_ip_report(request, application):
             1. Analysis report should show Hard-Coded IP Addresses report generated
     """
     app_name = "AdministracionEfectivo.ear"
-    project_collection = application.collections.projects
+    project_collection = mta_app.collections.projects
     project = project_collection.create(
         name=fauxfactory.gen_alphanumeric(12, start="project_"),
         description=fauxfactory.gen_alphanumeric(start="desc_"),
