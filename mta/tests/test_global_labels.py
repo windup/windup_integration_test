@@ -121,7 +121,7 @@ def test_invalid_label_file_type(mta_app, request):
     labels_configurations = CustomLabelsConfigurations(mta_app, file_name)
     labels_configurations.upload_custom_label_file()
     view = labels_configurations.create_view(CustomLabelsView)
-    view.table.wait_displayed("20s")
+    view.wait_displayed("20s")
 
     @request.addfinalizer
     def _finalize():

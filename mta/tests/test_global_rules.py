@@ -73,9 +73,9 @@ def test_search_global_custom_rule(mta_app, add_global_custom_rule):
     view.search.fill("rhamt")
     view.wait_displayed("20s")
     view.search.fill("rhamt-invalid")
-    view.wait_displayed("20s")
     try:
         assert file_name not in [rules["Short path"] for rules in view.table.read()]
+        view.search.fill("")
     except IndexError:
         view.search.fill("")
         pass
@@ -116,7 +116,7 @@ def test_analysis_global_custom_rule(
     view.tabs.issues.click()
     view = analysis_results.create_view(Issues)
     # TODO(ghubale): Update test case with reading Migration potential table
-    assert view.wait_displayed
+    assert view.wait_displayed("20s")
 
 
 @pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)

@@ -171,9 +171,9 @@ class LoginPage(View):
 
     @property
     def is_displayed(self):
-        return (self.username.is_displayed and self.login_button.is_displayed) or (
-            self.validate_url() and self.header.is_displayed
-        )
+        return (
+            self.username.is_displayed and self.login_button.is_displayed and self.validate_url()
+        ) or (self.validate_url() and self.header.is_displayed)
 
     def login(self, user, password):
         self.fill({"username": user, "password": password})
