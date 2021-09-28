@@ -1,5 +1,6 @@
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
+from wait_for import wait_for
 from widgetastic.utils import WaitFillViewStrategy
 from widgetastic.widget import Text
 from widgetastic.widget import View
@@ -46,6 +47,7 @@ class CustomLabelsView(BaseLoggedInPage):
     paginator = Pagination(locator='.//div[contains(@class, "pf-c-pagination")]')
     add_label_button = Button("Add label")
     search = Input(locator=".//input[@aria-label='Filter by short path']")
+    table_loading = './/div[contains(@class, "pf-c-skeleton")]'
     ACTIONS_INDEX = 2
     table = Table(
         locator='.//table[contains(@aria-label, "Table")]',
@@ -55,14 +57,23 @@ class CustomLabelsView(BaseLoggedInPage):
         },
     )
 
+    def is_table_loaded(self):
+        return wait_for(
+            lambda: not self.browser.is_displayed(self.table_loading), delay=10, timeout=120
+        )
+
     @property
     def is_displayed(self):
-        return self.add_label_button.is_displayed and self.table.is_displayed
+        if self.is_table_loaded():
+            return self.add_label_button.is_displayed and self.table.is_displayed
+        else:
+            return False
 
 
 class AddCustomLabelView(View):
     title = Text(locator=".//h1[contains(normalize-space(.), 'Add labels')]")
     upload_label = HiddenFileInput(locator='.//input[contains(@accept,".xml")]')
+    file_uploaded = './/div[contains(@class, "pf-m-success")]'
     browse_button = Button("Browse")
     close_button = Button("Close")
     fill_strategy = WaitFillViewStrategy("15s")
@@ -131,12 +142,13 @@ class CustomLabelsConfigurations(Updateable, NavigatableMixin):
         """Method for uploading custom label file
         """
         view = navigate_to(self, "Add")
-        view.wait_displayed()
+        view.wait_displayed("20s")
         # upload custom labels
         env = conf.get_config("env")
         fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
         file_path = fs1.download(self.file_name)
         view.upload_label.fill(file_path)
+        wait_for(lambda: view.browser.is_displayed(view.file_uploaded), delay=10, timeout=30)
         view.close_button.click()
 
     def delete_custom_label_file(self, cancel=False):
@@ -145,7 +157,7 @@ class CustomLabelsConfigurations(Updateable, NavigatableMixin):
             cancel
         """
         view = navigate_to(self, "Delete")
-        view.wait_displayed()
+        view.wait_displayed("30s")
 
         if cancel:
             view.cancel_button.click()

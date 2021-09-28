@@ -4,12 +4,14 @@ Polarion:
     linkedWorkItems: MTA_Web_Console
 """
 import fauxfactory
+import pytest
 
 from mta.entities.analysis_results import AnalysisResults
 from mta.entities.applications import Applications
 
 
-def test_multiple_applications_upload(request, application):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+def test_multiple_applications_upload(mta_app, request):
     """Test multiple applications upload
 
     Polarion:
@@ -25,7 +27,7 @@ def test_multiple_applications_upload(request, application):
             1. Analysis should get complete properly
     """
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
-    project_collection = application.collections.projects
+    project_collection = mta_app.collections.projects
     project = project_collection.create(
         name=project_name,
         description=fauxfactory.gen_alphanumeric(),
@@ -36,10 +38,10 @@ def test_multiple_applications_upload(request, application):
         ],
         transformation_path="Containerization",
     )
-    applications = Applications(application, project_name)
+    applications = Applications(mta_app, project_name)
     applications.delete_application("arit-ear-0.8.1-SNAPSHOT.ear")
     # Verify that analysis completes
-    analysis = AnalysisResults(application, project_name)
+    analysis = AnalysisResults(mta_app, project_name)
     analysis.run_analysis()
 
     @request.addfinalizer

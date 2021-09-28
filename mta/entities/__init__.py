@@ -71,7 +71,7 @@ class BaseLoggedInPage(View):
         return self.header.is_displayed and self.help.is_displayed and self.validate_url()
 
     def logout(self):
-        self.view.logout_button.item_select("Logout")
+        self.logout_button.item_select("Logout")
 
 
 @attr.s
@@ -85,6 +85,7 @@ class AllProjectView(BaseLoggedInPage):
     title = Text(".//div[contains(@class, 'pf-c-content')]/h1")
     search = Input(locator=".//input[@aria-label='Filter by name']")
     sort = SortSelector("class", "btn btn-default dropdown-toggle")
+    table_loading = './/div[contains(@class, "pf-c-skeleton")]'
 
     ACTIONS_INDEX = 4
     table = PatternflyTable(
@@ -130,6 +131,11 @@ class AllProjectView(BaseLoggedInPage):
             if row.name.text == name:
                 row["Name"].widget.click()
 
+    def table_loaded(self):
+        return wait_for(
+            lambda: not self.browser.is_displayed(self.table_loading), delay=10, timeout=120
+        )
+
 
 class ProjectView(AllProjectView):
     project_dropdown = DropdownMenu(
@@ -165,9 +171,9 @@ class LoginPage(View):
 
     @property
     def is_displayed(self):
-        return (self.username.is_displayed and self.login_button.is_displayed) or (
-            self.validate_url() and self.header.is_displayed
-        )
+        return (
+            self.username.is_displayed and self.login_button.is_displayed and self.validate_url()
+        ) or (self.validate_url() and self.header.is_displayed)
 
     def login(self, user, password):
         self.fill({"username": user, "password": password})

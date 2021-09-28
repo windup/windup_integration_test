@@ -18,18 +18,20 @@ from mta.utils.ftp import FTPClientWrapper
 
 
 @pytest.fixture(scope="function")
-def add_global_custom_rule(application):
+def add_global_custom_rule(mta_app):
     """This fixture with upload global custom rule file"""
     file_name = "custom.Test1rules.rhamt.xml"
-    rules_configurations = CustomRulesConfiguration(application, file_name)
+    rules_configurations = CustomRulesConfiguration(mta_app, file_name)
     rules_configurations.upload_custom_rule_file()
     view = rules_configurations.create_view(CustomRulesView)
-    view.table.wait_displayed("20s")
+    view.wait_displayed("20s")
     yield file_name, view, rules_configurations
     rules_configurations.delete_custom_rule()
+    view.logout()
 
 
-def test_crud_global_custom_rule(application):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_crud_global_custom_rule(mta_app, add_global_custom_rule):
     """ Test to upload global custom rules file
 
     Polarion:
@@ -44,16 +46,12 @@ def test_crud_global_custom_rule(application):
         expectedResults:
             1. Custom rules file should be listed in table
     """
-    file_name = "custom.Test1rules.rhamt.xml"
-    rules_configurations = CustomRulesConfiguration(application, file_name)
-    rules_configurations.upload_custom_rule_file()
-    view = rules_configurations.create_view(CustomRulesView)
-    view.table.wait_displayed("20s")
+    file_name, view, rules_configurations = add_global_custom_rule
     assert file_name in [rules["Short path"] for rules in view.table.read()]
-    assert rules_configurations.delete_custom_rule()
 
 
-def test_search_global_custom_rule(add_global_custom_rule):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI"], indirect=True)
+def test_search_global_custom_rule(mta_app, add_global_custom_rule):
     """ Test to search global custom rules file from table
 
     Polarion:
@@ -70,19 +68,23 @@ def test_search_global_custom_rule(add_global_custom_rule):
             1. Custom rules file should searched by substring
     """
     file_name, view, rules_configurations = add_global_custom_rule
-    view.table.wait_displayed("20s")
-    view.search.fill("rhamt")
+    view.wait_displayed("20s")
 
-    assert file_name in [rules["Short path"] for rules in view.table.read()]
+    view.search.fill("rhamt")
+    view.wait_displayed("20s")
     view.search.fill("rhamt-invalid")
     try:
         assert file_name not in [rules["Short path"] for rules in view.table.read()]
+        view.search.fill("")
     except IndexError:
         view.search.fill("")
         pass
 
 
-def test_analysis_global_custom_rule(application, add_global_custom_rule, create_minimal_project):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_analysis_global_custom_rule(
+    mta_app, add_global_custom_rule, create_minimal_project, request
+):
     """ Test to upload global custom rules file
 
     Polarion:
@@ -100,7 +102,7 @@ def test_analysis_global_custom_rule(application, add_global_custom_rule, create
     """
     file_name, view, rules_configurations = add_global_custom_rule
     project, project_collection = create_minimal_project
-    analysis_results = AnalysisResults(application, project.name)
+    analysis_results = AnalysisResults(mta_app, project.name)
     view = navigate_to(analysis_results, "AnalysisDetailsPage")
     view.custom_rules.wait_displayed("20s")
     card_info = view.custom_rules.read()
@@ -108,16 +110,17 @@ def test_analysis_global_custom_rule(application, add_global_custom_rule, create
     view.execution_link.click()
     view = analysis_results.create_view(AnalysisResultsView)
     view.wait_displayed("30s")
-    view.analysis_results.show_report()
+    view.analysis_results.show_report(request)
     view = analysis_results.create_view(AllApplicationsView)
     view.application_table.application_details("acmeair-webapp-1.0-SNAPSHOT.war")
     view.tabs.issues.click()
     view = analysis_results.create_view(Issues)
     # TODO(ghubale): Update test case with reading Migration potential table
-    assert view.wait_displayed
+    assert view.wait_displayed("20s")
 
 
-def test_invalid_rule_file_type(application, request):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_invalid_rule_file_type(mta_app, request):
     """ Test to upload global custom rules file
 
     Polarion:
@@ -135,24 +138,24 @@ def test_invalid_rule_file_type(application, request):
     @request.addfinalizer
     def _finalize():
         for file in file_names:
-            rules = CustomRulesConfiguration(application, file)
+            rules = CustomRulesConfiguration(mta_app, file)
             rules.delete_custom_rule()
+        view.logout()
 
     for file_name in file_names:
-        rules_configurations = CustomRulesConfiguration(application, file_name)
+        rules_configurations = CustomRulesConfiguration(mta_app, file_name)
         rules_configurations.upload_custom_rule_file()
         view = rules_configurations.create_view(CustomRulesView)
-        view.table.wait_displayed("20s")
+        view.wait_displayed("5s")
 
         all_rules = view.table.read()
         for rule in all_rules:
             if rule["Short path"] == file_name:
                 assert int(rule["Number of rules"]) == 0
-    else:
-        assert False
 
 
-def test_total_global_system_rule(application):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_total_global_system_rule(mta_app, request):
     """ Test to upload global custom rules file
 
     Polarion:
@@ -165,7 +168,13 @@ def test_total_global_system_rule(application):
         expectedResults:
             1. Total system rules count should be 331
     """
-    global_configurations = SystemRulesConfiguration(application)
+
+    @request.addfinalizer
+    def _finalize():
+        # Reset view else the URL does not change
+        view.logout()
+
+    global_configurations = SystemRulesConfiguration(mta_app)
     view = navigate_to(global_configurations, "SystemRule")
     view.show_all_rules.wait_displayed("30s")
     no_of_rules_before = view.paginator.total_items
@@ -173,7 +182,8 @@ def test_total_global_system_rule(application):
     assert view.paginator.total_items >= no_of_rules_before
 
 
-def test_filter_global_system_rule(application):
+@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
+def test_filter_global_system_rule(mta_app, request):
     """ Test to upload global custom rules file
 
     Polarion:
@@ -191,7 +201,13 @@ def test_filter_global_system_rule(application):
         # "Target": ["camel", "cloud-readiness", "quarkus"],
         # TODO(ghubale): Uncomment it once fixed drop down selection for option - Target
     }
-    global_configurations = SystemRulesConfiguration(application)
+
+    @request.addfinalizer
+    def _finalize():
+        # Reset view else the URL does not change
+        view.logout()
+
+    global_configurations = SystemRulesConfiguration(mta_app)
     view = navigate_to(global_configurations, "SystemRule")
     view.show_all_rules.wait_displayed("30s")
     view.show_all_rules.click()
@@ -205,7 +221,8 @@ def test_filter_global_system_rule(application):
                 assert filter_value in rule[filter_type]
 
 
-def test_add_folder_of_rules(request, application):
+@pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
+def test_add_folder_of_rules(mta_app, request):
     """ Test adding a folder containing both valid and invalid rules
 
     Polarion:
@@ -229,11 +246,12 @@ def test_add_folder_of_rules(request, application):
 
     @request.addfinalizer
     def _finalize():
-        rules = CustomRulesConfiguration(application, server_path)
+        rules = CustomRulesConfiguration(mta_app, server_path)
         rules.delete_custom_rule()
 
-    rules_configurations = CustomRulesConfiguration(application, server_path)
+    rules_configurations = CustomRulesConfiguration(mta_app, server_path)
     view = navigate_to(rules_configurations, "Add")
+    view.wait_displayed("20s")
 
     for file_name in rule_files:
         env = conf.get_config("env")
@@ -245,12 +263,10 @@ def test_add_folder_of_rules(request, application):
     view.server_path.scan_recursive.click()
     view.server_path.save_button.click()
     view = rules_configurations.create_view(CustomRulesView)
-    view.table.wait_displayed("50s")
+    view.wait_displayed("50s")
     all_rules = view.table.read()
     for rule in all_rules:
         if rule["Short path"] == "/tmp":
             # There will be older files downloaded in /tmp directory. Hence asserting number of
             # rules equal to and greater than 1 only
             assert int(rule["Number of rules"]) >= 1
-    else:
-        assert False

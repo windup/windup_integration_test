@@ -1,5 +1,6 @@
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
+from wait_for import wait_for
 from widgetastic.utils import WaitFillViewStrategy
 from widgetastic.widget import Checkbox
 from widgetastic.widget import Text
@@ -59,7 +60,9 @@ class CustomRulesView(BaseLoggedInPage):
     paginator = Pagination(locator='.//div[contains(@class, "pf-c-pagination")]')
     add_rule_button = Button("Add rule")
     search = Input(locator=".//input[@aria-label='Filter by short path']")
+    table_loading = './/div[contains(@class, "pf-c-skeleton")]'
     ACTIONS_INDEX = 4
+    title = Text(locator=".//div[contains(@class, 'pf-c-empty-state__content')]/h4")
     table = Table(
         locator='.//table[contains(@aria-label, "Table")]',
         column_widgets={
@@ -68,9 +71,19 @@ class CustomRulesView(BaseLoggedInPage):
         },
     )
 
+    def is_table_loaded(self):
+        return wait_for(
+            lambda: not self.browser.is_displayed(self.table_loading), delay=10, timeout=240
+        )
+
     @property
     def is_displayed(self):
-        return self.add_rule_button.is_displayed and self.table.is_displayed
+        if self.is_table_loaded():
+            return self.add_rule_button.is_displayed and (
+                self.table.is_displayed or self.title.is_displayed
+            )
+        else:
+            return False
 
 
 class RulesConfigurationView(BaseLoggedInPage):
@@ -111,9 +124,9 @@ class AddCustomRuleServerPathView(CustomRulesView):
 class AddCustomRuleView(CustomRulesView):
     title = Text(locator=".//h1[contains(normalize-space(.), 'Add rules')]")
     upload_rule = HiddenFileInput(locator='.//input[contains(@accept,".xml")]')
+    file_uploaded = './/div[contains(@class, "pf-m-success")]'
     browse_button = Button("Browse")
     close_button = Button("Close")
-    fill_strategy = WaitFillViewStrategy("15s")
 
     @View.nested
     class server_path(MTATab):  # noqa
@@ -180,7 +193,6 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
         scanned for rule sets
         """
         view = navigate_to(self, "Add")
-        view.wait_displayed("20s")
         if server_path:
             # upload custom rules by providing server path to folder of rule files
             env = conf.get_config("env")
@@ -198,6 +210,7 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
             fs1 = FTPClientWrapper(env.ftpserver.entities.mta)
             file_path = fs1.download(self.file_name)
             view.upload_rule.fill(file_path)
+            wait_for(lambda: view.browser.is_displayed(view.file_uploaded), delay=10, timeout=60)
             view.close_button.click()
 
     def delete_custom_rule(self, cancel=False):
@@ -206,7 +219,7 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
              cancel
         """
         view = navigate_to(self, "Delete")
-        view.wait_displayed()
+        view.wait_displayed("30s")
 
         if cancel:
             view.cancel_button.click()
@@ -243,6 +256,7 @@ class CustomRule(MTANavigateStep):
 
     def step(self):
         self.prerequisite_view.custom_rules.click()
+        self.view.wait_displayed("20s")
 
 
 @ViaWebUI.register_destination_for(CustomRulesConfiguration, "Add")
@@ -260,6 +274,7 @@ class CustomRuleDelete(MTANavigateStep):
     prerequisite = NavigateToSibling("CustomRule")
 
     def step(self):
+        self.prerequisite_view.wait_displayed("30s")
         for row in self.prerequisite_view.table:
             if row.read()["Short path"] == self.obj.file_name:
                 row[self.prerequisite_view.ACTIONS_INDEX].widget.item_select("Delete")
