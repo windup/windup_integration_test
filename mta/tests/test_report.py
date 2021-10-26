@@ -11,7 +11,7 @@ from mta.entities.report import AllApplicationsView
 from mta.entities.report import HardCodedIP
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
+# @pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_send_feedback_and_validate_url(mta_app, create_minimal_project):
     """Test send feedback
 
