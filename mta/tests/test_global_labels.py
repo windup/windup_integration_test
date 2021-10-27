@@ -26,7 +26,6 @@ def add_global_custom_label(mta_app):
     view.logout()
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_crud_global_custom_label(mta_app, add_global_custom_label):
     """ Test to upload global custom labels file
 
@@ -46,7 +45,6 @@ def test_crud_global_custom_label(mta_app, add_global_custom_label):
     assert file_name in [label["Short path"] for label in view.table.read()]
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_search_global_custom_label(mta_app, add_global_custom_label):
     """ Test to search global custom labels file from table
 
@@ -76,7 +74,6 @@ def test_search_global_custom_label(mta_app, add_global_custom_label):
         pass
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_analysis_global_custom_label(
     mta_app, add_global_custom_label, create_minimal_project, request
 ):
@@ -103,7 +100,6 @@ def test_analysis_global_custom_label(
     assert file_name in card_info["body"].split("Global")[1]
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_invalid_label_file_type(mta_app, request):
     """ Test to upload global custom label file
 
@@ -135,7 +131,6 @@ def test_invalid_label_file_type(mta_app, request):
             assert int(label["Number of labels"]) == 0
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_total_global_system_label(mta_app, request):
     """ Test to upload global custom label file
 
@@ -161,7 +156,6 @@ def test_total_global_system_label(mta_app, request):
     assert view.paginator.total_items >= 1
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_search_global_system_label(mta_app, request):
     """ Test to upload global custom label file
 

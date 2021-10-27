@@ -11,7 +11,6 @@ from mta.entities.report import AllApplicationsView
 from mta.entities.report import HardCodedIP
 
 
-# @pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_send_feedback_and_validate_url(mta_app, create_minimal_project):
     """Test send feedback
 
@@ -37,7 +36,6 @@ def test_send_feedback_and_validate_url(mta_app, create_minimal_project):
     view.send_feedback.click()
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_filter_application_list(mta_app, create_project_with_two_apps):
     """Test filter applications
 
@@ -66,7 +64,6 @@ def test_filter_application_list(mta_app, create_project_with_two_apps):
     assert "acmeair-webapp-1.0-SNAPSHOT.war" in apps_list[:-1]
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_sort_application_list(mta_app, create_project):
     """Test Sorting of applications
 
@@ -110,7 +107,6 @@ def test_sort_application_list(mta_app, create_project):
     assert app_list_by_story_points[:-1] == app_list_story_points_asc
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_hard_code_ip_report(request, mta_app):
     """Test send feedback
 

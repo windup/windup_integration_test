@@ -9,7 +9,6 @@ from mta.entities.applications import Applications
 from mta.entities.applications import ApplicationsView
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_applications_page(mta_app, create_project):
     """ Test search applications
 
@@ -45,7 +44,6 @@ def test_applications_page(mta_app, create_project):
 
 # Bug WINDUP-2995 Fail
 @pytest.mark.skip(reason="MTA UI Issue - WINDUP-2995")
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_add_applications_to_project(mta_app, create_minimal_project):
     """ Test add applications
 
@@ -69,7 +67,6 @@ def test_add_applications_to_project(mta_app, create_minimal_project):
     applications.add_application(app="cadmium-war-0.1.0.war")
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_delete_application_from_project(mta_app, create_project_with_two_apps):
     """ Test delete application from project
 
@@ -95,7 +92,6 @@ def test_delete_application_from_project(mta_app, create_project_with_two_apps):
     applications.delete_application(name="acmeair-webapp-1.0-SNAPSHOT.war", cancel=False)
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_sort_applications(mta_app, create_project_with_two_apps):
     """ Test sort applications
 

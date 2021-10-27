@@ -30,7 +30,6 @@ def add_global_custom_rule(mta_app):
     view.logout()
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_crud_global_custom_rule(mta_app, add_global_custom_rule):
     """ Test to upload global custom rules file
 
@@ -50,7 +49,6 @@ def test_crud_global_custom_rule(mta_app, add_global_custom_rule):
     assert file_name in [rules["Short path"] for rules in view.table.read()]
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI"], indirect=True)
 def test_search_global_custom_rule(mta_app, add_global_custom_rule):
     """ Test to search global custom rules file from table
 
@@ -81,7 +79,6 @@ def test_search_global_custom_rule(mta_app, add_global_custom_rule):
         pass
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_analysis_global_custom_rule(
     mta_app, add_global_custom_rule, create_minimal_project, request
 ):
@@ -119,7 +116,6 @@ def test_analysis_global_custom_rule(
     assert view.wait_displayed("20s")
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_invalid_rule_file_type(mta_app, request):
     """ Test to upload global custom rules file
 
@@ -154,7 +150,6 @@ def test_invalid_rule_file_type(mta_app, request):
                 assert int(rule["Number of rules"]) == 0
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_total_global_system_rule(mta_app, request):
     """ Test to upload global custom rules file
 
@@ -182,7 +177,6 @@ def test_total_global_system_rule(mta_app, request):
     assert view.paginator.total_items >= no_of_rules_before
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure", "ViaWebUI"], indirect=True)
 def test_filter_global_system_rule(mta_app, request):
     """ Test to upload global custom rules file
 

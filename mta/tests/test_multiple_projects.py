@@ -10,7 +10,6 @@ from mta.entities.analysis_results import AnalysisResults
 from mta.entities.applications import Applications
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_multiple_applications_upload(mta_app, request):
     """Test multiple applications upload
 
