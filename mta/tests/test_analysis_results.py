@@ -4,7 +4,6 @@ Polarion:
     linkedWorkItems: MTA_Web_Console
 """
 import fauxfactory
-import pytest
 
 from mta.entities.analysis_results import AnalysisResults
 from mta.entities.analysis_results import AnalysisResultsView

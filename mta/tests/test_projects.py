@@ -4,7 +4,6 @@ Polarion:
     linkedWorkItems: MTA_Web_Console
 """
 import fauxfactory
-import pytest
 from wait_for import wait_for
 
 from mta.base.application.implementations.web_ui import navigate_to
