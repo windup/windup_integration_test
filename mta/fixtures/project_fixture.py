@@ -3,7 +3,7 @@ import pytest
 
 
 def pytest_addoption(parser):
-    parser.addoption("--context", action="store", default="ViaWebUI")
+    parser.addoption("--context", action="store", default="ViaOperatorUI")
 
 
 @pytest.fixture(scope="session")

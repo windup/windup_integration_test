@@ -91,7 +91,6 @@ def test_ocp_delete_application(mta_app):
     view.create_project.yes_button.click()
 
 
-@pytest.mark.parametrize("mta_app", ["ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_ocp_application_report(mta_app, create_minimal_project, request):
     """
     Polarion:
