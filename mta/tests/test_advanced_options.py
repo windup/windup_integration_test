@@ -4,7 +4,6 @@ Polarion:
     linkedWorkItems: MTA_Web_Console
 """
 import fauxfactory
-import pytest
 from wait_for import wait_for
 
 from mta.base.application.implementations.web_ui import navigate_to
@@ -14,7 +13,6 @@ from mta.utils import conf
 from mta.utils.ftp import FTPClientWrapper
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_advanced_options(mta_app, request):
     """ Test advanced options and run analysis
 

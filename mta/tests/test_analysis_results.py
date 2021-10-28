@@ -4,13 +4,11 @@ Polarion:
     linkedWorkItems: MTA_Web_Console
 """
 import fauxfactory
-import pytest
 
 from mta.entities.analysis_results import AnalysisResults
 from mta.entities.analysis_results import AnalysisResultsView
 
 
-@pytest.mark.parametrize("mta_app", ["ViaWebUI", "ViaOperatorUI", "ViaSecure"], indirect=True)
 def test_analysis_results_search_sort_delete(request, mta_app):
     """ Test search and sort analysis
 

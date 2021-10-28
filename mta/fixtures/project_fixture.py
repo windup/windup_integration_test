@@ -2,9 +2,13 @@ import fauxfactory
 import pytest
 
 
+def pytest_addoption(parser):
+    parser.addoption("--context", action="store", default="ViaOperatorUI")
+
+
 @pytest.fixture(scope="session")
 def mta_app(application, request):
-    context = getattr(request, "param", "ViaWebUI")
+    context = request.config.getoption("--context")
     application.mta_context = context
     return application
 
