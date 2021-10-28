@@ -11,7 +11,7 @@ from mta.entities.report import AllApplicationsView
 from mta.entities.report import HardCodedIP
 
 
-def test_send_feedback_and_validate_url(mta_app, create_minimal_project):
+def test_send_feedback_and_validate_url(mta_app, create_minimal_project, request):
     """Test send feedback
 
     Polarion:
@@ -28,7 +28,7 @@ def test_send_feedback_and_validate_url(mta_app, create_minimal_project):
     project, project_collection = create_minimal_project
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()
-    view.analysis_results.show_report()
+    view.analysis_results.show_report(request)
     # Validate URL report has mta-ui/api/static-report
     url = "/mta-ui/api/static-report"
     assert url in mta_app.web_ui.widgetastic_browser.url
@@ -36,7 +36,7 @@ def test_send_feedback_and_validate_url(mta_app, create_minimal_project):
     view.send_feedback.click()
 
 
-def test_filter_application_list(mta_app, create_project_with_two_apps):
+def test_filter_application_list(mta_app, create_project_with_two_apps, request):
     """Test filter applications
 
     Polarion:
@@ -53,7 +53,7 @@ def test_filter_application_list(mta_app, create_project_with_two_apps):
     project, project_collection = create_project_with_two_apps
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()
-    view.analysis_results.show_report()
+    view.analysis_results.show_report(request)
     view = project_collection.create_view(AllApplicationsView)
     view.search("acm", "Name")
     apps_list = view.application_table.get_applications_list
@@ -64,7 +64,7 @@ def test_filter_application_list(mta_app, create_project_with_two_apps):
     assert "acmeair-webapp-1.0-SNAPSHOT.war" in apps_list[:-1]
 
 
-def test_sort_application_list(mta_app, create_project):
+def test_sort_application_list(mta_app, create_project, request):
     """Test Sorting of applications
 
     Polarion:
@@ -81,7 +81,7 @@ def test_sort_application_list(mta_app, create_project):
     project, project_collection = create_project
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()
-    view.analysis_results.show_report()
+    view.analysis_results.show_report(request)
     view = project_collection.create_view(AllApplicationsView)
     view.sort_by("Name")
     app_list_by_name = view.application_table.get_applications_list
@@ -132,7 +132,7 @@ def test_hard_code_ip_report(request, mta_app):
     request.addfinalizer(project.delete_if_exists)
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()
-    view.analysis_results.show_report()
+    view.analysis_results.show_report(request)
     view = project_collection.create_view(AllApplicationsView)
     view.application_table.application_details(app_name)
     view.tabs.hard_coded_ip.click()
