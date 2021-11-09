@@ -226,7 +226,9 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
         else:
             view.delete_button.click()
         view = self.create_view(CustomRulesView)
-        view.wait_displayed("30s")
+        wait_for(lambda: view.is_displayed, delay=10, timeout=240)
+        view.wait_displayed("40s")
+
         return self.file_name not in [row.read()["Short path"] for row in view.table]
 
 
