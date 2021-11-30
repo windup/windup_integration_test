@@ -18,6 +18,12 @@ def main():
 @click.option(
     "-h", "--hostname", default="http://localhost:8080", help="Hostname of the target application"
 )
+@click.option(
+    "-ocph", "--ocphostname", default="http://mta-mta.apps.mta01.cnv-qe.rhcloud.com", help="OCP Hostname of the target application"
+)
+@click.option(
+    "-ocpsh", "--ocpsecurehostname", default="https://secure-mta-mta.apps.mta01.cnv-qe.rhcloud.com", help="OCP Secure Hostname of the target application"
+)
 @click.option("-p", "--password", default="password", help="MTA password")
 @click.option(
     "-d",
@@ -45,6 +51,8 @@ def main():
 @click.option("-o", "--output-file", default=ENV_LOCAL_CONF, help="Output file for yaml dump")
 def local_env(
     hostname,
+    ocphostname,
+    ocpsecurehostname,
     password,
     webdriver,
     wharf,
@@ -59,6 +67,8 @@ def local_env(
         conf = safe_load(env_conf)
 
     conf["application"]["hostname"] = hostname
+    conf["application"]["ocphostname"] = ocphostname
+    conf["application"]["ocpsecurehostname"] = ocpsecurehostname
     conf["application"]["password"] = password
     conf["browser"]["webdriver"] = webdriver
     conf["browser"]["webdriver_options"]["command_executor"] = executor
