@@ -19,10 +19,16 @@ def main():
     "-h", "--hostname", default="http://localhost:8080", help="Hostname of the target application"
 )
 @click.option(
-    "-ocph", "--ocphostname", default="http://mta-mta.apps.mta01.cnv-qe.rhcloud.com", help="OCP Hostname of the target application"
+    "-ocph",
+    "--ocphostname",
+    default="http://mta-mta.apps.mta01.cnv-qe.rhcloud.com",
+    help="OCP Hostname of the target application",
 )
 @click.option(
-    "-ocpsh", "--ocpsecurehostname", default="https://secure-mta-mta.apps.mta01.cnv-qe.rhcloud.com", help="OCP Secure Hostname of the target application"
+    "-ocpsh",
+    "--ocpsecurehostname",
+    default="https://secure-mta-mta.apps.mta01.cnv-qe.rhcloud.com",
+    help="OCP Secure Hostname of the target application",
 )
 @click.option("-p", "--password", default="password", help="MTA password")
 @click.option(
