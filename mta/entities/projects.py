@@ -497,6 +497,17 @@ class ProjectCollection(BaseCollection):
             if row.name.text == name:
                 return row
 
+    def delete_project(self, name):
+        view = navigate_to(self, "All")
+        for row in view.table:
+            if row.name.text == name:
+                row.widget.item_select("Delete")
+        view = self.create_view(DeleteProjectView)
+        view.wait_displayed("30s")
+        view.fill({"delete_project_name": self.name})
+        wait_for(lambda: view.delete_button.is_enabled, delay=5, timeout=30)
+        view.delete_button.click()
+
 
 @ViaWebUI.register_destination_for(ProjectCollection)
 class All(MTANavigateStep):
