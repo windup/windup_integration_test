@@ -4,11 +4,13 @@ Polarion:
     linkedWorkItems: MTA_Web_Console
 """
 import fauxfactory
+import pytest
 
 from mta.entities.analysis_results import AnalysisResults
 from mta.entities.applications import Applications
 
 
+@pytest.mark.skip(reason="MTA UI Issue - WINDUP-3160")
 def test_multiple_applications_upload(mta_app, request):
     """Test multiple applications upload
 
