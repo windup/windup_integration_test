@@ -13,6 +13,7 @@ ENV BASE_URL="https://oss.sonatype.org/content/repositories/snapshots/org/jboss/
 ENV WEB_CONSOLE="mta-web-distribution"
 
 ENV DATE=build_date
+ENV VERSION=snapshot_version
 ENV SNAPSHOT_BUILD="mta-web-distribution-*-$DATE.*-*-with-authentication.zip"
 RUN echo $SNAPSHOT_BUILD
 
