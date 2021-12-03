@@ -36,6 +36,12 @@ def test_advanced_options(mta_app, request):
     """
     project_name = fauxfactory.gen_alphanumeric(12, start="project_")
     project_collection = mta_app.collections.projects
+    project = project_collection.instantiate(name=project_name)
+
+    @request.addfinalizer
+    def _finalize():
+        project.delete()
+
     view = navigate_to(project_collection, "Add")
     view.create_project.fill({"name": project_name, "description": "desc"})
     view.add_applications.wait_displayed("20s")
