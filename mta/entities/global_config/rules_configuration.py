@@ -23,6 +23,7 @@ from mta.widgetastic import HiddenFileInput
 from mta.widgetastic import Input
 from mta.widgetastic import MTACheckboxSelect
 from mta.widgetastic import MTATab
+from selenium.common.exceptions import NoSuchElementException
 
 
 class SystemRulesView(BaseLoggedInPage):
@@ -220,16 +221,19 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
         """
         view = navigate_to(self, "Delete")
         view.wait_displayed("30s")
-
         if cancel:
             view.cancel_button.click()
         else:
             view.delete_button.click()
         view = self.create_view(CustomRulesView)
         wait_for(lambda: view.is_displayed, delay=10, timeout=240)
-        view.wait_displayed("40s")
-
-        return self.file_name not in [row.read()["Short path"] for row in view.table]
+        try:
+            return self.file_name not in [row.read()["Short path"] for row in view.table]
+        except NoSuchElementException:
+            view.browser.refresh()
+            view.delete_button.click()
+            view = self.create_view(CustomRulesView)
+            wait_for(lambda: view.is_displayed, delay=10, timeout=240)
 
 
 @ViaWebUI.register_destination_for(SystemRulesConfiguration, "AllRules")
