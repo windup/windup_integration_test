@@ -1,4 +1,3 @@
-from selenium.common.exceptions import NoSuchElementException
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
 from wait_for import wait_for
@@ -219,21 +218,18 @@ class CustomRulesConfiguration(Updateable, NavigatableMixin):
         Args:
              cancel
         """
-        view = navigate_to(self, "Delete")
+        view = navigate_to(self, "CustomRule")
         view.wait_displayed("30s")
-        if cancel:
-            view.cancel_button.click()
-        else:
-            view.delete_button.click()
-        view = self.create_view(CustomRulesView)
-        wait_for(lambda: view.is_displayed, delay=10, timeout=240)
-        try:
-            return self.file_name not in [row.read()["Short path"] for row in view.table]
-        except NoSuchElementException:
-            view.browser.refresh()
-            view.delete_button.click()
+        while self.file_name not in [row.read()["Short path"] for row in view.table]:
+            view = navigate_to(self, "Delete")
+            view.wait_displayed("30s")
+            if cancel:
+                view.cancel_button.click()
+            else:
+                view.delete_button.click()
             view = self.create_view(CustomRulesView)
             wait_for(lambda: view.is_displayed, delay=10, timeout=240)
+        return self.file_name not in [row.read()["Short path"] for row in view.table]
 
 
 @ViaWebUI.register_destination_for(SystemRulesConfiguration, "AllRules")
