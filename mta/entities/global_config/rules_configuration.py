@@ -1,3 +1,4 @@
+from selenium.common.exceptions import NoSuchElementException
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
 from wait_for import wait_for
@@ -23,7 +24,6 @@ from mta.widgetastic import HiddenFileInput
 from mta.widgetastic import Input
 from mta.widgetastic import MTACheckboxSelect
 from mta.widgetastic import MTATab
-from selenium.common.exceptions import NoSuchElementException
 
 
 class SystemRulesView(BaseLoggedInPage):
