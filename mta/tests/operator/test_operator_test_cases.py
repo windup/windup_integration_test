@@ -91,7 +91,7 @@ def test_ocp_delete_application(mta_app):
 def test_ocp_application_report(create_minimal_project, request):
     """
     Polarion:
-        assignee: ghubalemta_app
+        assignee: ghubale
         initialEstimate: 1/12h
         caseimportance: medium
         testSteps:
