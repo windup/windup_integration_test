@@ -14,7 +14,7 @@ from mta.utils.ftp import FTPClientWrapper
 from mta.utils.update import update
 
 
-def test_ocp_project_crud(mta_app, create_minimal_project):
+def test_ocp_project_crud(create_minimal_project):
     """
     Polarion:
         assignee: ghubale
@@ -88,7 +88,7 @@ def test_ocp_delete_application(mta_app):
     view.create_project.yes_button.click()
 
 
-def test_ocp_application_report(mta_app, create_minimal_project, request):
+def test_ocp_application_report(create_minimal_project, request):
     """
     Polarion:
         assignee: ghubale
@@ -104,11 +104,6 @@ def test_ocp_application_report(mta_app, create_minimal_project, request):
     view = project_collection.create_view(AnalysisResultsView)
     view.wait_displayed()
     assert view.is_displayed
-
-    @request.addfinalizer
-    def _finalize():
-        view.browser.close_window(view.browser.window_handles[0])
-
     view.analysis_results.show_report(request)
     view = project_collection.create_view(AllApplicationsView)
     view.wait_displayed("40s")
