@@ -6,10 +6,10 @@ LABEL description="Migration Toolkit for Applications Web-Console"
 
 
 RUN dnf -y update && dnf clean all
-RUN dnf -y install java java-devel unzip wget xterm python3-virtualenv && dnf clean all
+RUN dnf -y install  java-11-openjdk-devel unzip wget xterm python3-virtualenv && dnf clean all
 
 # set java env
-ENV JAVA_HOME /usr/lib/jvm/java-openjdk
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk
 ENV BASE_URL="https://repo1.maven.org/maven2/org/jboss/windup"
 ENV WEB_CONSOLE="mta-web-distribution"
 ENV VERSION=build_version
