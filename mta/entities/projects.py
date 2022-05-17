@@ -1,3 +1,5 @@
+import time
+
 import attr
 from taretto.navigate import NavigateToAttribute
 from taretto.navigate import NavigateToSibling
@@ -367,6 +369,7 @@ class Project(BaseEntity, Updateable):
     def exists(self):
         """Check project exist or not"""
         view = navigate_to(self.parent, "All")
+        time.sleep(10)
         if view.table_loaded():
             for row in view.table:
                 if row.name.text == self.name:
@@ -456,7 +459,7 @@ class ProjectCollection(BaseCollection):
             {"transformation_path": transformation_path}
         )
         wait_for(
-            lambda: view.configure_analysis.select_packages(pkg).is_displayed, delay=5, timeout=300
+            lambda: view.configure_analysis.select_packages(pkg).is_displayed, delay=10, timeout=600
         )
         view.configure_analysis.select_packages(pkg).wait_displayed()
         view.configure_analysis.select_packages(pkg).fill({"pkg": pkg})
