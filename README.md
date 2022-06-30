@@ -8,7 +8,7 @@
 ```shell
 git clone https://github.com/<user>/windup_integration_tests.git
 cd windup_integration_test
-python3.7 -m venv .mta_venv
+python3.8 -m venv .mta_venv
 source .mta_venv/bin/activate
 pip install -e .
 ```
