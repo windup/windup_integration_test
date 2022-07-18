@@ -2,7 +2,7 @@ import yaycl
 
 
 class Configuration(object):
-    """ holds the current configuration"""
+    """holds the current configuration"""
 
     def __init__(self):
         self.yaycl_config = None

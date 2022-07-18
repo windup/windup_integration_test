@@ -178,7 +178,7 @@ class HiddenFileInput(FileInput):
 
 class AddButton(Button):
     """Multiple buttons with same name are present in UI.
-       So need to specify the locator.
+    So need to specify the locator.
     """
 
     def __locator__(self):

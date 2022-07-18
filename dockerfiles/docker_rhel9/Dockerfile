@@ -12,13 +12,13 @@ RUN dnf -y install python
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk
 ENV BASE_URL="https://repo1.maven.org/maven2/org/jboss/windup"
 ENV WEB_CONSOLE="mta-web-distribution"
-ENV VERSION=5.3.1.Final
+ENV VERSION=5.3.0.Final
 ENV WEB_DISTRIBUTION="${WEB_CONSOLE}-${VERSION}"
 ENV WEB_CONSOLE_FILE="${WEB_DISTRIBUTION}-with-authentication.zip"
 ENV WEB_CONSOLE_FILE_PATH="${BASE_URL}/web/${WEB_CONSOLE}/${VERSION}/${WEB_CONSOLE_FILE}"
 RUN echo $WEB_CONSOLE_FILE_PATH
 
-RUN wget -o - $WEB_CONSOLE_FILE_PATH --show-progress --progress=dot -P /tmp| wc -l > /number && unzip -o /tmp/$WEB_CONSOLE_FILE -d /tmp 
+RUN wget -o - $WEB_CONSOLE_FILE_PATH --show-progress --progress=dot -P /tmp| wc -l > /number && unzip -o /tmp/$WEB_CONSOLE_FILE -d /tmp
 
 RUN echo $WEB_CONSOLE_FILE_PATH
 RUN echo $WEB_CONSOLE_FILE

@@ -42,7 +42,7 @@ class AnalysisConfiguration(Updateable, NavigatableMixin):
         view.save_and_run_button.click()
 
     def delete_application(self, app_name):
-        """ Delete application to be analysed
+        """Delete application to be analysed
         Args:
             app_name: Application
         """
@@ -51,7 +51,7 @@ class AnalysisConfiguration(Updateable, NavigatableMixin):
         view.save_and_run_button.click()
 
     def select_none(self):
-        """ Delete all application to be analysed
+        """Delete all application to be analysed
         Args:
             app_name: Application
         """

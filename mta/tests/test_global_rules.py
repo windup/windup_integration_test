@@ -29,7 +29,7 @@ def add_global_custom_rule(mta_app):
 
 
 def test_crud_global_custom_rule(mta_app, add_global_custom_rule):
-    """ Test to upload global custom rules file
+    """Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
@@ -48,7 +48,7 @@ def test_crud_global_custom_rule(mta_app, add_global_custom_rule):
 
 
 def test_search_global_custom_rule(mta_app, add_global_custom_rule):
-    """ Test to search global custom rules file from table
+    """Test to search global custom rules file from table
 
     Polarion:
         assignee: ghubale
@@ -80,7 +80,7 @@ def test_search_global_custom_rule(mta_app, add_global_custom_rule):
 def test_analysis_global_custom_rule(
     mta_app, add_global_custom_rule, create_minimal_project, request
 ):
-    """ Test to upload global custom rules file
+    """Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
@@ -115,7 +115,7 @@ def test_analysis_global_custom_rule(
 
 
 def test_invalid_rule_file_type(mta_app, request):
-    """ Test to upload global custom rules file
+    """Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
@@ -149,7 +149,7 @@ def test_invalid_rule_file_type(mta_app, request):
 
 
 def test_total_global_system_rule(mta_app, request):
-    """ Test to upload global custom rules file
+    """Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale
@@ -176,7 +176,7 @@ def test_total_global_system_rule(mta_app, request):
 
 
 def test_filter_global_system_rule(mta_app, request):
-    """ Test to upload global custom rules file
+    """Test to upload global custom rules file
 
     Polarion:
         assignee: ghubale

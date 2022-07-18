@@ -97,22 +97,22 @@ class AnalysisResults(Updateable, NavigatableMixin):
         self.project_name = project_name
 
     def get_analysis_number(self, view, row):
-        """ Method to return only digit from row text"""
+        """Method to return only digit from row text"""
         analysis_num = view.analysis_row(row).analysis_number.text
         only_digits = "".join([c for c in analysis_num if c.isdigit()])
         return only_digits
 
     def search_analysis(self, row):
-        """ Search analysis results with analysis number
-            Args:
-            row: row number to search
+        """Search analysis results with analysis number
+        Args:
+        row: row number to search
         """
         view = navigate_to(self, "AnalysisResultsPage")
         view.wait_displayed("20s")
         view.search.fill(self.get_analysis_number(view, row))
 
     def run_analysis(self):
-        """ Run analysis"""
+        """Run analysis"""
         view = navigate_to(self, "AnalysisResultsPage")
         wait_for(lambda: view.run_analysis_button.is_displayed, delay=5, timeout=30)
         view.run_analysis_button.click()
@@ -121,9 +121,9 @@ class AnalysisResults(Updateable, NavigatableMixin):
         assert view.analysis_results.is_analysis_complete()
 
     def delete_analysis(self, row, cancel=False):
-        """ Delete analysis results with analysis number
-            Args:
-            row: row number
+        """Delete analysis results with analysis number
+        Args:
+        row: row number
         """
         view = navigate_to(self, "AnalysisResultsPage")
         view.analysis_row(row).delete_analysis.click()

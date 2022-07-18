@@ -5,7 +5,7 @@ class TriesExceeded(Exception):
 
 
 def tries(num_tries, exceptions, f, *args, **kwargs):
-    """ Tries to call the function multiple times if specific exceptions occur.
+    """Tries to call the function multiple times if specific exceptions occur.
 
     Args:
         num_tries: How many times to try if exception is raised

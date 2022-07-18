@@ -10,7 +10,7 @@ from mta.entities.analysis_results import AnalysisResultsView
 
 
 def test_analysis_results_search_sort_delete(request, mta_app):
-    """ Test search and sort analysis
+    """Test search and sort analysis
 
     Polarion:
         assignee: ghubale

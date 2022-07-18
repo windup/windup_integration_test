@@ -5,8 +5,9 @@ Contains `pathlib.Path` objects for accessing common project locations.
 Paths rendered below will be different in your local environment.
 """
 import os
-from distutils.sysconfig import get_python_lib as _get_python_lib
 from pathlib import Path
+
+from distutils.sysconfig import get_python_lib as _get_python_lib
 
 import mta as _mta
 

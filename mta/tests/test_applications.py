@@ -10,7 +10,7 @@ from mta.entities.applications import ApplicationsView
 
 
 def test_applications_page(mta_app, create_project):
-    """ Test search applications
+    """Test search applications
 
     Polarion:
         assignee: ghubale
@@ -45,7 +45,7 @@ def test_applications_page(mta_app, create_project):
 # Bug WINDUP-2995 Fail
 @pytest.mark.skip(reason="MTA UI Issue - WINDUP-2995")
 def test_add_applications_to_project(mta_app, create_minimal_project):
-    """ Test add applications
+    """Test add applications
 
     Polarion:
         assignee: ghubale
@@ -68,7 +68,7 @@ def test_add_applications_to_project(mta_app, create_minimal_project):
 
 
 def test_delete_application_from_project(mta_app, create_project_with_two_apps):
-    """ Test delete application from project
+    """Test delete application from project
 
     Polarion:
         assignee: ghubale
@@ -93,7 +93,7 @@ def test_delete_application_from_project(mta_app, create_project_with_two_apps):
 
 
 def test_sort_applications(mta_app, create_project_with_two_apps):
-    """ Test sort applications
+    """Test sort applications
 
     Polarion:
         assignee: ghubale

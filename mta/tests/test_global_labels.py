@@ -27,7 +27,7 @@ def add_global_custom_label(mta_app):
 
 
 def test_crud_global_custom_label(mta_app, add_global_custom_label):
-    """ Test to upload global custom labels file
+    """Test to upload global custom labels file
 
     Polarion:
         assignee: ghubale
@@ -46,7 +46,7 @@ def test_crud_global_custom_label(mta_app, add_global_custom_label):
 
 
 def test_search_global_custom_label(mta_app, add_global_custom_label):
-    """ Test to search global custom labels file from table
+    """Test to search global custom labels file from table
 
     Polarion:
         assignee: ghubale
@@ -77,7 +77,7 @@ def test_search_global_custom_label(mta_app, add_global_custom_label):
 def test_analysis_global_custom_label(
     mta_app, add_global_custom_label, create_minimal_project, request
 ):
-    """ Test to upload global custom labels file
+    """Test to upload global custom labels file
 
     Polarion:
         assignee: ghubale
@@ -101,7 +101,7 @@ def test_analysis_global_custom_label(
 
 
 def test_invalid_label_file_type(mta_app, request):
-    """ Test to upload global custom label file
+    """Test to upload global custom label file
 
     Polarion:
         assignee: ghubale
@@ -132,7 +132,7 @@ def test_invalid_label_file_type(mta_app, request):
 
 
 def test_total_global_system_label(mta_app, request):
-    """ Test to upload global custom label file
+    """Test to upload global custom label file
 
     Polarion:
         assignee: ghubale
@@ -157,7 +157,7 @@ def test_total_global_system_label(mta_app, request):
 
 
 def test_search_global_system_label(mta_app, request):
-    """ Test to upload global custom label file
+    """Test to upload global custom label file
 
     Polarion:
         assignee: ghubale
