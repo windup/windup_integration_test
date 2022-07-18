@@ -14,7 +14,7 @@ from mta.utils.ftp import FTPClientWrapper
 
 @pytest.mark.parametrize("mta_app", ["ViaWebUI"], indirect=True)
 def test_add_folder_of_rules(mta_app, request):
-    """ Test adding a folder containing both valid and invalid rules
+    """Test adding a folder containing both valid and invalid rules
 
     Polarion:
         assignee: ghubale

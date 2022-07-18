@@ -25,7 +25,7 @@ class FTPException(Exception):
 
 
 class FTPDirectory(object):
-    """ FTP FS Directory encapsulation
+    """FTP FS Directory encapsulation
 
     This class represents one directory.
     Contains pointers to all child directories (self.directories)
@@ -34,7 +34,7 @@ class FTPDirectory(object):
     """
 
     def __init__(self, client, name, items, parent_dir=None, time=None):
-        """ Constructor
+        """Constructor
 
         Args:
             client: ftplib.FTP instance
@@ -76,7 +76,7 @@ class FTPDirectory(object):
         return "<FTPDirectory {}>".format(self.path)
 
     def cd(self, path):
-        """ Change to a directory
+        """Change to a directory
 
         Changes directory to a path specified by parameter path. There are three special cases:
         / - climbs by self.parent_dir up in the hierarchy until it reaches root element.
@@ -86,7 +86,7 @@ class FTPDirectory(object):
         Args:
             path: Path to change
 
-            """
+        """
         if path == ".":
             return self
         elif path == "..":
@@ -113,7 +113,7 @@ class FTPDirectory(object):
         raise FTPException("Directory {}{} does not exist!".format(self.path, enter))
 
     def search(self, by, files=True, directories=True):
-        """ Recursive search by string or regexp.
+        """Recursive search by string or regexp.
 
         Searches throughout all the filesystem structure from top till the bottom until
         it finds required files or dirctories.
@@ -149,7 +149,7 @@ class FTPDirectory(object):
 
 
 class FTPFile(object):
-    """ FTP FS File encapsulation
+    """FTP FS File encapsulation
 
     This class represents one file in the FS hierarchy.
     It encapsulates mainly its position in FS and adds the possibility
@@ -157,7 +157,7 @@ class FTPFile(object):
     """
 
     def __init__(self, client, name, parent_dir, time=None):
-        """ Constructor
+        """Constructor
 
         Args:
             client: ftplib.FTP instance
@@ -195,7 +195,7 @@ class FTPFile(object):
         return "<FTPFile {}>".format(self.path)
 
     def retr(self, callback):
-        """ Retrieve file
+        """Retrieve file
 
         Wrapper around ftplib.FTP.retrbinary().
         This function cd's to the directory where this file is present, then calls the
@@ -220,7 +220,7 @@ class FTPFile(object):
             assert self.client.cdup(), "Could not get out of directory {}!".format(d)
 
     def download(self, target=None):
-        """ Download file into this machine
+        """Download file into this machine
 
         Wrapper around self.retr function. It downloads the file from remote filesystem
         into local filesystem. Name is either preserved original, or can be changed.
@@ -235,7 +235,7 @@ class FTPFile(object):
 
 
 class FTPClient(object):
-    """ FTP Client encapsulation
+    """FTP Client encapsulation
 
     This class provides basic encapsulation around ftplib's FTP class.
     It wraps some methods and allows to easily delete whole directory or walk
@@ -271,7 +271,7 @@ class FTPClient(object):
     """
 
     def __init__(self, host, login, password, upload_dir="/", time_diff=True):
-        """ Constructor
+        """Constructor
 
         Args:
             host: FTP server host
@@ -295,7 +295,7 @@ class FTPClient(object):
         logger.info("FTP Server login successful")
 
     def update_time_difference(self):
-        """ Determine the time difference between the FTP server and this computer.
+        """Determine the time difference between the FTP server and this computer.
 
         This is done by uploading a fake file, reading its time and deleting it.
         Then the self.dt variable captures the time you need to ADD to the remote
@@ -322,7 +322,7 @@ class FTPClient(object):
         raise FTPException("The timecheck file was not found in the current FTP directory")
 
     def ls(self):
-        """ Lists the content of a directory.
+        """Lists the content of a directory.
 
 
         Returns:
@@ -350,7 +350,7 @@ class FTPClient(object):
         return result
 
     def pwd(self):
-        """ Get current directory
+        """Get current directory
 
         Returns:
             Current directory
@@ -364,13 +364,11 @@ class FTPClient(object):
         return d.strip()
 
     def cdup(self):
-        """ Goes one level up in directory hierarchy (cd ..)
-
-        """
+        """Goes one level up in directory hierarchy (cd ..)"""
         return self.ftp.sendcmd("CDUP")
 
     def mkd(self, d):
-        """ Create a directory
+        """Create a directory
 
         Args:
             d: Directory name
@@ -385,7 +383,7 @@ class FTPClient(object):
             return False
 
     def rmd(self, d):
-        """ Remove a directory
+        """Remove a directory
 
         Args:
             d: Directory name
@@ -400,7 +398,7 @@ class FTPClient(object):
             return False
 
     def dele(self, f):
-        """ Remove a file
+        """Remove a file
 
         Args:
             f: File name
@@ -415,7 +413,7 @@ class FTPClient(object):
             return False
 
     def cwd(self, d):
-        """ Enter a directory
+        """Enter a directory
 
         Args:
             d: Directory name
@@ -430,15 +428,13 @@ class FTPClient(object):
             return False
 
     def close(self):
-        """ Finish work and close connection
-
-        """
+        """Finish work and close connection"""
         self.ftp.quit()
         self.ftp.close()
         self.ftp = None
 
     def retrbinary(self, f, callback):
-        """ Download file
+        """Download file
 
         You need to specify the callback function, which accepts one parameter
         (data), to be processed.
@@ -450,7 +446,7 @@ class FTPClient(object):
         return self.ftp.retrbinary("RETR {}".format(f), callback)
 
     def storbinary(self, f, file_obj):
-        """ Store file
+        """Store file
 
         You need to specify the file object.
 
@@ -461,7 +457,7 @@ class FTPClient(object):
         return self.ftp.storbinary("STOR {}".format(f), file_obj)
 
     def recursively_delete(self, d=None):
-        """ Recursively deletes content of pwd
+        """Recursively deletes content of pwd
 
         WARNING: Destructive!
 
@@ -489,7 +485,7 @@ class FTPClient(object):
             assert self.rmd(d), "Could not remove directory {}!".format(d)
 
     def tree(self, d=None):
-        """ Walks the tree recursively and creates a tree
+        """Walks the tree recursively and creates a tree
 
         Base structure is a list. List contains directory content and the type decides whether
         it's a directory or a file:
@@ -526,7 +522,7 @@ class FTPClient(object):
 
     @property
     def filesystem(self):
-        """ Returns the object structure of the filesystem
+        """Returns the object structure of the filesystem
 
         Returns:
             Root directory
@@ -536,15 +532,11 @@ class FTPClient(object):
 
     # Context management methods
     def __enter__(self):
-        """ Entering the context does nothing, because the client is already connected
-
-        """
+        """Entering the context does nothing, because the client is already connected"""
         return self
 
     def __exit__(self, type, value, traceback):
-        """ Exiting the context means just calling .close() on the client.
-
-        """
+        """Exiting the context means just calling .close() on the client."""
         self.close()
 
 
@@ -621,7 +613,7 @@ class FTPClientWrapper(FTPClient):
         return [FTPFileWrapper(self, name=name, parent_dir=current_dir) for name in self.file_names]
 
     def download(self, name, target=None):
-        """ Download FTP file
+        """Download FTP file
         Arg:
             name: remote file name
             target: local path for download else it will consider current working path
@@ -639,7 +631,7 @@ class FTPClientWrapper(FTPClient):
             return target
 
     def upload(self, path, name=None):
-        """ Upload FTP file
+        """Upload FTP file
         Arg:
             path: path of local file
             name: set name of file default it will consider original name of uploading file
@@ -655,7 +647,7 @@ class FTPClientWrapper(FTPClient):
 
     @property
     def directory_names(self):
-        """ List remote FTP directories"""
+        """List remote FTP directories"""
         return [name for is_dir, name, _ in self.ls() if is_dir]
 
 

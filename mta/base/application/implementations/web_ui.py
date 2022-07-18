@@ -103,8 +103,7 @@ class NavigatableMixin(object):
         )
 
     def list_destinations(self):
-        """This function returns a list of all valid destinations for a particular object
-        """
+        """This function returns a list of all valid destinations for a particular object"""
         return {
             impl.name: impl.navigator.list_destinations(self)
             for impl in self.application.context.implementations.values()

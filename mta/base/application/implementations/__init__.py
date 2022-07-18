@@ -14,6 +14,6 @@ class Implementation(object):
 
 
 class MTAImplementationContext(sentaku.ImplementationContext):
-    """ Our context for Sentaku"""
+    """Our context for Sentaku"""
 
     pass

@@ -14,7 +14,7 @@ from mta.utils.ftp import FTPClientWrapper
 
 
 def test_advanced_options(mta_app, request):
-    """ Test advanced options and run analysis
+    """Test advanced options and run analysis
 
     Polarion:
         assignee: ghubale

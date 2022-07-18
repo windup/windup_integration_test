@@ -158,14 +158,14 @@ class AddProjectView(AllProjectView):
                 return self.title.is_displayed and self.select_all_packages.is_displayed
 
             def fill_pkg(self):
-                """ Add packages """
+                """Add packages"""
                 self.packages.click()
                 self.move_into_button.click()
                 was_change = True
                 return was_change
 
             def remove(self):
-                """ Remove packages"""
+                """Remove packages"""
                 self.included_packages.click()
                 self.move_from_button.click()
                 was_change = True

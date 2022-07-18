@@ -139,8 +139,7 @@ class CustomLabelsConfigurations(Updateable, NavigatableMixin):
         self.file_name = file_name
 
     def upload_custom_label_file(self):
-        """Method for uploading custom label file
-        """
+        """Method for uploading custom label file"""
         view = navigate_to(self, "Add")
         view.wait_displayed("20s")
         # upload custom labels

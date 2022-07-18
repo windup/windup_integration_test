@@ -66,7 +66,7 @@ class Applications(Updateable, NavigatableMixin):
         self.project_name = project_name
 
     def search_application(self, name):
-        """ Search application
+        """Search application
         Args:
             name: name to search
         """
@@ -75,7 +75,7 @@ class Applications(Updateable, NavigatableMixin):
         view.search.fill(name)
 
     def delete_application(self, name, cancel=False):
-        """ Delete application
+        """Delete application
         Args:
             name: name of app
         """
@@ -91,7 +91,7 @@ class Applications(Updateable, NavigatableMixin):
             view.delete_button.click()
 
     def add_application(self, app):
-        """ Add application
+        """Add application
         Args:
             app: name of app
         """

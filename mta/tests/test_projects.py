@@ -114,21 +114,21 @@ def test_application_report(mta_app, create_minimal_project, request):
 def test_sort_projects(
     mta_app, create_minimal_project, create_project_with_two_apps, create_project
 ):
-    """ Test to sort Projects
+    """Test to sort Projects
 
-     Polarion:
-        assignee: ghubale
-        initialEstimate: 1/12h
-        caseimportance: medium
-        testSteps:
-            1. Create three different projects
-            2. Go to project all page
-            3. Sort projects by
-                {"name" > "ascending" and "descending",
-                 "Applications" > "ascending" and "descending",
-                 "Status" > "ascending" and "descending"}
-        expectedResults:
-            1. All values should get sorted properly
+    Polarion:
+       assignee: ghubale
+       initialEstimate: 1/12h
+       caseimportance: medium
+       testSteps:
+           1. Create three different projects
+           2. Go to project all page
+           3. Sort projects by
+               {"name" > "ascending" and "descending",
+                "Applications" > "ascending" and "descending",
+                "Status" > "ascending" and "descending"}
+       expectedResults:
+           1. All values should get sorted properly
     """
     project1, project_collection = create_minimal_project
     assert project1.exists
