@@ -7,13 +7,14 @@ LABEL description="Windup Web-Console"
 RUN dnf -y update && dnf clean all
 RUN dnf -y install  java-11-openjdk-devel unzip wget xterm python3-virtualenv && dnf clean all
 
+ARG VERSION
+ARG WEB_CONSOLE_FILE
+
 # set java env
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk
 ENV BASE_URL="https://oss.sonatype.org/content/repositories/snapshots/org/jboss/windup"
 ENV WEB_CONSOLE="windup-web-distribution"
-ENV VERSION=build_version
 ENV WEB_DISTRIBUTION="${WEB_CONSOLE}-${VERSION}"
-ENV WEB_CONSOLE_FILE=web_console_filename
 ENV WEB_CONSOLE_FILE_PATH="${BASE_URL}/web/${WEB_CONSOLE}/${VERSION}/${WEB_CONSOLE_FILE}"
 
 
