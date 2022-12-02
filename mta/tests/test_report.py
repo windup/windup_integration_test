@@ -30,7 +30,7 @@ def test_send_feedback_and_validate_url(mta_app, create_minimal_project, request
     view.wait_displayed()
     view.analysis_results.show_report(request)
     # Validate URL report has mta-ui/api/static-report
-    url = "/mta-ui/api/static-report"
+    url = "/windup-ui/api/static-report"
     assert url in mta_app.web_ui.widgetastic_browser.url
     view = project_collection.create_view(AllApplicationsView)
     view.send_feedback.click()

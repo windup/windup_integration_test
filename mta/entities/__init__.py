@@ -30,7 +30,7 @@ class BlankStateView(View):
     def is_displayed(self):
         return (
             self.title.is_displayed
-            and self.title.text == "Welcome to the Migration Toolkit for Applications"
+            and self.title.text == "Welcome to Migration Toolkit for Runtimes"
             and self.create_project.is_displayed
         )
 
