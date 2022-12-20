@@ -270,7 +270,7 @@ class FTPClient(object):
 
     """
 
-    def __init__(self, host, login, password, upload_dir="/", time_diff=True):
+    def __init__(self, host, login, password, port, upload_dir="/", time_diff=True):
         """Constructor
 
         Args:
@@ -280,6 +280,7 @@ class FTPClient(object):
             time_diff: Server and client time diff management
         """
         self.host = host
+        self.port = port
         self.login = login
         self.password = password
         self.ftp = None
@@ -290,7 +291,8 @@ class FTPClient(object):
             self.update_time_difference()
 
     def connect(self):
-        self.ftp = ftplib.FTP(self.host)
+        self.ftp = ftplib.FTP()
+        self.ftp.connect(self.host, self.port)
         self.ftp.login(self.login, self.password)
         logger.info("FTP Server login successful")
 
@@ -571,9 +573,12 @@ class FTPClientWrapper(FTPClient):
           f.download()  # download file
     """
 
-    def __init__(self, entity_path=None, entrypoint=None, host=None, login=None, password=None):
+    def __init__(
+        self, entity_path=None, entrypoint=None, host=None, login=None, password=None, port=None
+    ):
         env = conf.get_config("env")
         host = host or env.ftpserver.host
+        port = port or env.ftpserver.port
         login = login or env.ftpserver.credentials.username
         password = password or env.ftpserver.credentials.password
 
@@ -581,7 +586,7 @@ class FTPClientWrapper(FTPClient):
         self.entity_path = entity_path
 
         super(FTPClientWrapper, self).__init__(
-            host=host, login=login, password=password, time_diff=False
+            host=host, login=login, password=password, port=port, time_diff=False
         )
 
         # Change working directory as per entity_path if provided
